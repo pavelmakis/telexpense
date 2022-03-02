@@ -1,7 +1,4 @@
-from os import popen
-from webbrowser import get
 import gspread
-from pprint import pprint
 
 class Sheet:
     def __init__(self) -> None:
@@ -31,7 +28,6 @@ class Sheet:
         category_list.pop(0)
         for i in range(len(category_list)):
             category_list[i] = category_list[i].lower().strip()
-        pprint(category_list)
         return category_list
 
     def get_accounts(self) -> list:
@@ -42,7 +38,6 @@ class Sheet:
         account_list.pop(0)
         for i in range(len(account_list)):
             account_list[i] = account_list[i].lower().strip()
-        pprint(account_list)
         return account_list
 
     def get_today(self) -> str:
