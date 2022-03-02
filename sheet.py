@@ -1,4 +1,7 @@
+from os import popen
+from webbrowser import get
 import gspread
+from pprint import pprint
 
 class Sheet:
     def __init__(self) -> None:
@@ -19,3 +22,41 @@ class Sheet:
         main_sheet = self.user_sheet.worksheet("Main")
         total_amount = main_sheet.acell('B11').value
         return total_amount
+
+    def get_categories(self) -> list:
+        """Get all user categories from preferences list in Google sheet"""
+        pref_list = self.user_sheet.worksheet("Preferences")
+        category_list = pref_list.col_values(2)
+        # TODO: If no categories, return empty list
+        category_list.pop(0)
+        for i in range(len(category_list)):
+            category_list[i] = category_list[i].lower().strip()
+        pprint(category_list)
+        return category_list
+
+    def get_accounts(self) -> list:
+        """Get all user accounts from preferences list in Google sheet"""
+        pref_list = self.user_sheet.worksheet("Preferences")
+        # TODO: If no accounts, return empty list
+        account_list = pref_list.col_values(8)
+        account_list.pop(0)
+        for i in range(len(account_list)):
+            account_list[i] = account_list[i].lower().strip()
+        pprint(account_list)
+        return account_list
+
+    def get_today(self) -> str:
+        """Get today date from cell in users Google sheet"""
+        pref_list = self.user_sheet.worksheet("Preferences")
+        today_date = pref_list.acell('N3').value
+        return today_date
+
+    def add_expense(self, data: list):
+        # Getting transactions day and appending it 
+        today = self.get_today()
+        data.insert(0, today)
+
+        # Opening transactions sheet and inserting transaction data
+        trans_list = self.user_sheet.worksheet("Transactions")
+        trans_list.insert_row(data, index=2, value_input_option='RAW')
+        return

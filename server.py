@@ -1,6 +1,9 @@
+
 import os
 import logging
 import sheet
+import expenses
+import answers
 
 from aiogram import Bot, Dispatcher, executor, types
 
@@ -22,30 +25,66 @@ async def send_welcome(message: types.Message):
 
 @dp.message_handler(commands=['available'])
 async def send_total(message: types.Message):
-    """
-    This handler will be called when user sends `/start` or `/help` command
-    """
+    """Send an available amount of money from users sheet"""
     user_sheet = sheet.Sheet()
     available_amount = user_sheet.get_available()
     await message.answer(f"Сейчас доступно: {available_amount} на всех счетах")
 
 @dp.message_handler(commands=['savings'])
 async def send_savings(message: types.Message):
-    """
-    This handler will be called when user sends `/start` or `/help` command
-    """
+    """Send an amount of savings from users sheet"""
     user_sheet = sheet.Sheet()
     savings_amount = user_sheet.get_savings()
     await message.answer(f"У вас сбережений: {savings_amount}")
 
 @dp.message_handler(commands=['total'])
 async def send_total(message: types.Message):
-    """
-    This handler will be called when user sends `/start` or `/help` command
-    """
+    """Send a total amount of money from users sheet"""
     user_sheet = sheet.Sheet()
     total_amount = user_sheet.get_total()
     await message.answer(f"Всего денег: {total_amount} на всех счетах")
+
+# @dp.message_handler(commands=['addexp'])
+# async def send_total(message: types.Message):
+#     """Send a help message for adding expenses"""
+#     await message.answer(answers.EXPENSE_HELP, parse_mode='Markdown')
+
+@dp.message_handler(lambda message: message.text.startswith('/addexp'))
+async def send_total(message: types.Message):
+    """Add the record of new expense from user to users sheet"""
+    raw_expension = message.text[7:].split(',')
+
+    # Checking if command contains only one argument
+    if len(raw_expension) == 1:
+        await message.answer(answers.WRONG_EXPENSE, parse_mode='Markdown')
+        return
+    
+    # Parsing expense
+    parsed_expension = expenses.parse_expension(raw_expension)
+
+    # If not parsed, send help message
+    if parsed_expension == []:
+        await message.answer(answers.WRONG_EXPENSE, parse_mode='Markdown')
+        return
+    # If wrong amount
+    if parsed_expension[2] == None:
+        await message.answer("Cannot understand this expense!\nLooks like amount is wrong!")
+        return
+    # If wrong category
+    if parsed_expension[1] == None:
+        await message.answer("Cannot understand this expense!\n"
+                            "Looks like this category doesn't exist!")
+        return
+    # If wrong account
+    if parsed_expension[3] == None:
+        await message.answer("Cannot understand this expense!\n"
+                            "Looks like this account doesn't exist!")
+        return
+
+    # If successful
+    user_sheet = sheet.Sheet()
+    user_sheet.add_expense(parsed_expension)
+    await message.answer("Successfully added!", parse_mode='Markdown')
 
 if __name__ == '__main__':
     executor.start_polling(dp, skip_updates=True)
