@@ -44,11 +44,6 @@ async def send_total(message: types.Message):
     total_amount = user_sheet.get_total()
     await message.answer(f"Всего денег: {total_amount} на всех счетах")
 
-# @dp.message_handler(commands=['addexp'])
-# async def send_total(message: types.Message):
-#     """Send a help message for adding expenses"""
-#     await message.answer(answers.EXPENSE_HELP, parse_mode='Markdown')
-
 @dp.message_handler(lambda message: message.text.startswith('/addexp'))
 async def send_total(message: types.Message):
     """Add the record of new expense from user to users sheet"""
