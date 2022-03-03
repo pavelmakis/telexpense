@@ -24,7 +24,8 @@ class Sheet:
         """Get all user categories from preferences list in Google sheet"""
         pref_list = self.user_sheet.worksheet("Preferences")
         category_list = pref_list.col_values(2)
-        # TODO: If no categories, return empty list
+        if category_list == []:
+            return category_list
         category_list.pop(0)
         for i in range(len(category_list)):
             category_list[i] = category_list[i].lower().strip()
@@ -33,12 +34,21 @@ class Sheet:
     def get_accounts(self) -> list:
         """Get all user accounts from preferences list in Google sheet"""
         pref_list = self.user_sheet.worksheet("Preferences")
-        # TODO: If no accounts, return empty list
-        account_list = pref_list.col_values(8)
+        account_list = pref_list.col_values(1)
+        if account_list == []:
+            return account_list
         account_list.pop(0)
         for i in range(len(account_list)):
             account_list[i] = account_list[i].lower().strip()
         return account_list
+
+    def get_accounts_and_categories(self) -> tuple():
+        pref_list = self.user_sheet.worksheet("Preferences")
+        account_list = pref_list.col_values(8)
+        category_list = pref_list.col_values(2)
+
+        return
+
 
     def get_today(self) -> str:
         """Get today date from cell in users Google sheet"""
@@ -55,3 +65,8 @@ class Sheet:
         trans_list = self.user_sheet.worksheet("Transactions")
         trans_list.insert_row(data, index=2, value_input_option='RAW')
         return
+
+
+user_sheet = Sheet()
+
+print(user_sheet.get_accounts())
