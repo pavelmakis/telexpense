@@ -1,7 +1,4 @@
 import gspread
-import time
-
-start = time.monotonic()
 
 class Sheet:
     def __init__(self) -> None:
