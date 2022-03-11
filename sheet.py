@@ -1,4 +1,7 @@
 import gspread
+import time
+
+start = time.monotonic()
 
 class Sheet:
     def __init__(self) -> None:
@@ -42,16 +45,16 @@ class Sheet:
             account_list[i] = account_list[i].lower().strip()
         return account_list
 
-    # def get_categories_and_acounts(self) -> tuple:
-    #     """Get all user categories and accounts from preferences list in Google sheet.
+    def get_categories_and_acounts(self) -> tuple:
+        """Get all user categories and accounts from preferences list in Google sheet.
 
-    #     Returns:
-    #         tuple(category_list, account_list): tuple of lists of categories and accounts. If no categories and no accounts returns tuple of empty lists.
-    #     """
-    #     account_list = self.get_accounts()
-    #     category_list = self.get_categories()
-    #     categories_and_accounts = tuple(account_list, category_list)
-    #     return categories_and_accounts
+        Returns:
+            tuple(category_list, account_list): tuple of lists of categories and accounts. If no categories and no accounts returns tuple of empty lists.
+        """
+        account_list = self.get_accounts()
+        category_list = self.get_categories()
+        categories_and_accounts = tuple((account_list, category_list))
+        return categories_and_accounts
 
 
     def get_today(self) -> str | None:
