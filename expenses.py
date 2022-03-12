@@ -15,7 +15,7 @@ def parse_expension(raw_expension: list) -> list | None:
             if not _parse_amount(amount):
                 amount = None
             user_sheet = sheet.Sheet()
-            if not category.lower() in user_sheet.get_categories():
+            if not category.lower() in user_sheet.get_outcome_categories():
                 category = None
             if not account.lower() in user_sheet.get_accounts():
                 account = None
@@ -25,7 +25,7 @@ def parse_expension(raw_expension: list) -> list | None:
             if not _parse_amount(amount):
                 amount = None
             user_sheet = sheet.Sheet()
-            if not category.lower() in user_sheet.get_categories():
+            if not category.lower() in user_sheet.get_outcome_categories():
                 category = None
             if not account.lower() in user_sheet.get_accounts():
                 account = None
@@ -35,7 +35,7 @@ def parse_expension(raw_expension: list) -> list | None:
             if not _parse_amount(amount):
                 amount = None
             user_sheet = sheet.Sheet()
-            if not category.lower() in user_sheet.get_categories():
+            if not category.lower() in user_sheet.get_outcome_categories():
                 category = None
             parsed_data = ['', category, amount, '']
     return parsed_data
