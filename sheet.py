@@ -29,7 +29,7 @@ class Sheet:
         # Delete column headers
         del category_list[:3]
         for i in range(len(category_list)):
-            category_list[i] = category_list[i].lower().strip()
+            category_list[i] = category_list[i].strip()
         return category_list
     
     def get_income_categories(self) -> list:
@@ -41,7 +41,7 @@ class Sheet:
         # Delete column headers
         del category_list[:3]
         for i in range(len(category_list)):
-            category_list[i] = category_list[i].lower().strip()
+            category_list[i] = category_list[i].strip()
         return category_list
 
     def get_accounts(self) -> list:
@@ -53,11 +53,12 @@ class Sheet:
         # Delete column headers
         del account_list[:3]
         for i in range(len(account_list)):
-            account_list[i] = account_list[i].lower().strip()
+            account_list[i] = account_list[i].strip()
         return account_list
 
     def get_today(self) -> str | None:
-        """Get today date from cell in users Google sheet.
+        """Get today date from cell in user's Google sheet.
+        Cell with today date: E25.
 
         Returns:
             str: today date from users sheet.
@@ -67,9 +68,13 @@ class Sheet:
         return today_date
 
     def add_expense(self, data: list):
-        # Getting transactions day and appending it 
-        today = self.get_today()
-        data.insert(0, today)
+        """Insert new row with transaction data to transactions list in Google Sheet.
+
+        Args:
+            data (list): parsed data for inserting in user's sheet.
+        """
+        # Appending transactions day to insert data
+        data.insert(0, self.get_today())
 
         # Opening transactions sheet and inserting transaction data
         trans_list = self.user_sheet.worksheet("Transactions")
