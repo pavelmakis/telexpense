@@ -1,8 +1,7 @@
-
 import os
 import logging
 import sheet
-import expenses
+import transactions
 import answers
 
 from aiogram import Bot, Dispatcher, executor, types
@@ -47,38 +46,38 @@ async def send_total(message: types.Message):
 @dp.message_handler(lambda message: message.text.startswith('/addexp'))
 async def send_total(message: types.Message):
     """Add the record of new expense from user to users sheet"""
-    raw_expension = message.text[7:].split(',')
+    raw_transaction = message.text[7:].split(',')
 
     # Checking if command contains only one argument
-    if len(raw_expension) == 1:
+    if len(raw_transaction) == 1:
         await message.answer(answers.WRONG_EXPENSE, parse_mode='Markdown')
         return
     
     # Parsing expense
-    parsed_expension = expenses.parse_expension(raw_expension)
+    parsed_transaction = transactions.parse_transaction(raw_transaction)
 
     # If not parsed, send help message
-    if parsed_expension == []:
+    if parsed_transaction == []:
         await message.answer(answers.WRONG_EXPENSE, parse_mode='Markdown')
         return
     # If wrong amount
-    if parsed_expension[2] == None:
+    if parsed_transaction[2] == None:
         await message.answer("Cannot understand this expense!\nLooks like amount is wrong!")
         return
     # If wrong category
-    if parsed_expension[1] == None:
+    if parsed_transaction[1] == None:
         await message.answer("Cannot understand this expense!\n"
                             "Looks like this category doesn't exist!")
         return
     # If wrong account
-    if parsed_expension[3] == None:
+    if parsed_transaction[3] == None:
         await message.answer("Cannot understand this expense!\n"
                             "Looks like this account doesn't exist!")
         return
 
     # If successful
     user_sheet = sheet.Sheet()
-    user_sheet.add_expense(parsed_expension)
+    user_sheet.add_expense(parsed_transaction)
     await message.answer("Successfully added!", parse_mode='Markdown')
 
 if __name__ == '__main__':
