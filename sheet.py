@@ -1,4 +1,3 @@
-from binascii import Incomplete
 import gspread
 
 class Sheet:
@@ -57,18 +56,6 @@ class Sheet:
             account_list[i] = account_list[i].lower().strip()
         return account_list
 
-    # TODO: Remove in the future
-    def get_categories_and_acounts(self) -> tuple:
-        """Get all user categories and accounts from preferences list in Google sheet.
-
-        Returns:
-            tuple(category_list, account_list): tuple of lists of categories and accounts. If no categories and no accounts returns tuple of empty lists.
-        """
-        account_list = self.get_accounts()
-        category_list = self.get_categories()
-        categories_and_accounts = tuple((account_list, category_list))
-        return categories_and_accounts
-
     def get_today(self) -> str | None:
         """Get today date from cell in users Google sheet.
 
@@ -76,7 +63,7 @@ class Sheet:
             str: today date from users sheet.
         """
         pref_list = self.user_sheet.worksheet("Preferences")
-        today_date = pref_list.acell('N3').value
+        today_date = pref_list.acell('E25').value
         return today_date
 
     def add_expense(self, data: list):
@@ -86,8 +73,6 @@ class Sheet:
 
         # Opening transactions sheet and inserting transaction data
         trans_list = self.user_sheet.worksheet("Transactions")
-        trans_list.insert_row(data, index=2, value_input_option='RAW')
+        trans_list.insert_row(data, index=2, value_input_option='USER_ENTERED')
         return
 
-user_sh = Sheet()
-print(user_sh.get_accounts())
