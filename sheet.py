@@ -67,7 +67,7 @@ class Sheet:
         today_date = pref_list.acell('E25').value
         return today_date
 
-    def add_expense(self, data: list):
+    def add_record(self, data: list):
         """Insert new row with transaction data to transactions list in Google Sheet.
 
         Args:
