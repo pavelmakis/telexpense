@@ -78,7 +78,8 @@ async def send_total(message: types.Message):
     # If successful
     user_sheet = sheet.Sheet()
     user_sheet.add_expense(parsed_transaction)
-    await message.answer("Successfully added!", parse_mode='Markdown')
+    await message.answer(f"Successfully added {parsed_transaction[2]} to "
+                         "{parsed_transaction[1]}!", parse_mode='Markdown')
 
 if __name__ == '__main__':
     executor.start_polling(dp, skip_updates=True)
