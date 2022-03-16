@@ -1,7 +1,7 @@
 import os
 import logging
 import sheet
-import transactions
+import records
 import answers
 
 from aiogram import Bot, Dispatcher, executor, types
@@ -54,7 +54,7 @@ async def send_total(message: types.Message):
         return
     
     # Parsing expense
-    parsed_transaction = transactions.parse_transaction(raw_transaction)
+    parsed_transaction = records.parse_transaction(raw_transaction)
 
     # If not parsed, send help message
     if parsed_transaction == []:
