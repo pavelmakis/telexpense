@@ -18,7 +18,7 @@ def _parse_income_amount(amount: str) -> float | None:
 def _parse_account(account: str, user_sheet: sheet.Sheet) -> str | None:
     account_list = user_sheet.get_accounts()
     for i in range(len(account_list)):
-        if account.lower() in account_list[i].lower():
+        if account.lower() == account_list[i].lower():
             account = account_list[i]
             return account
     return None
@@ -26,7 +26,7 @@ def _parse_account(account: str, user_sheet: sheet.Sheet) -> str | None:
 def _parse_outcome_category(category: str, user_sheet: sheet.Sheet) -> str | None:
     category_list = user_sheet.get_outcome_categories()
     for i in range(len(category_list)):
-        if category.lower() in category_list[i].lower():
+        if category.lower() == category_list[i].lower():
             category = category_list[i]
             return category
     return None
@@ -34,7 +34,7 @@ def _parse_outcome_category(category: str, user_sheet: sheet.Sheet) -> str | Non
 def _parse_income_category(category: str, user_sheet: sheet.Sheet) -> str | None:
     category_list = user_sheet.get_income_categories()
     for i in range(len(category_list)):
-        if category.lower() in category_list[i].lower():
+        if category.lower() == category_list[i].lower():
             category = category_list[i]
             return category
     return None
