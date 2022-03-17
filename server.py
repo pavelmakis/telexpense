@@ -56,17 +56,21 @@ async def send_total(message: types.Message):
         return
     # If wrong amount
     if parsed_expense[2] == None:
-        await message.answer("Cannot understand this expense!\nLooks like amount is wrong!")
+        await message.answer(
+            "Cannot understand this expense!\n" +
+            "Looks like amount is wrong!")
         return
     # If wrong category
     if parsed_expense[1] == None:
-        await message.answer("Cannot understand this expense!\n"
-                            "Looks like this category doesn't exist!")
+        await message.answer(
+            "Cannot understand this expense!\n" +
+            "Looks like this category doesn't exist!")
         return
     # If wrong account
     if parsed_expense[3] == None:
-        await message.answer("Cannot understand this expense!\n"
-                            "Looks like this account doesn't exist!")
+        await message.answer(
+            "Cannot understand this expense!\n" +
+            "Looks like this account doesn't exist!")
         return
 
     # If successful
@@ -89,17 +93,21 @@ async def send_total(message: types.Message):
         return
     # If wrong amount
     if parsed_income[2] == None:
-        await message.answer("Cannot understand this income!\nLooks like amount is wrong!")
+        await message.answer(
+            "Cannot understand this income!\n" +
+            "Looks like amount is wrong!")
         return
     # If wrong category
     if parsed_income[1] == None:
-        await message.answer("Cannot understand this income!\n"
-                            "Looks like this income category doesn't exist!")
+        await message.answer(
+            "Cannot understand this income!\n" +
+            "Looks like this income category doesn't exist!")
         return
     # If wrong account
     if parsed_income[3] == None:
-        await message.answer("Cannot understand this income!\n"
-                            "Looks like this account doesn't exist!")
+        await message.answer(
+            "Cannot understand this income!\n" +
+            "Looks like this account doesn't exist!")
         return
 
     # If successful
