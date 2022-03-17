@@ -46,40 +46,69 @@ async def send_total(message: types.Message):
 @dp.message_handler(lambda message: message.text.startswith('/addexp'))
 async def send_total(message: types.Message):
     """Add the record of new expense from user to users sheet"""
-    raw_transaction = message.text[7:].split(',')
-
-    # Checking if command contains only one argument
-    if len(raw_transaction) == 1:
-        await message.answer(answers.WRONG_EXPENSE, parse_mode='Markdown')
-        return
-    
     # Parsing expense
-    parsed_transaction = records.parse_transaction(raw_transaction)
+    raw_expense = message.text[7:].split(',')
+    parsed_expense = records.parse_record(raw_expense, type='outcome')
 
     # If not parsed, send help message
-    if parsed_transaction == []:
+    if parsed_expense == []:
         await message.answer(answers.WRONG_EXPENSE, parse_mode='Markdown')
         return
     # If wrong amount
-    if parsed_transaction[2] == None:
+    if parsed_expense[2] == None:
         await message.answer("Cannot understand this expense!\nLooks like amount is wrong!")
         return
     # If wrong category
-    if parsed_transaction[1] == None:
+    if parsed_expense[1] == None:
         await message.answer("Cannot understand this expense!\n"
                             "Looks like this category doesn't exist!")
         return
     # If wrong account
-    if parsed_transaction[3] == None:
+    if parsed_expense[3] == None:
         await message.answer("Cannot understand this expense!\n"
                             "Looks like this account doesn't exist!")
         return
 
     # If successful
     user_sheet = sheet.Sheet()
-    user_sheet.add_record(parsed_transaction)
-    await message.answer(f"Successfully added {parsed_transaction[2]} to "
-                         "{parsed_transaction[1]}!", parse_mode='Markdown')
+    user_sheet.add_record(parsed_expense)
+    await message.answer(f"Successfully added {parsed_expense[3]} to " +
+                         f"{parsed_expense[2]}!", parse_mode='Markdown')
+
+@dp.message_handler(lambda message: message.text.startswith('/addinc'))
+async def send_total(message: types.Message):
+    """Add the record of new income from user to users sheet"""
+    # Parsing income
+    raw_income = message.text[7:].split(',')
+    parsed_income = records.parse_record(raw_income, type='income')
+
+    # If not parsed, send help message
+    # TODO: Add message for wrong income
+    if parsed_income == []:
+        await message.answer(answers.WRONG_EXPENSE, parse_mode='Markdown')
+        return
+    # If wrong amount
+    if parsed_income[2] == None:
+        await message.answer("Cannot understand this income!\nLooks like amount is wrong!")
+        return
+    # If wrong category
+    if parsed_income[1] == None:
+        await message.answer("Cannot understand this income!\n"
+                            "Looks like this income category doesn't exist!")
+        return
+    # If wrong account
+    if parsed_income[3] == None:
+        await message.answer("Cannot understand this income!\n"
+                            "Looks like this account doesn't exist!")
+        return
+
+    # If successful
+    user_sheet = sheet.Sheet()
+    user_sheet.add_record(parsed_income)
+    await message.answer(f"Successfully added {parsed_income[3]} to " +
+                         f"{parsed_income[2]}!", parse_mode='Markdown')
+    
+
 
 if __name__ == '__main__':
     executor.start_polling(dp, skip_updates=True)
