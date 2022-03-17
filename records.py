@@ -1,7 +1,7 @@
 import sheet
 
 def _parse_outcome_amount(amount: str) -> float | None:
-    if amount[0] == '+':
+    if amount[0] == '+' or amount[0] == '-':
         amount = amount[1:]
     amount = '-' + amount
     try: float(amount)
