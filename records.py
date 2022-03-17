@@ -47,7 +47,6 @@ def parse_record(raw_record: list, type: str) -> list | None:
     user_sheet = sheet.Sheet()
     match raw_record:
         case amount, category, account, description:
-            user_sheet = sheet.Sheet()
             if type == 'income':
                 amount = _parse_income_amount(amount)
                 category = _parse_income_category(category, user_sheet)
@@ -58,7 +57,6 @@ def parse_record(raw_record: list, type: str) -> list | None:
             parsed_data = [description, category, amount, account]
 
         case amount, category, account:
-            user_sheet = sheet.Sheet()
             if type == 'income':
                 amount = _parse_income_amount(amount)
                 category = _parse_income_category(category, user_sheet)
@@ -69,7 +67,6 @@ def parse_record(raw_record: list, type: str) -> list | None:
             parsed_data = ['', category, amount, account]
         
         case amount, category:
-            user_sheet = sheet.Sheet()
             if type == 'income':
                 amount = _parse_income_amount(amount)
                 category = _parse_income_category(category, user_sheet)
