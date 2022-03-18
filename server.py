@@ -1,23 +1,14 @@
 import os
 import logging
-from unicodedata import category
 import sheet
 import records
 import answers
 import keyboards
 
 from aiogram import Bot, Dispatcher, executor, types
-
-
-import aiogram.utils.markdown as md
-
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.dispatcher import FSMContext
-from aiogram.dispatcher.filters import Text
 from aiogram.dispatcher.filters.state import State, StatesGroup
-from aiogram.types import ParseMode
-
-
 
 
 API_TOKEN = os.getenv('TELEXPENSE_TOKEN')
@@ -31,10 +22,14 @@ bot = Bot(token=API_TOKEN)
 dp = Dispatcher(bot, storage=storage)
 
 
-class Form(StatesGroup):
+class RecordForm(StatesGroup):
+    """
+    This form is used both for expense and income.
+    """
     amount = State()
     category = State()
     account = State()
+    description = State()
 
 @dp.message_handler(commands=['start', 'help'])
 async def send_welcome(message: types.Message):
@@ -141,18 +136,31 @@ async def send_total(message: types.Message):
 
 
 
+
+
+
 @dp.message_handler(commands=['expense'])
 async def process_expense(message: types.Message):
-    await Form.amount.set()
+    """
+    The handler is used to retrieve a record of expense through a form. 
+    To add a record, the user must specify the record data in multiple messages. 
+    To add an entry with a single command, the /addexp handler is used
+    """
+    await RecordForm.amount.set()
     await bot.send_message(
             message.chat.id,
             "Specify the amount of expense")
 
-@dp.message_handler(state=Form.amount)
+@dp.message_handler(state=RecordForm.amount)
 async def process_expense_amount(message: types.Message, state: FSMContext):
-    amount = message.text
-    parsed_amount = records._parse_outcome_amount(amount)
+    """
+    This handler is used to get the expense amount after calling the /expense command
+    """
+    # Parsing amount
+    parsed_amount = records._parse_outcome_amount(message.text)
 
+    # If not parsed, stop form getting
+    # TODO: add main screen keyboard
     if parsed_amount is None:
         await bot.send_message(
             message.chat.id,
@@ -161,18 +169,28 @@ async def process_expense_amount(message: types.Message, state: FSMContext):
         await state.finish()
         return
 
+    # Write amount data to dictionary
     async with state.proxy() as data:
         data['amount'] = parsed_amount
 
-    await Form.next()
-    await message.answer("Specify expense category")
+    # Go to the next step of form and send message
+    await RecordForm.next()
+    await bot.send_message(
+            message.chat.id,
+            "Specify expense category",
+            reply_markup=keyboards.get_outcome_categories_markup())
 
-@dp.message_handler(state=Form.category)
+@dp.message_handler(state=RecordForm.category)
 async def process_expense_category(message: types.Message, state: FSMContext):
-    category = message.text
+    """
+    This handler is used to get the expense category after calling the /expense command
+    """
+    # Parsing expense category 
     user_sheet = sheet.Sheet()
-    parsed_category = records._parse_outcome_category(category, user_sheet)
+    parsed_category = records._parse_outcome_category(message.text, user_sheet)
 
+    # If not parsed, stop form getting
+    # TODO: and start screen keyboard
     if parsed_category is None:
         await bot.send_message(
             message.chat.id,
@@ -181,18 +199,28 @@ async def process_expense_category(message: types.Message, state: FSMContext):
         await state.finish()
         return
 
+    # Write expense category to dictionary
     async with state.proxy() as data:
         data['category'] = parsed_category
 
-    await Form.next()
-    await message.answer("Specify an account of expense")
+    # Go to the next step of the form and send a message 
+    # with the buttons with accounts titles
+    await RecordForm.next()
+    await bot.send_message(
+            message.chat.id,
+            "Specify an account of expense",
+            reply_markup=keyboards.get_accounts_markup())
 
-@dp.message_handler(state=Form.account)
-async def process_expense_category(message: types.Message, state: FSMContext):
-    account = message.text
+@dp.message_handler(state=RecordForm.account)
+async def process_expense_account(message: types.Message, state: FSMContext):
+    """
+    This handler is used to get the expense account after calling the /expense command
+    """
     user_sheet = sheet.Sheet()
-    parsed_account = records._parse_account(account, user_sheet)
+    parsed_account = records._parse_account(message.text, user_sheet)
 
+    # If not parsed, stop form getting
+    # TODO: and start screen keyboard
     if parsed_account is None:
         await bot.send_message(
             message.chat.id,
@@ -201,15 +229,19 @@ async def process_expense_category(message: types.Message, state: FSMContext):
         await state.finish()
         return
 
+    # Write account to dictionary
     async with state.proxy() as data:
         data['account'] = parsed_account
 
+    # Send finish message
+    # TODO: main screen keyboard
     await bot.send_message(
         message.chat.id,
         f"Successfully added {data['amount']} to {data['category']} from {data['account']}!",
         parse_mode='Markdown',
     )
 
+    # Stop form filling
     await state.finish()
 
 
