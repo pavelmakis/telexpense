@@ -13,7 +13,7 @@ def get_accounts_markup() -> ReplyKeyboardMarkup:
     Returns:
         ReplyKeyboardMarkup: keyboard markup with a list of accounts from sheet
     """
-    accounts_markup = ReplyKeyboardMarkup(resize_keyboard=True, selective=True)
+    accounts_markup = ReplyKeyboardMarkup(resize_keyboard=True, selective=True, one_time_keyboard=True)
     # Getting account list from Google sheet
     user_sheet = sheet.Sheet()
     account_list = user_sheet.get_accounts()
@@ -37,7 +37,7 @@ def get_outcome_categories_markup() -> ReplyKeyboardMarkup:
     Returns:
         ReplyKeyboardMarkup: keyboard markup with a list of outcome categories from sheet
     """
-    out_categories_markup = ReplyKeyboardMarkup(resize_keyboard=True, selective=True)
+    out_categories_markup = ReplyKeyboardMarkup(resize_keyboard=True, selective=True, one_time_keyboard=True)
     # Getting outcome categorues list from Google sheet
     user_sheet = sheet.Sheet()
     out_category_list = user_sheet.get_outcome_categories()
@@ -61,7 +61,7 @@ def get_income_categories_markup() -> ReplyKeyboardMarkup:
     Returns:
         ReplyKeyboardMarkup: keyboard markup with a list of income categories from sheet
     """
-    in_categories_markup = ReplyKeyboardMarkup(resize_keyboard=True, selective=True)
+    in_categories_markup = ReplyKeyboardMarkup(resize_keyboard=True, selective=True, one_time_keyboard=True)
     # Getting outcome categorues list from Google sheet
     user_sheet = sheet.Sheet()
     in_category_list = user_sheet.get_income_categories()
