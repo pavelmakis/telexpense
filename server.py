@@ -133,12 +133,7 @@ async def send_total(message: types.Message):
                          f"{parsed_income[2]}!", parse_mode='Markdown')
     
 
-
-
-
-
-
-
+# --- /EXPENSE FORM HANDLERS ---
 @dp.message_handler(commands=['expense'])
 async def process_expense(message: types.Message):
     """
@@ -149,7 +144,7 @@ async def process_expense(message: types.Message):
     await RecordForm.amount.set()
     await bot.send_message(
             message.chat.id,
-            "Specify the amount of expense")
+            "Specify an amount of expense")
 
 @dp.message_handler(state=RecordForm.amount)
 async def process_expense_amount(message: types.Message, state: FSMContext):
@@ -160,12 +155,13 @@ async def process_expense_amount(message: types.Message, state: FSMContext):
     parsed_amount = records._parse_outcome_amount(message.text)
 
     # If not parsed, stop form getting
-    # TODO: add main screen keyboard
+    # and show main keyboard
     if parsed_amount is None:
         await bot.send_message(
             message.chat.id,
             "Cannot understand this amount...\n"
-            "Try to add /expense one more time!")
+            "Try to add /expense one more time!",
+            reply_markup=keyboards.get_main_markup())
         await state.finish()
         return
 
@@ -177,7 +173,7 @@ async def process_expense_amount(message: types.Message, state: FSMContext):
     await RecordForm.next()
     await bot.send_message(
             message.chat.id,
-            "Specify expense category",
+            "Specify a category of expense",
             reply_markup=keyboards.get_outcome_categories_markup())
 
 @dp.message_handler(state=RecordForm.category)
@@ -190,12 +186,13 @@ async def process_expense_category(message: types.Message, state: FSMContext):
     parsed_category = records._parse_outcome_category(message.text, user_sheet)
 
     # If not parsed, stop form getting
-    # TODO: and start screen keyboard
+    # and show main keyboard
     if parsed_category is None:
         await bot.send_message(
             message.chat.id,
             "This outcome category doesn't exist...\n"
-            "Try to add /expense one more time!")
+            "Try to add /expense one more time!",
+            reply_markup=keyboards.get_main_markup())
         await state.finish()
         return
 
@@ -219,13 +216,13 @@ async def process_expense_account(message: types.Message, state: FSMContext):
     user_sheet = sheet.Sheet()
     parsed_account = records._parse_account(message.text, user_sheet)
 
-    # If not parsed, stop form getting
-    # TODO: and start screen keyboard
+    # If not parsed, stop form getting and show main keyboard
     if parsed_account is None:
         await bot.send_message(
             message.chat.id,
             "This account doesn't exist...\n"
-            "Try to add /expense one more time!")
+            "Try to add /expense one more time!",
+            reply_markup=keyboards.get_main_markup())
         await state.finish()
         return
 
@@ -233,16 +230,20 @@ async def process_expense_account(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
         data['account'] = parsed_account
 
-    # Send finish message
-    # TODO: main screen keyboard
+    # Send finish message and show main keyboard
     await bot.send_message(
         message.chat.id,
         f"Successfully added {data['amount']} to {data['category']} from {data['account']}!",
         parse_mode='Markdown',
-    )
+        reply_markup=keyboards.get_main_markup())
 
     # Stop form filling
     await state.finish()
+# --- END OF /EXPENSE FORM HANDLERS ---
+
+# --- /INCOME FORM HANDLERS ---
+
+
 
 
 
