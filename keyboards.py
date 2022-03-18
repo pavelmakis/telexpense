@@ -5,8 +5,8 @@ from aiogram.types import ReplyKeyboardRemove, \
 
 def get_main_markup() -> ReplyKeyboardMarkup:
     main_markup = ReplyKeyboardMarkup(resize_keyboard=True, selective=True, one_time_keyboard=True)
-    main_markup.add("/expense", "/income")
-    main_markup.add("/total", "/available")
+    main_markup.add("/income", "/expense")
+    main_markup.add("/savings", "/total", "/available")
     return main_markup
 
 def get_accounts_markup() -> ReplyKeyboardMarkup:
