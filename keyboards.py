@@ -80,7 +80,11 @@ def get_income_categories_markup() -> ReplyKeyboardMarkup:
         # Adding categories as two buttons in a row
         in_categories_markup.add(in_category_list[i], in_category_list[i+1])
     return in_categories_markup
-        
+    
+def get_description_markup() -> ReplyKeyboardMarkup:
+    description_markup = ReplyKeyboardMarkup(resize_keyboard=True, selective=True, one_time_keyboard=True)
+    description_markup.add("No description")
+    return description_markup
 
 
 
