@@ -33,6 +33,15 @@ class RecordForm(StatesGroup):
     account = State()
     description = State()
 
+class IncomeForm(StatesGroup):
+    """
+    This form is used both for income.
+    """
+    amount = State()
+    category = State()
+    account = State()
+    description = State()
+
 @dp.message_handler(commands=['start', 'help'])
 async def send_welcome(message: types.Message):
     """
@@ -194,7 +203,7 @@ async def process_expense_amount(message: types.Message, state: FSMContext):
     if parsed_amount is None:
         await bot.send_message(
             message.chat.id,
-            "Cannot understand this amount...\n"
+            "❌ Cannot understand this amount...\n"
             "Try to add /expense one more time!",
             reply_markup=keyboards.get_main_markup())
         # Stop form
@@ -250,7 +259,7 @@ async def process_expense_category(message: types.Message, state: FSMContext):
         if data['category'] == None:
             await bot.send_message(
                 message.chat.id,
-                "This outcome category doesn't exist...\n"
+                "❌ This outcome category doesn't exist...\n"
                 "Try to add /expense one more time!",
                 reply_markup=keyboards.get_main_markup())
             # Finish form
@@ -273,13 +282,141 @@ async def process_expense_category(message: types.Message, state: FSMContext):
     # Send message with the buttons with accounts titles
     await bot.send_message(
             message.chat.id,
+            "Specify an account",
+            reply_markup=accounts_markup)
+# --- END OF /EXPENSE FORM HANDLERS ---
+
+# --- /INCOME FORM HANDLERS ---
+@dp.message_handler(commands=['income'])
+async def process_income(message: types.Message, state: FSMContext):
+    """
+    The handler is used to retrieve a record of income through a form. 
+    To add a record, the user must specify the record data in multiple messages. 
+    To add an entry with a single command, the /addinc handler is used
+    """
+    # Starting form filling
+    await IncomeForm.amount.set()
+    await bot.send_message(
+            message.chat.id,
+            "Specify an amount of income")
+
+    # As the user enters the amount of income,
+    # I send a query to the table to get expense categories, 
+    # income categories, today's date, and accounts.
+    # This is done to minimize the number of requests
+    user_sheet = sheet.Sheet()
+    user_data = user_sheet.get_day_categories_accounts()
+
+    # I put the data in the state.proxy(),
+    # I have not found a better way to store the data,
+    # preserving access to it from other handlers
+    async with state.proxy() as data:
+        data['sheet data'] = user_data
+
+@dp.message_handler(state=IncomeForm.amount)
+async def process_income_amount(message: types.Message, state: FSMContext):
+    """
+    This handler is used to get the income amount after calling the /income command
+    """
+    # Parsing amount
+    parsed_amount = records.parse_income_amount(message.text)
+
+    # If the user entered an unrecognizable amount,
+    # stop filling out the form and send main keyboard
+    if parsed_amount is None:
+        await bot.send_message(
+            message.chat.id,
+            "❌ Cannot understand this amount...\n"
+            "Try to add /income one more time!",
+            reply_markup=keyboards.get_main_markup())
+        # Stop form
+        await state.finish()
+        return
+    
+    # Defining keyboard markup
+    in_categories_markup = types.ReplyKeyboardMarkup(resize_keyboard=True,
+                                                      selective=True,
+                                                      one_time_keyboard=True)
+    async with state.proxy() as data:
+        # Write amount data to dictionary
+        data['amount'] = parsed_amount
+        # Adding buttons to markup from data get before
+        in_category_list = data['sheet data']['income categories']
+        for i in range(0, len(in_category_list), 2):
+            # If there is only one item left...
+            if len(in_category_list) - i == 1:
+                # Adding last category as big button
+                in_categories_markup.add(in_category_list[-1])
+                break
+            # Adding categories as two buttons in a row
+            in_categories_markup.add(in_category_list[i], in_category_list[i+1])
+
+    # Go to the next step of form and send message
+    await IncomeForm.next()
+    await bot.send_message(
+            message.chat.id,
+            "Specify a category of income",
+            reply_markup=in_categories_markup)
+
+@dp.message_handler(state=IncomeForm.category)
+async def process_income_category(message: types.Message, state: FSMContext):
+    """
+    This handler is used to get the income category after calling the /income command
+    """
+    # Defining keyboard markup
+    accounts_markup = types.ReplyKeyboardMarkup(resize_keyboard=True,
+                                                      selective=True,
+                                                      one_time_keyboard=True)
+    async with state.proxy() as data:
+        # Getting outcome categories from sheet data in state.proxy()
+        category_list = data['sheet data']['income categories']
+        # Setting category to None
+        data['category'] = None
+        for i in range(len(category_list)):
+            # If user entered category is similar to data from sheet
+            if message.text.lower() == category_list[i].lower():
+                data['category'] = category_list[i]
+                break
+        # If category remains None, user entered wrong category
+        # Stop from getting and show main keyboard
+        if data['category'] == None:
+            await bot.send_message(
+                message.chat.id,
+                "❌ This income category doesn't exist...\n"
+                "Try to add /income one more time!",
+                reply_markup=keyboards.get_main_markup())
+            # Finish form
+            await state.finish()
+            return
+
+        # Adding buttons to markup from data get before
+        account_list = data['sheet data']['accounts']
+        for i in range(0, len(account_list), 2):
+            # If there is only one item left...
+            if len(account_list) - i == 1:
+                # Adding last account as big button
+                accounts_markup.add(account_list[-1])
+                break
+            # Adding accounts as two buttons in a row
+            accounts_markup.add(account_list[i], account_list[i+1])
+    
+    # Go to the next step of the form
+    await IncomeForm.next()
+    # Send message with the buttons with accounts titles
+    await bot.send_message(
+            message.chat.id,
             "Specify an account of expense",
             reply_markup=accounts_markup)
 
+# --- END OF /INCOME HANDLERS ---
+
+# --- HANDLERS WHICH ARE USED BOTH BY /INCOME AND /EXPENSE
+# --- Account handler ----
+@dp.message_handler(state=IncomeForm.account)
 @dp.message_handler(state=RecordForm.account)
-async def process_expense_account(message: types.Message, state: FSMContext):
+async def process_account(message: types.Message, state: FSMContext):
     """
-    This handler is used to get the expense account after calling the /expense command
+    This handler is used to get the account after calling the /expense or /income command
     """
     async with state.proxy() as data:
         # Getting accounts from sheet data in state.proxy()
@@ -295,28 +432,28 @@ async def process_expense_account(message: types.Message, state: FSMContext):
         if data['account'] == None:
             await bot.send_message(
                 message.chat.id,
-                "This account doesn't exist...\n"
-                "Try to add /expense one more time!",
+                "❌ This account doesn't exist...\n"
+                "Try to add record one more time!",
                 reply_markup=keyboards.get_main_markup())
             # Stop form
             await state.finish()
             return
 
-    # Go to the next step of the form and send a message 
-    # with the button for cancelling description
-    await RecordForm.next()
+    # This handler is used both for income and expense form
+    # Go to the next step depending on which form is now working
+    current_state = await state.get_state()
+    if current_state == "IncomeForm:account":
+        await IncomeForm.next()
+    else:
+        await RecordForm.next()
+    # Send a message with the button for cancelling description
     await bot.send_message(
         message.chat.id,
-        "Specify a description of expense",
+        "Specify a description",
         reply_markup=keyboards.get_description_markup())
 
-# --- END OF /EXPENSE FORM HANDLERS ---
-
-# --- /INCOME FORM HANDLERS ---
-
-# --- END OF /INCOME HANDLERS ---
-
-# DESCRIPTION HANDLER
+# --- Description handler ---
+@dp.message_handler(state=IncomeForm.description)
 @dp.message_handler(state=RecordForm.description)
 async def process_record_description(message: types.Message, state: FSMContext):
     """
@@ -335,17 +472,23 @@ async def process_record_description(message: types.Message, state: FSMContext):
                   data['category'], data['amount'], data['account']]
         
         # Send finish message and show main keyboard
+        current_state = await state.get_state()
+        answer_message = ""
+        if "IncomeForm" in current_state:
+            answer_message = f"✅ Successfully added {data['amount']} to \n {data['category']} to {data['account']}!"
+        else:
+            answer_message = f"✅ Successfully added {data['amount']} to \n {data['category']} from {data['account']}!"
         await bot.send_message(
             message.chat.id,
-            f"✅ Successfully added {data['amount']} to \n {data['category']} on {data['account']}!",
+            answer_message,
             reply_markup=keyboards.get_main_markup())
 
     # Stop form filling
     await state.finish()
 
     # Enter data to transactions list 
-    user_sheet = sheet.Sheet()
-    user_sheet.add_record(record)
+    # user_sheet = sheet.Sheet()
+    # user_sheet.add_record(record)
 
 
 
