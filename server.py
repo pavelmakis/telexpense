@@ -95,7 +95,7 @@ async def send_total(message: types.Message):
     user_sheet = sheet.Sheet()
     user_sheet.add_record(parsed_expense)
     await message.answer(f"Successfully added {parsed_expense[3]} to "
-                         f"{parsed_expense[2]}!", parse_mode='Markdown')
+                         f"{parsed_expense[2]}!")
 
 @dp.message_handler(lambda message: message.text.startswith('/addinc'))
 async def send_total(message: types.Message):
