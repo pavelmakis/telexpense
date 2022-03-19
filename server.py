@@ -8,6 +8,7 @@ import keyboards
 from aiogram import Bot, Dispatcher, executor, types
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.dispatcher import FSMContext
+from aiogram.dispatcher.filters import Text
 from aiogram.dispatcher.filters.state import State, StatesGroup
 
 
@@ -133,6 +134,25 @@ async def send_total(message: types.Message):
                          f"{parsed_income[2]}!", parse_mode='Markdown')
     
 
+# --- HADLER FOR CANCELLING /EXPENSE OR /INCOME FORM ---
+@dp.message_handler(state='*', commands='cancel')
+@dp.message_handler(Text(equals='cancel', ignore_case=True), state='*')
+async def cancel_handler(message: types.Message, state: FSMContext):
+    """
+    Allow user to cancel expense or income form filling
+    """
+    current_state = await state.get_state()
+    if current_state is None:
+        return
+
+    # Cancel state and inform user about it
+    await state.finish()
+    # And remove keyboard (just in case)
+    await bot.send_message(
+        message.chat.id,
+        'Cancelled',
+        reply_markup=keyboards.get_main_markup())
+
 # --- /EXPENSE FORM HANDLERS ---
 @dp.message_handler(commands=['expense'])
 async def process_expense(message: types.Message):
@@ -147,7 +167,7 @@ async def process_expense(message: types.Message):
             "Specify an amount of expense")
 
 @dp.message_handler(state=RecordForm.amount)
-async def process_expense_amount(message: types.Message, state: FSMContext):
+async def process_expense_amount(message: types.Message, state: FSMContext, ):
     """
     This handler is used to get the expense amount after calling the /expense command
     """
@@ -230,21 +250,41 @@ async def process_expense_account(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
         data['account'] = parsed_account
 
-    # Send finish message and show main keyboard
+    # Go to the next step of the form and send a message 
+    # with the button for cancelling description
+    await RecordForm.next()
     await bot.send_message(
         message.chat.id,
-        f"Successfully added {data['amount']} to {data['category']} from {data['account']}!",
-        parse_mode='Markdown',
-        reply_markup=keyboards.get_main_markup())
+        "Specify a description of expense",
+        reply_markup=keyboards.get_description_markup())
 
-    # Stop form filling
-    await state.finish()
 # --- END OF /EXPENSE FORM HANDLERS ---
 
 # --- /INCOME FORM HANDLERS ---
 
 
 
+
+@dp.message_handler(state=RecordForm.description)
+async def process_record_description(message: types.Message, state: FSMContext):
+    """
+    This handler is used to get the expense or income description
+    after calling the /expense or /income command
+    """
+    # If not negative answer, add description to form
+    if message.text != "No description":
+        # Write description to dictionary
+        async with state.proxy() as data:
+            data['description'] = message.text
+
+    # Send finish message and show main keyboard
+    await bot.send_message(
+        message.chat.id,
+        f"Successfully added {data['amount']} to {data['category']} on {data['account']}!",
+        reply_markup=keyboards.get_main_markup())
+
+    # Stop form filling
+    await state.finish()
 
 
 if __name__ == '__main__':
