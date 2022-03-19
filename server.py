@@ -162,15 +162,22 @@ async def process_expense(message: types.Message, state: FSMContext):
     To add a record, the user must specify the record data in multiple messages. 
     To add an entry with a single command, the /addexp handler is used
     """
+    # Starting form filling
     await RecordForm.amount.set()
     await bot.send_message(
             message.chat.id,
             "Specify an amount of expense")
 
-    # Getting all data needed for keyboards and taday date
+    # As the user enters the amount of spending,
+    # I send a query to the table to get expense categories, 
+    # income categories, today's date, and accounts.
+    # This is done to minimize the number of requests
     user_sheet = sheet.Sheet()
     user_data = user_sheet.get_day_categories_accounts()
 
+    # I put the data in the state.proxy(),
+    # I have not found a better way to store the data,
+    # preserving access to it from other handlers
     async with state.proxy() as data:
         data['sheet data'] = user_data
 
@@ -182,14 +189,15 @@ async def process_expense_amount(message: types.Message, state: FSMContext):
     # Parsing amount
     parsed_amount = records._parse_outcome_amount(message.text)
 
-    # If not parsed, stop form getting
-    # and show main keyboard
+    # If the user entered an unrecognizable amount,
+    # stop filling out the form and send main keyboard
     if parsed_amount is None:
         await bot.send_message(
             message.chat.id,
             "Cannot understand this amount...\n"
             "Try to add /expense one more time!",
             reply_markup=keyboards.get_main_markup())
+        # Stop form
         await state.finish()
         return
 
@@ -203,6 +211,7 @@ async def process_expense_amount(message: types.Message, state: FSMContext):
         # Adding buttons to markup from data get before
         out_category_list = data['sheet data']['outcome categories']
         for i in range(0, len(out_category_list), 2):
+            # If there is only one item left...
             if len(out_category_list) - i == 1:
                 # Adding last category as big button
                 out_categories_markup.add(out_category_list[-1])
@@ -222,17 +231,17 @@ async def process_expense_category(message: types.Message, state: FSMContext):
     """
     This handler is used to get the expense category after calling the /expense command
     """
-
     # Defining keyboard markup
     accounts_markup = types.ReplyKeyboardMarkup(resize_keyboard=True,
                                                       selective=True,
                                                       one_time_keyboard=True)
     async with state.proxy() as data:
-        # Write amount data to dictionary
+        # Getting outcome categories from sheet data in state.proxy()
         category_list = data['sheet data']['outcome categories']
         # Setting category to None
         data['category'] = None
         for i in range(len(category_list)):
+            # If user entered category is similar to data from sheet
             if message.text.lower() == category_list[i].lower():
                 data['category'] = category_list[i]
                 break
@@ -244,12 +253,14 @@ async def process_expense_category(message: types.Message, state: FSMContext):
                 "This outcome category doesn't exist...\n"
                 "Try to add /expense one more time!",
                 reply_markup=keyboards.get_main_markup())
+            # Finish form
             await state.finish()
             return
 
         # Adding buttons to markup from data get before
         account_list = data['sheet data']['accounts']
         for i in range(0, len(account_list), 2):
+            # If there is only one item left...
             if len(account_list) - i == 1:
                 # Adding last account as big button
                 accounts_markup.add(account_list[-1])
@@ -257,9 +268,9 @@ async def process_expense_category(message: types.Message, state: FSMContext):
             # Adding accounts as two buttons in a row
             accounts_markup.add(account_list[i], account_list[i+1])
 
-    # Go to the next step of the form and send a message 
-    # with the buttons with accounts titles
+    # Go to the next step of the form
     await RecordForm.next()
+    # Send message with the buttons with accounts titles
     await bot.send_message(
             message.chat.id,
             "Specify an account of expense",
@@ -270,9 +281,8 @@ async def process_expense_account(message: types.Message, state: FSMContext):
     """
     This handler is used to get the expense account after calling the /expense command
     """
-
     async with state.proxy() as data:
-        # Write amount data to dictionary
+        # Getting accounts from sheet data in state.proxy()
         account_list = data['sheet data']['accounts']
         # Setting account to None
         data['account'] = None
@@ -288,6 +298,7 @@ async def process_expense_account(message: types.Message, state: FSMContext):
                 "This account doesn't exist...\n"
                 "Try to add /expense one more time!",
                 reply_markup=keyboards.get_main_markup())
+            # Stop form
             await state.finish()
             return
 
@@ -303,28 +314,39 @@ async def process_expense_account(message: types.Message, state: FSMContext):
 
 # --- /INCOME FORM HANDLERS ---
 
+# --- END OF /INCOME HANDLERS ---
 
-
-
+# DESCRIPTION HANDLER
 @dp.message_handler(state=RecordForm.description)
 async def process_record_description(message: types.Message, state: FSMContext):
     """
     This handler is used to get the expense or income description
-    after calling the /expense or /income command
+    after calling the /expense or /income command.
     """
+    record = []
     async with state.proxy() as data:
         # If not negative answer, add description to form
+        data['description'] = ""
         if message.text != "No description":
             data['description'] = message.text
 
+        # Creating list with expense or income data
+        record = [data['sheet data']['today'], data['description'], 
+                  data['category'], data['amount'], data['account']]
+        
         # Send finish message and show main keyboard
         await bot.send_message(
             message.chat.id,
-            f"Successfully added {data['amount']} to {data['category']} on {data['account']}!",
+            f"✅ Successfully added {data['amount']} to \n {data['category']} on {data['account']}!",
             reply_markup=keyboards.get_main_markup())
 
     # Stop form filling
     await state.finish()
+
+    # Enter data to transactions list 
+    user_sheet = sheet.Sheet()
+    user_sheet.add_record(record)
+
 
 
 if __name__ == '__main__':
