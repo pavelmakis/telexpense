@@ -73,19 +73,19 @@ async def send_total(message: types.Message):
         await message.answer(answers.WRONG_EXPENSE, parse_mode='Markdown')
         return
     # If wrong amount
-    if parsed_expense[2] == None:
+    if parsed_expense[3] == None:
         await message.answer(
             "Cannot understand this expense!\n"
             "Looks like amount is wrong!")
         return
     # If wrong category
-    if parsed_expense[1] == None:
+    if parsed_expense[2] == None:
         await message.answer(
             "Cannot understand this expense!\n"
             "Looks like this category doesn't exist!")
         return
     # If wrong account
-    if parsed_expense[3] == None:
+    if parsed_expense[4] == None:
         await message.answer(
             "Cannot understand this expense!\n"
             "Looks like this account doesn't exist!")
@@ -110,19 +110,19 @@ async def send_total(message: types.Message):
         await message.answer(answers.WRONG_EXPENSE, parse_mode='Markdown')
         return
     # If wrong amount
-    if parsed_income[2] == None:
+    if parsed_income[3] == None:
         await message.answer(
             "Cannot understand this income!\n"
             "Looks like amount is wrong!")
         return
     # If wrong category
-    if parsed_income[1] == None:
+    if parsed_income[2] == None:
         await message.answer(
             "Cannot understand this income!\n"
             "Looks like this income category doesn't exist!")
         return
     # If wrong account
-    if parsed_income[3] == None:
+    if parsed_income[4] == None:
         await message.answer(
             "Cannot understand this income!\n"
             "Looks like this account doesn't exist!")
@@ -187,7 +187,7 @@ async def process_expense_amount(message: types.Message, state: FSMContext):
     This handler is used to get the expense amount after calling the /expense command
     """
     # Parsing amount
-    parsed_amount = records._parse_outcome_amount(message.text)
+    parsed_amount = records.parse_outcome_amount(message.text)
 
     # If the user entered an unrecognizable amount,
     # stop filling out the form and send main keyboard
