@@ -80,4 +80,39 @@ class Sheet:
         trans_list = self.user_sheet.worksheet("Transactions")
         trans_list.insert_row(data, index=2, value_input_option='USER_ENTERED')
         return
+    
+    def get_day_categories_accounts(self) -> dict:
+        # Dictionary with data
+        # It will contain today date, outcome categories, income categories
+        # and account lists
+        parsed_data = {}
 
+        # Getting all data from specified ranges as lists
+        pref_list = self.user_sheet.worksheet("Preferences")
+        data = pref_list.batch_get(['E25', 'B4:B44', 'C4:C44', 'H4:H23'])
+
+        # Writing date to dictionary
+        parsed_data['today'] = data[0][0][0]
+
+        # Parsing outcome categories from list os lists to dictionary
+        outcome_categories = []
+        for i in range(len(data[1])):
+            outcome_categories.append(data[1][i][0])
+        # Writing outcome categories to dictionary
+        parsed_data['outcome categories'] = outcome_categories
+
+        # Parsing income categories from list os lists to dictionary
+        income_categories = []
+        for i in range(len(data[2])):
+            income_categories.append(data[2][i][0])
+        # Writing income categories to dictionary
+        parsed_data['income categories'] = income_categories
+
+        # Parsing accounts from list os lists to dictionary
+        accounts = []
+        for i in range(len(data[3])):
+            accounts.append(data[3][i][0])
+        # Writing accounts to dictionary
+        parsed_data['accounts'] = accounts
+
+        return parsed_data
