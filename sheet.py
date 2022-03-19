@@ -73,8 +73,6 @@ class Sheet:
         Args:
             data (list): parsed data for inserting in user's sheet.
         """
-        # Appending transactions day to insert data
-        data.insert(0, self.get_today())
 
         # Opening transactions sheet and inserting transaction data
         trans_list = self.user_sheet.worksheet("Transactions")
