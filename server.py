@@ -1,3 +1,4 @@
+from calendar import c
 import os
 import logging
 import sheet
@@ -155,7 +156,7 @@ async def cancel_handler(message: types.Message, state: FSMContext):
 
 # --- /EXPENSE FORM HANDLERS ---
 @dp.message_handler(commands=['expense'])
-async def process_expense(message: types.Message):
+async def process_expense(message: types.Message, state: FSMContext):
     """
     The handler is used to retrieve a record of expense through a form. 
     To add a record, the user must specify the record data in multiple messages. 
@@ -166,8 +167,15 @@ async def process_expense(message: types.Message):
             message.chat.id,
             "Specify an amount of expense")
 
+    # Getting all data needed for keyboards and taday date
+    user_sheet = sheet.Sheet()
+    user_data = user_sheet.get_day_categories_accounts()
+
+    async with state.proxy() as data:
+        data['sheet data'] = user_data
+
 @dp.message_handler(state=RecordForm.amount)
-async def process_expense_amount(message: types.Message, state: FSMContext, ):
+async def process_expense_amount(message: types.Message, state: FSMContext):
     """
     This handler is used to get the expense amount after calling the /expense command
     """
@@ -185,40 +193,69 @@ async def process_expense_amount(message: types.Message, state: FSMContext, ):
         await state.finish()
         return
 
-    # Write amount data to dictionary
+    # Defining keyboard markup
+    out_categories_markup = types.ReplyKeyboardMarkup(resize_keyboard=True,
+                                                      selective=True,
+                                                      one_time_keyboard=True)
     async with state.proxy() as data:
+        # Write amount data to dictionary
         data['amount'] = parsed_amount
+        # Adding buttons to markup from data get before
+        out_category_list = data['sheet data']['outcome categories']
+        for i in range(0, len(out_category_list), 2):
+            if len(out_category_list) - i == 1:
+                # Adding last category as big button
+                out_categories_markup.add(out_category_list[-1])
+                break
+            # Adding categories as two buttons in a row
+            out_categories_markup.add(out_category_list[i], out_category_list[i+1])
 
     # Go to the next step of form and send message
     await RecordForm.next()
     await bot.send_message(
             message.chat.id,
             "Specify a category of expense",
-            reply_markup=keyboards.get_outcome_categories_markup())
+            reply_markup=out_categories_markup)
 
 @dp.message_handler(state=RecordForm.category)
 async def process_expense_category(message: types.Message, state: FSMContext):
     """
     This handler is used to get the expense category after calling the /expense command
     """
-    # Parsing expense category 
-    user_sheet = sheet.Sheet()
-    parsed_category = records._parse_outcome_category(message.text, user_sheet)
 
-    # If not parsed, stop form getting
-    # and show main keyboard
-    if parsed_category is None:
-        await bot.send_message(
-            message.chat.id,
-            "This outcome category doesn't exist...\n"
-            "Try to add /expense one more time!",
-            reply_markup=keyboards.get_main_markup())
-        await state.finish()
-        return
-
-    # Write expense category to dictionary
+    # Defining keyboard markup
+    accounts_markup = types.ReplyKeyboardMarkup(resize_keyboard=True,
+                                                      selective=True,
+                                                      one_time_keyboard=True)
     async with state.proxy() as data:
-        data['category'] = parsed_category
+        # Write amount data to dictionary
+        category_list = data['sheet data']['outcome categories']
+        # Setting category to None
+        data['category'] = None
+        for i in range(len(category_list)):
+            if message.text.lower() == category_list[i].lower():
+                data['category'] = category_list[i]
+                break
+        # If category remains None, user entered wrong category
+        # Stop from getting and show main keyboard
+        if data['category'] == None:
+            await bot.send_message(
+                message.chat.id,
+                "This outcome category doesn't exist...\n"
+                "Try to add /expense one more time!",
+                reply_markup=keyboards.get_main_markup())
+            await state.finish()
+            return
+
+        # Adding buttons to markup from data get before
+        account_list = data['sheet data']['accounts']
+        for i in range(0, len(account_list), 2):
+            if len(account_list) - i == 1:
+                # Adding last account as big button
+                accounts_markup.add(account_list[-1])
+                break
+            # Adding accounts as two buttons in a row
+            accounts_markup.add(account_list[i], account_list[i+1])
 
     # Go to the next step of the form and send a message 
     # with the buttons with accounts titles
@@ -226,29 +263,33 @@ async def process_expense_category(message: types.Message, state: FSMContext):
     await bot.send_message(
             message.chat.id,
             "Specify an account of expense",
-            reply_markup=keyboards.get_accounts_markup())
+            reply_markup=accounts_markup)
 
 @dp.message_handler(state=RecordForm.account)
 async def process_expense_account(message: types.Message, state: FSMContext):
     """
     This handler is used to get the expense account after calling the /expense command
     """
-    user_sheet = sheet.Sheet()
-    parsed_account = records._parse_account(message.text, user_sheet)
 
-    # If not parsed, stop form getting and show main keyboard
-    if parsed_account is None:
-        await bot.send_message(
-            message.chat.id,
-            "This account doesn't exist...\n"
-            "Try to add /expense one more time!",
-            reply_markup=keyboards.get_main_markup())
-        await state.finish()
-        return
-
-    # Write account to dictionary
     async with state.proxy() as data:
-        data['account'] = parsed_account
+        # Write amount data to dictionary
+        account_list = data['sheet data']['accounts']
+        # Setting account to None
+        data['account'] = None
+        for i in range(len(account_list)):
+            if message.text.lower() == account_list[i].lower():
+                data['account'] = account_list[i]
+                break
+        # If account remains None, user entered wrong account
+        # Stop from getting and show main keyboard
+        if data['account'] == None:
+            await bot.send_message(
+                message.chat.id,
+                "This account doesn't exist...\n"
+                "Try to add /expense one more time!",
+                reply_markup=keyboards.get_main_markup())
+            await state.finish()
+            return
 
     # Go to the next step of the form and send a message 
     # with the button for cancelling description
@@ -271,17 +312,16 @@ async def process_record_description(message: types.Message, state: FSMContext):
     This handler is used to get the expense or income description
     after calling the /expense or /income command
     """
-    # If not negative answer, add description to form
-    if message.text != "No description":
-        # Write description to dictionary
-        async with state.proxy() as data:
+    async with state.proxy() as data:
+        # If not negative answer, add description to form
+        if message.text != "No description":
             data['description'] = message.text
 
-    # Send finish message and show main keyboard
-    await bot.send_message(
-        message.chat.id,
-        f"Successfully added {data['amount']} to {data['category']} on {data['account']}!",
-        reply_markup=keyboards.get_main_markup())
+        # Send finish message and show main keyboard
+        await bot.send_message(
+            message.chat.id,
+            f"Successfully added {data['amount']} to {data['category']} on {data['account']}!",
+            reply_markup=keyboards.get_main_markup())
 
     # Stop form filling
     await state.finish()
