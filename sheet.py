@@ -20,42 +20,6 @@ class Sheet:
         total_amount = main_sheet.acell('B11').value
         return total_amount
 
-    def get_outcome_categories(self) -> list:
-        """Get user's outcome categories from preferences list in Google sheet."""
-        pref_list = self.user_sheet.worksheet("Preferences")
-        category_list = pref_list.col_values(2)
-        if category_list == []:
-            return category_list
-        # Delete column headers
-        del category_list[:3]
-        for i in range(len(category_list)):
-            category_list[i] = category_list[i].strip()
-        return category_list
-    
-    def get_income_categories(self) -> list:
-        """Get user's income categories from preferences list in Google sheet"""
-        pref_list = self.user_sheet.worksheet("Preferences")
-        category_list = pref_list.col_values(3)
-        if category_list == []:
-            return category_list
-        # Delete column headers
-        del category_list[:3]
-        for i in range(len(category_list)):
-            category_list[i] = category_list[i].strip()
-        return category_list
-
-    def get_accounts(self) -> list:
-        """Get all user accounts from preferences list in Google sheet"""
-        pref_list = self.user_sheet.worksheet("Preferences")
-        account_list = pref_list.col_values(8)
-        if account_list == []:
-            return account_list
-        # Delete column headers
-        del account_list[:3]
-        for i in range(len(account_list)):
-            account_list[i] = account_list[i].strip()
-        return account_list
-
     def get_today(self) -> str | None:
         """Get today date from cell in user's Google sheet.
         Cell with today date: E25.
@@ -80,6 +44,14 @@ class Sheet:
         return
     
     def get_day_categories_accounts(self) -> dict:
+        """Get today's date, income and outcome categories and accounts as dictionary.
+        This function replaced the previous few functions, in which many separate 
+        requests were sent, which was inefficient. Now you can get all the data you need 
+        in one query.
+
+        Returns:
+            dict: all the data needed for parsing expense or income as dictionary of lists
+        """
         # Dictionary with data
         # It will contain today date, outcome categories, income categories
         # and account lists
@@ -95,6 +67,9 @@ class Sheet:
         # Parsing outcome categories from list os lists to dictionary
         outcome_categories = []
         for i in range(len(data[1])):
+            # If user left blank cell in category column
+            if data[1][i] == []:
+                continue
             outcome_categories.append(data[1][i][0])
         # Writing outcome categories to dictionary
         parsed_data['outcome categories'] = outcome_categories
@@ -102,6 +77,9 @@ class Sheet:
         # Parsing income categories from list os lists to dictionary
         income_categories = []
         for i in range(len(data[2])):
+            # If user left blank cell in category column
+            if data[2][i] == []:
+                continue
             income_categories.append(data[2][i][0])
         # Writing income categories to dictionary
         parsed_data['income categories'] = income_categories
@@ -109,6 +87,8 @@ class Sheet:
         # Parsing accounts from list os lists to dictionary
         accounts = []
         for i in range(len(data[3])):
+            if data[3][i] == []:
+                continue
             accounts.append(data[3][i][0])
         # Writing accounts to dictionary
         parsed_data['accounts'] = accounts
