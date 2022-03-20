@@ -103,7 +103,7 @@ async def send_total(message: types.Message):
     # If successful
     user_sheet = sheet.Sheet()
     user_sheet.add_record(parsed_expense)
-    await message.answer(f"Successfully added {parsed_expense[3]} to "
+    await message.answer(f"✅ Successfully added {parsed_expense[3]} to "
                          f"{parsed_expense[2]}!")
 
 @dp.message_handler(lambda message: message.text.startswith('/addinc'))
@@ -140,7 +140,7 @@ async def send_total(message: types.Message):
     # If successful
     user_sheet = sheet.Sheet()
     user_sheet.add_record(parsed_income)
-    await message.answer(f"Successfully added {parsed_income[3]} to " +
+    await message.answer(f"✅ Successfully added {parsed_income[3]} to " +
                          f"{parsed_income[2]}!")
     
 
@@ -175,7 +175,8 @@ async def process_expense(message: types.Message, state: FSMContext):
     await RecordForm.amount.set()
     await bot.send_message(
             message.chat.id,
-            "Specify an amount of expense")
+            'Specify an amount of expense or type "cancel"',
+            reply_markup=keyboards.get_cancel_markup())
 
     # As the user enters the amount of spending,
     # I send a query to the table to get expense categories, 
@@ -298,7 +299,8 @@ async def process_income(message: types.Message, state: FSMContext):
     await IncomeForm.amount.set()
     await bot.send_message(
             message.chat.id,
-            "Specify an amount of income")
+            'Specify an amount of income or type "cancel"',
+            reply_markup=keyboards.get_cancel_markup())
 
     # As the user enters the amount of income,
     # I send a query to the table to get expense categories, 
@@ -405,7 +407,7 @@ async def process_income_category(message: types.Message, state: FSMContext):
     # Send message with the buttons with accounts titles
     await bot.send_message(
             message.chat.id,
-            "Specify an account of expense",
+            "Specify an account",
             reply_markup=accounts_markup)
 
 # --- END OF /INCOME HANDLERS ---
@@ -442,7 +444,7 @@ async def process_account(message: types.Message, state: FSMContext):
     # This handler is used both for income and expense form
     # Go to the next step depending on which form is now working
     current_state = await state.get_state()
-    if current_state == "IncomeForm:account":
+    if "IncomeForm" in current_state:
         await IncomeForm.next()
     else:
         await RecordForm.next()
