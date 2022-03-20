@@ -20,29 +20,10 @@ class Sheet:
         total_amount = main_sheet.acell('B11').value
         return total_amount
 
-    def get_today(self) -> str | None:
-        """Get today date from cell in user's Google sheet.
-        Cell with today date: E25.
 
-        Returns:
-            str: today date from users sheet.
-        """
-        pref_list = self.user_sheet.worksheet("Preferences")
-        today_date = pref_list.acell('E25').value
-        return today_date
 
-    def add_record(self, data: list):
-        """Insert new row with transaction data to transactions list in Google Sheet.
 
-        Args:
-            data (list): parsed data for inserting in user's sheet.
-        """
 
-        # Opening transactions sheet and inserting transaction data
-        trans_list = self.user_sheet.worksheet("Transactions")
-        trans_list.insert_row(data, index=2, value_input_option='USER_ENTERED')
-        return
-    
     def get_day_categories_accounts(self) -> dict:
         """Get today's date, income and outcome categories and accounts as dictionary.
         This function replaced the previous few functions, in which many separate 
@@ -94,3 +75,16 @@ class Sheet:
         parsed_data['accounts'] = accounts
 
         return parsed_data
+
+    def add_record(self, data: list):
+        """Insert new row with transaction data to transactions list in Google Sheet.
+
+        Args:
+            data (list): parsed data for inserting in user's sheet.
+        """
+
+        # Opening transactions sheet and inserting transaction data
+        trans_list = self.user_sheet.worksheet("Transactions")
+        trans_list.insert_row(data, index=2, value_input_option='USER_ENTERED')
+        return
+    
