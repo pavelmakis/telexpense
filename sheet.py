@@ -20,7 +20,23 @@ class Sheet:
         total_amount = main_sheet.acell('B11').value
         return total_amount
 
+    def get_account_amounts(self) -> list:
+        # Selectiong sheet 'Main'
+        main_sheet = self.user_sheet.worksheet("Main")
 
+        # Sending query to get accounts and its amounts
+        data = main_sheet.batch_get(['N7:N26', 'O7:O26'])
+
+        # Parsing data
+        parsed_data = []
+        for i in range(len(data[0])):
+            # If user left cell blank
+            if data[0][i] == []:
+                continue
+            # Parse data as list of tuples
+            parsed_data.append(tuple((data[0][i][0], data[1][i][0])))
+        
+        return parsed_data
 
 
 
@@ -39,8 +55,8 @@ class Sheet:
         parsed_data = {}
 
         # Getting all data from specified ranges as lists
-        pref_list = self.user_sheet.worksheet("Preferences")
-        data = pref_list.batch_get(['E25', 'B4:B44', 'C4:C44', 'H4:H23'])
+        pref_sheet = self.user_sheet.worksheet("Preferences")
+        data = pref_sheet.batch_get(['E25', 'B4:B44', 'C4:C44', 'H4:H23'])
 
         # Writing date to dictionary
         parsed_data['today'] = data[0][0][0]
@@ -88,3 +104,6 @@ class Sheet:
         trans_list.insert_row(data, index=2, value_input_option='USER_ENTERED')
         return
     
+
+user_sh = Sheet()
+print(len(user_sh.get_account_amounts()[8][1]))
