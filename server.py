@@ -52,8 +52,15 @@ async def send_welcome(message: types.Message):
 async def send_total(message: types.Message):
     """Send an available amount of money from users sheet"""
     user_sheet = sheet.Sheet()
-    available_amount = user_sheet.get_available()
-    await message.answer(f"Сейчас доступно: {available_amount} на всех счетах")
+    account_amounts = user_sheet.get_account_amounts()
+    available = ""
+    for i in range(len(account_amounts)):
+        available += account_amounts[i][0]
+        available += "   "
+        available += account_amounts[i][1]
+        available += '\n'
+    await message.answer(f"Длина строки: {len(available)}")
+    await message.answer(available)
 
 @dp.message_handler(commands=['savings'])
 async def send_savings(message: types.Message):
