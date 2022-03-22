@@ -38,8 +38,6 @@ class Sheet:
         
         return parsed_data
 
-
-
     def get_day_categories_accounts(self) -> dict:
         """Get today's date, income and outcome categories and accounts as dictionary.
         This function replaced the previous few functions, in which many separate 
@@ -104,6 +102,3 @@ class Sheet:
         trans_list.insert_row(data, index=2, value_input_option='USER_ENTERED')
         return
     
-
-user_sh = Sheet()
-print(len(user_sh.get_account_amounts()[8][1]))
