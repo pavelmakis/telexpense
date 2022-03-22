@@ -25,37 +25,62 @@ dp.register_message_handler(forms.cancel_handler, commands=['cancel'], state="*"
 dp.register_message_handler(forms.cancel_handler, lambda msg: msg.text.lower() == 'cancel', state="*")
 
 dp.register_message_handler(forms.process_expense, commands=['expense'])
+dp.register_message_handler(forms.process_expense, lambda message: message.text.startswith('➖Expense'))
 dp.register_message_handler(forms.process_expense_amount, state=forms.ExpenseForm.amount)
 dp.register_message_handler(forms.process_expense_category, state=forms.ExpenseForm.category)
 dp.register_message_handler(forms.process_account, state=forms.ExpenseForm.account)
 dp.register_message_handler(forms.process_record_description, state=forms.ExpenseForm.description)
 
 dp.register_message_handler(forms.process_income, commands=['income'])
+dp.register_message_handler(forms.process_income, lambda message: message.text.startswith('➕Income'))
 dp.register_message_handler(forms.process_income_amount, state=forms.IncomeForm.amount)
 dp.register_message_handler(forms.process_income_category, state=forms.IncomeForm.category)
 dp.register_message_handler(forms.process_account, state=forms.IncomeForm.account)
 dp.register_message_handler(forms.process_record_description, state=forms.IncomeForm.description)
+
 
 @dp.message_handler(commands=['start', 'help'])
 async def send_welcome(message: types.Message):
     """
     This handler will be called when user sends `/start` or `/help` command
     """
-    await message.reply(f"Привет!",reply_markup=keyboards.greet_kb)
+    await message.reply(f"Привет!",reply_markup=keyboards.get_main_markup())
 
 @dp.message_handler(commands=['available'])
+@dp.message_handler(lambda message: message.text.startswith('Available'))
 async def send_total(message: types.Message):
-    """Send an available amount of money from users sheet"""
+    """Send a list of accounts and its amounts from users sheet"""
     user_sheet = sheet.Sheet()
-    account_amounts = user_sheet.get_account_amounts()
-    available = ""
-    for i in range(len(account_amounts)):
-        available += account_amounts[i][0]
-        available += "   "
-        available += account_amounts[i][1]
-        available += '\n'
-    await message.answer(f"Длина строки: {len(available)}")
-    await message.answer(available)
+    amounts = user_sheet.get_account_amounts()
+    max_text_lenght, max_digit_lenght = 0, 0
+
+    # Finding account with the longest name and
+    # the longest amount (in symbols)
+    for i in range(len(amounts)):
+        if len(amounts[i][0]) > max_text_lenght:
+            max_text_lenght = len(amounts[i][0])
+        if len(amounts[i][1]) > max_digit_lenght:
+            max_digit_lenght = len(amounts[i][1])
+
+    # Combining answer string
+    # ``` is used for parsing string in markdown to get
+    # fixed width in message
+    available = "💰Your accounts:\n\n"
+    available += "```\n"
+    for i in range(len(amounts)):
+        # Current line lenght
+        text_lenght = len(amounts[i][0]) + len(amounts[i][1])
+        available += amounts[i][0]
+        # max_text_lenght + max_digit_lenght is the longest line
+        # 2 (spaces) is the indent between account column and amount column
+        available += " " * (max_text_lenght + max_digit_lenght - text_lenght + 2)
+        available += amounts[i][1] + '\n'
+    available += "```"
+
+    await bot.send_message(
+        message.chat.id, available,
+        parse_mode='MarkdownV2',
+        reply_markup=keyboards.get_main_markup())
 
 @dp.message_handler(commands=['savings'])
 async def send_savings(message: types.Message):
