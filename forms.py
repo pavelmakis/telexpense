@@ -13,7 +13,6 @@ import keyboards
 from aiogram import Bot, Dispatcher, executor, types
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.dispatcher import FSMContext
-from aiogram.dispatcher.filters import Text
 from aiogram.dispatcher.filters.state import State, StatesGroup
 
 
@@ -27,9 +26,10 @@ storage = MemoryStorage()
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher(bot, storage=storage)
 
+
 class ExpenseForm(StatesGroup):
     """
-    This form is used both for expense and income.
+    This form is used for expense record.
     """
     amount = State()
     category = State()
@@ -39,7 +39,7 @@ class ExpenseForm(StatesGroup):
 
 class IncomeForm(StatesGroup):
     """
-    This form is used both for income.
+    This form is used for income record.
     """
     amount = State()
     category = State()
@@ -47,9 +47,20 @@ class IncomeForm(StatesGroup):
     description = State()
 
 
+class TransactionForm(StatesGroup):
+    """
+    This form is used for transaction record
+    """
+    outcome_account = State()
+    outcome_amount = State()
+    income_account = State()
+    income_amount = State()
+
+
+# --- CANCEL HANDLER ---
 async def cancel_handler(message: types.Message, state: FSMContext):
     """
-    Allow user to cancel expense or income form filling
+    Allow user to cancel any form filling
     """
     current_state = await state.get_state()
     if current_state is None:
@@ -57,12 +68,13 @@ async def cancel_handler(message: types.Message, state: FSMContext):
 
     # Cancel state and inform user about it
     await state.finish()
-    # And remove keyboard (just in case)
+    # Show main screen keyboard
     await bot.send_message(
         message.chat.id,
         'Cancelled',
         reply_markup=keyboards.get_main_markup())
 
+# --- START OF EXPENSE HANDLERS ---
 async def process_expense(message: types.Message, state: FSMContext):
     """
     The handler is used to retrieve a record of expense through a form. 
@@ -181,47 +193,9 @@ async def process_expense_category(message: types.Message, state: FSMContext):
             message.chat.id,
             "Specify an account",
             reply_markup=accounts_markup)
+# --- END OF EXPENSE HANDLERS ---
 
-
-async def process_account(message: types.Message, state: FSMContext):
-    """
-    This handler is used to get the account after calling the /expense or /income command
-    """
-    async with state.proxy() as data:
-        # Getting accounts from sheet data in state.proxy()
-        account_list = data['sheet data']['accounts']
-        # Setting account to None
-        data['account'] = None
-        for i in range(len(account_list)):
-            if message.text.lower() == account_list[i].lower():
-                data['account'] = account_list[i]
-                break
-        # If account remains None, user entered wrong account
-        # Stop from getting and show main keyboard
-        if data['account'] == None:
-            await bot.send_message(
-                message.chat.id,
-                "❌ This account doesn't exist...\n"
-                "Try to add record one more time!",
-                reply_markup=keyboards.get_main_markup())
-            # Stop form
-            await state.finish()
-            return
-
-    # This handler is used both for income and expense form
-    # Go to the next step depending on which form is now working
-    current_state = await state.get_state()
-    if "IncomeForm" in current_state:
-        await IncomeForm.next()
-    else:
-        await ExpenseForm.next()
-    # Send a message with the button for cancelling description
-    await bot.send_message(
-        message.chat.id,
-        "Specify a description",
-        reply_markup=keyboards.get_description_markup())
-
-
+# --- START OF INCOME HABDLERS ---
 async def process_income(message: types.Message, state: FSMContext):
     """
     The handler is used to retrieve a record of income through a form. 
@@ -247,7 +221,6 @@ async def process_income(message: types.Message, state: FSMContext):
     # preserving access to it from other handlers
     async with state.proxy() as data:
         data['sheet data'] = user_data
-
 
 async def process_income_amount(message: types.Message, state: FSMContext):
     """
@@ -292,7 +265,6 @@ async def process_income_amount(message: types.Message, state: FSMContext):
             message.chat.id,
             "Specify a category of income",
             reply_markup=in_categories_markup)
-
 
 async def process_income_category(message: types.Message, state: FSMContext):
     """
@@ -342,13 +314,9 @@ async def process_income_category(message: types.Message, state: FSMContext):
             message.chat.id,
             "Specify an account",
             reply_markup=accounts_markup)
+# --- END OF INCOME HANDLERS ---
 
-# --- END OF /INCOME HANDLERS ---
-
-# --- HANDLERS WHICH ARE USED BOTH BY /INCOME AND /EXPENSE
-# --- Account handler ----
-#@dp.message_handler(state=IncomeForm.account)
-#@dp.message_handler(state=ExpenseForm.account)
+# --- Next handlers are used both for Income and Expense comands
 async def process_account(message: types.Message, state: FSMContext):
     """
     This handler is used to get the account after calling the /expense or /income command
@@ -387,9 +355,7 @@ async def process_account(message: types.Message, state: FSMContext):
         "Specify a description",
         reply_markup=keyboards.get_description_markup())
 
-# --- Description handler ---
-#@dp.message_handler(state=IncomeForm.description)
-#@dp.message_handler(state=ExpenseForm.description)
+# --- Description handler used both in Income and Expense
 async def process_record_description(message: types.Message, state: FSMContext):
     """
     This handler is used to get the expense or income description
@@ -422,5 +388,5 @@ async def process_record_description(message: types.Message, state: FSMContext):
     await state.finish()
 
     # Enter data to transactions list 
-    # user_sheet = sheet.Sheet()
-    # user_sheet.add_record(record)
+    user_sheet = sheet.Sheet()
+    user_sheet.add_record(record)
