@@ -2,8 +2,8 @@ from aiogram.types import ReplyKeyboardMarkup
 
 def get_main_markup() -> ReplyKeyboardMarkup:
     main_markup = ReplyKeyboardMarkup(resize_keyboard=True, selective=True, one_time_keyboard=True)
-    main_markup.add("/income", "/expense")
-    main_markup.add("/savings", "/total", "/available")
+    main_markup.add("➕Income", "➖Expense")
+    main_markup.add("/savings", "/total", "Available")
     return main_markup
 
 def get_cancel_markup() -> ReplyKeyboardMarkup:
