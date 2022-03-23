@@ -39,7 +39,7 @@ def _parse_income_category(category: str, sheet_data: dict) -> str | None:
             return category
     return None
 
-def parse_record(raw_record: list, type: str) -> list | None:
+def parse_record(raw_record: list, type: str) -> list:
     for arg in range(len(raw_record)):
         raw_record[arg] = raw_record[arg].strip()
 
@@ -75,4 +75,37 @@ def parse_record(raw_record: list, type: str) -> list | None:
                 amount = parse_outcome_amount(amount)
                 category = _parse_outcome_category(category, sheet_data)
             parsed_data = [sheet_data['today'], '', category, amount, '']
+    return parsed_data
+
+def parse_transaction(raw_transaction: list) -> list:
+    for arg in range(len(raw_transaction)):
+        raw_transaction[arg] = raw_transaction[arg].strip()
+
+    parsed_data = []
+
+    # If too few arguments get
+    if len(raw_transaction) != 3 or 4:
+        return parsed_data
+    
+    # Getting account list from sheet
+    user_sheet = sheet.Sheet()
+    sheet_data = user_sheet.get_accounts()
+
+    match raw_transaction:
+        case outcome_amount, outcome_account, income_amount, income_account:
+            outcome_amount = parse_outcome_amount(outcome_amount)
+            outcome_account = _parse_account(outcome_account, sheet_data)
+            income_amount = parse_income_amount(income_amount)
+            income_account = _parse_account(income_account, sheet_data)
+
+            parsed_data = [outcome_amount, outcome_account, income_amount, income_account]
+
+        case outcome_amount, outcome_account, income_account:
+            outcome_amount = parse_outcome_amount(outcome_amount)
+            outcome_account = _parse_account(outcome_account, sheet_data)
+            income_amount = parse_income_amount(raw_transaction[0])
+            income_account = _parse_account(income_account, sheet_data)
+
+            parsed_data = [outcome_amount, outcome_account, income_amount, income_account]
+
     return parsed_data
