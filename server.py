@@ -97,7 +97,7 @@ async def send_total(message: types.Message):
     await message.answer(f"Всего денег: {total_amount} на всех счетах")
 
 @dp.message_handler(lambda message: message.text.startswith('/addexp'))
-async def send_total(message: types.Message):
+async def add_exp(message: types.Message):
     """Add the record of new expense from user to users sheet"""
     # Parsing expense
     raw_expense = message.text[7:].split(',')
@@ -133,7 +133,7 @@ async def send_total(message: types.Message):
                          f"{parsed_expense[2]}!")
 
 @dp.message_handler(lambda message: message.text.startswith('/addinc'))
-async def send_total(message: types.Message):
+async def add_inc(message: types.Message):
     """Add the record of new income from user to users sheet"""
     # Parsing income
     raw_income = message.text[7:].split(',')
@@ -168,7 +168,51 @@ async def send_total(message: types.Message):
     user_sheet.add_record(parsed_income)
     await message.answer(f"✅ Successfully added {parsed_income[3]} to " +
                          f"{parsed_income[2]}!")
-    
+
+@dp.message_handler(lambda message: message.text.startswith('/addtran'))
+async def add_tran(message: types.Message):
+    # Parsing transaction
+    raw_transaction = message.text[8:].split(',')
+    parsed_transaction = records.parse_transaction(raw_transaction)
+
+    # TODO: Add message for wrong transaction
+    if parsed_transaction == []:
+        await message.answer(answers.WRONG_EXPENSE, parse_mode='Markdown')
+        return
+
+    # If wrong outcome amount
+    if parsed_transaction[0] == None:
+        await message.answer(
+            "Cannot understand this transaction!\n"
+            "Looks like outcome amount is wrong!")
+        return
+
+    # If wrong account
+    if parsed_transaction[1] == None:
+        await message.answer(
+            "Cannot understand this transaction!\n"
+            "Looks like this outcome account doesn't exist!")
+        return
+
+    # If wrong account
+    if parsed_transaction[2] == None:
+        await message.answer(
+            "Cannot understand this transaction!\n"
+            "Looks like income amount is wrong!")
+        return
+
+    # If wrong account
+    if parsed_transaction[3] == None:
+        await message.answer(
+            "Cannot understand this transaction!\n"
+            "Looks like this income account doesn't exist!")
+        return
+
+    # If success
+    # user_sheet = sheet.Sheet()
+    # user_sheet.add_transaction(parsed_transaction)
+    await message.answer("✅ Successfully added transaction from \n" +
+                         f"{parsed_transaction[1]} to {parsed_transaction[3]}!")
 
 
 if __name__ == '__main__':
