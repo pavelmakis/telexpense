@@ -82,10 +82,6 @@ def parse_transaction(raw_transaction: list) -> list:
         raw_transaction[arg] = raw_transaction[arg].strip()
 
     parsed_data = []
-
-    # If too few arguments get
-    if len(raw_transaction) != 3 or 4:
-        return parsed_data
     
     # Getting account list from sheet
     user_sheet = sheet.Sheet()
