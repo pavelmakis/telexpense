@@ -4,11 +4,6 @@ class Sheet:
     def __init__(self) -> None:
         self.gspread_client = gspread.service_account(filename="token.json")
         self.user_sheet = self.gspread_client.open_by_url('https://docs.google.com/spreadsheets/d/1DfLa0vry-8YJVZgdkPDPcQEI6vYm19n2ddTBPNWo7K8')
-
-    def get_available(self):
-        main_sheet = self.user_sheet.worksheet("Main")
-        available_amount = main_sheet.acell('B3').value
-        return available_amount
     
     def get_savings(self):
         main_sheet = self.user_sheet.worksheet("Main")
@@ -19,6 +14,27 @@ class Sheet:
         main_sheet = self.user_sheet.worksheet("Main")
         total_amount = main_sheet.acell('B11').value
         return total_amount
+
+    def get_accounts(self) -> dict:
+        # Selectiong sheet 'Preferences'
+        pref_sheet = self.user_sheet.worksheet("Preferences")
+
+        # Sending query to get accounts and its amounts
+        data = pref_sheet.batch_get(['H4:H23'])
+
+        # Parsing data
+        parsed_data, accounts = {}, []
+        for i in range(len(data[0])):
+            # If user left cell blank
+            if data[0][i] == []:
+                continue
+            # Parse data as account list
+            accounts.append(data[0][i][0])
+        
+        # Adding list of accounts to dictionary
+        parsed_data['accounts'] = accounts
+
+        return parsed_data
 
     def get_account_amounts(self) -> list:
         # Selectiong sheet 'Main'
@@ -101,4 +117,3 @@ class Sheet:
         trans_list = self.user_sheet.worksheet("Transactions")
         trans_list.insert_row(data, index=2, value_input_option='USER_ENTERED')
         return
-    
