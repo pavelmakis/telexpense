@@ -111,7 +111,8 @@ class Sheet:
         return parsed_data
 
     def add_record(self, data: list):
-        """Insert new row with transaction data to transactions list in Google Sheet.
+        """Insert new row with expense or income record data to
+        transactions list in Google Sheet.
 
         Args:
             data (list): parsed data for inserting in user's sheet.
@@ -120,4 +121,22 @@ class Sheet:
         # Opening transactions sheet and inserting transaction data
         trans_list = self.user_sheet.worksheet("Transactions")
         trans_list.insert_row(data, index=2, value_input_option='USER_ENTERED')
+        return
+
+    def add_transaction(self, data: list):
+        """Insert new row with transaction record data to
+        transactions list in Google Sheet.
+
+        Args:
+            data (list): parsed data for inserting in user's sheet.
+        """
+
+        # Preparing transaction data as two records with
+        # outcome record and income record
+        outcome_tran = [data[0], '', 'Transaction', data[1], data[2]]
+        income_tran = [data[0], '', 'Transaction', data[3], data[4]]
+
+        # Opening transactions sheet and inserting transaction data
+        trans_list = self.user_sheet.worksheet("Transactions")
+        trans_list.insert_rows([income_tran, outcome_tran], row=2, value_input_option='USER_ENTERED')
         return
