@@ -15,21 +15,25 @@ class Sheet:
         total_amount = main_sheet.acell('B11').value
         return total_amount
 
-    def get_accounts(self) -> dict:
+    def get_day_accounts(self) -> dict:
         # Selectiong sheet 'Preferences'
         pref_sheet = self.user_sheet.worksheet("Preferences")
 
         # Sending query to get accounts and its amounts
-        data = pref_sheet.batch_get(['H4:H23'])
+        data = pref_sheet.batch_get(['E25', 'H4:H23'])
 
         # Parsing data
         parsed_data, accounts = {}, []
-        for i in range(len(data[0])):
+
+        # Added today date to dictionary
+        parsed_data['today'] = data[0][0][0]
+
+        for i in range(len(data[1])):
             # If user left cell blank
-            if data[0][i] == []:
+            if data[1][i] == []:
                 continue
             # Parse data as account list
-            accounts.append(data[0][i][0])
+            accounts.append(data[1][i][0])
         
         # Adding list of accounts to dictionary
         parsed_data['accounts'] = accounts
