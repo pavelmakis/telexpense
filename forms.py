@@ -403,7 +403,7 @@ async def process_transaction(message: types.Message, state: FSMContext):
     await TransactionForm.outcome_amount.set()
     await bot.send_message(
             message.chat.id,
-            'Specify an amount of transaction or type "cancel"',
+            'Specify an amount of transaction\nor type "cancel"',
             reply_markup=keyboards.get_cancel_markup())
     
     # As the user enters the amount of transaction,
@@ -452,7 +452,7 @@ async def process_tran_outcome_amount(message: types.Message, state: FSMContext)
     await TransactionForm.next()
     await bot.send_message(
             message.chat.id,
-            "Specify the account from which the money was transferred",
+            "Specify the account from which\nthe money was transferred",
             reply_markup=accounts_markup)
 
 async def process_outcome_account(message: types.Message, state: FSMContext):
@@ -482,8 +482,8 @@ async def process_outcome_account(message: types.Message, state: FSMContext):
     # Send a message with the button for 
     await bot.send_message(
         message.chat.id,
-        "Specify the income amount if the amount was not transferred in full " +
-        'or in another currency.\nIf the amounts are the same, tap "Same amount".',
+        "Specify the amount credited to the account\nto which the transfer was made.\n\n" +
+        'If the amounts are the same, tap "Same amount"',
         reply_markup=keyboards.get_same_amount_markup())
 
 async def process_tran_income_amount(message: types.Message, state: FSMContext):
@@ -526,7 +526,7 @@ async def process_tran_income_amount(message: types.Message, state: FSMContext):
     await TransactionForm.next()
     await bot.send_message(
             message.chat.id,
-            "Specify the account to which\nthe money is transferred",
+            "Specify the account to which\nthe money was transferred",
             reply_markup=accounts_markup)
 
 async def process_income_account(message: types.Message, state: FSMContext):
