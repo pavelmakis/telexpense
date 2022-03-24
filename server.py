@@ -89,7 +89,7 @@ dp.register_message_handler(forms.process_income_account,
 
 
 @dp.message_handler(commands=['available'])
-@dp.message_handler(lambda message: message.text.startswith('Available'))
+@dp.message_handler(lambda message: message.text.startswith('💲Available'))
 async def send_total(message: types.Message):
     """Send a list of accounts and its amounts from users sheet"""
     user_sheet = sheet.Sheet()
