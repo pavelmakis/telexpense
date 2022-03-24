@@ -181,38 +181,38 @@ async def add_tran(message: types.Message):
         return
 
     # If wrong outcome amount
-    if parsed_transaction[0] == None:
+    if parsed_transaction[1] == None:
         await message.answer(
             "Cannot understand this transaction!\n"
             "Looks like outcome amount is wrong!")
         return
 
     # If wrong account
-    if parsed_transaction[1] == None:
+    if parsed_transaction[2] == None:
         await message.answer(
             "Cannot understand this transaction!\n"
             "Looks like this outcome account doesn't exist!")
         return
 
     # If wrong account
-    if parsed_transaction[2] == None:
+    if parsed_transaction[3] == None:
         await message.answer(
             "Cannot understand this transaction!\n"
             "Looks like income amount is wrong!")
         return
 
     # If wrong account
-    if parsed_transaction[3] == None:
+    if parsed_transaction[4] == None:
         await message.answer(
             "Cannot understand this transaction!\n"
             "Looks like this income account doesn't exist!")
         return
 
     # If success
-    # user_sheet = sheet.Sheet()
-    # user_sheet.add_transaction(parsed_transaction)
+    user_sheet = sheet.Sheet()
+    user_sheet.add_transaction(parsed_transaction)
     await message.answer("✅ Successfully added transaction from \n" +
-                         f"{parsed_transaction[1]} to {parsed_transaction[3]}!")
+                         f"{parsed_transaction[2]} to {parsed_transaction[4]}!")
 
 
 if __name__ == '__main__':
