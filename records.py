@@ -85,7 +85,7 @@ def parse_transaction(raw_transaction: list) -> list:
     
     # Getting account list from sheet
     user_sheet = sheet.Sheet()
-    sheet_data = user_sheet.get_accounts()
+    sheet_data = user_sheet.get_day_accounts()
 
     match raw_transaction:
         case outcome_amount, outcome_account, income_amount, income_account:
@@ -103,5 +103,8 @@ def parse_transaction(raw_transaction: list) -> list:
             income_account = _parse_account(income_account, sheet_data)
 
             parsed_data = [outcome_amount, outcome_account, income_amount, income_account]
+
+    # Adding today date to result
+    parsed_data.insert(0, sheet_data['today'])
 
     return parsed_data
