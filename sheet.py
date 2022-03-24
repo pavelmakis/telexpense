@@ -74,7 +74,7 @@ class Sheet:
 
         # Getting all data from specified ranges as lists
         pref_sheet = self.user_sheet.worksheet("Preferences")
-        data = pref_sheet.batch_get(['E25', 'B4:B44', 'C4:C44', 'H4:H23'])
+        data = pref_sheet.batch_get(['E25', 'B4:B43', 'C4:C43', 'H4:H23'])
 
         # Writing date to dictionary
         parsed_data['today'] = data[0][0][0]
