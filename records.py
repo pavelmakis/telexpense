@@ -95,6 +95,7 @@ def parse_transaction(raw_transaction: list) -> list:
             income_account = _parse_account(income_account, sheet_data)
 
             parsed_data = [outcome_amount, outcome_account, income_amount, income_account]
+            parsed_data.insert(0, sheet_data['today'])
 
         case outcome_amount, outcome_account, income_account:
             outcome_amount = parse_outcome_amount(outcome_amount)
@@ -103,8 +104,6 @@ def parse_transaction(raw_transaction: list) -> list:
             income_account = _parse_account(income_account, sheet_data)
 
             parsed_data = [outcome_amount, outcome_account, income_amount, income_account]
-
-    # Adding today date to result
-    parsed_data.insert(0, sheet_data['today'])
+            parsed_data.insert(0, sheet_data['today'])
 
     return parsed_data
