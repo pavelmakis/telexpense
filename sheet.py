@@ -1,3 +1,5 @@
+import formulas
+
 import gspread
 
 class Sheet:
@@ -117,6 +119,8 @@ class Sheet:
         Args:
             data (list): parsed data for inserting in user's sheet.
         """
+        # Appending formula which calculates amounts to main currency
+        data.append(formulas.to_main_currency)
 
         # Opening transactions sheet and inserting transaction data
         trans_list = self.user_sheet.worksheet("Transactions")
