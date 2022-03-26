@@ -116,27 +116,20 @@ async def process_expense_amount(message: types.Message, state: FSMContext):
             "❌ Cannot understand this amount...\n"
             "Try to add /expense one more time!",
             reply_markup=keyboards.get_main_markup())
+
         # Stop form
         await state.finish()
         return
 
     # Defining keyboard markup
-    out_categories_markup = types.ReplyKeyboardMarkup(resize_keyboard=True,
-                                                      selective=True,
-                                                      one_time_keyboard=True)
+    out_categories_markup = types.ReplyKeyboardMarkup()
     async with state.proxy() as data:
         # Write amount data to dictionary
         data['amount'] = parsed_amount
-        # Adding buttons to markup from data get before
+
+        # Getting keyboard markup from data get before
         out_category_list = data['sheet data']['outcome categories']
-        for i in range(0, len(out_category_list), 2):
-            # If there is only one item left...
-            if len(out_category_list) - i == 1:
-                # Adding last category as big button
-                out_categories_markup.add(out_category_list[-1])
-                break
-            # Adding categories as two buttons in a row
-            out_categories_markup.add(out_category_list[i], out_category_list[i+1])
+        out_categories_markup = keyboards.get_two_row_keyboard(out_category_list)
 
     # Go to the next step of form and send message
     await ExpenseForm.next()
@@ -150,19 +143,12 @@ async def process_expense_category(message: types.Message, state: FSMContext):
     This handler is used to get the expense category after calling the /expense command
     """
     # Defining keyboard markup
-    accounts_markup = types.ReplyKeyboardMarkup(resize_keyboard=True,
-                                                      selective=True,
-                                                      one_time_keyboard=True)
+    accounts_markup = types.ReplyKeyboardMarkup()
     async with state.proxy() as data:
-        # Getting outcome categories from sheet data in state.proxy()
-        category_list = data['sheet data']['outcome categories']
-        # Setting category to None
-        data['category'] = None
-        for i in range(len(category_list)):
-            # If user entered category is similar to data from sheet
-            if message.text.lower() == category_list[i].lower():
-                data['category'] = category_list[i]
-                break
+        # Parsing category
+        data['category'] = records._parse_outcome_category(
+            message.text, data['sheet data'])
+
         # If category remains None, user entered wrong category
         # Stop from getting and show main keyboard
         if data['category'] == None:
@@ -171,20 +157,14 @@ async def process_expense_category(message: types.Message, state: FSMContext):
                 "❌ This outcome category doesn't exist...\n"
                 "Try to add /expense one more time!",
                 reply_markup=keyboards.get_main_markup())
+
             # Finish form
             await state.finish()
             return
 
-        # Adding buttons to markup from data get before
+        # Getting keyboard markup from data get before
         account_list = data['sheet data']['accounts']
-        for i in range(0, len(account_list), 2):
-            # If there is only one item left...
-            if len(account_list) - i == 1:
-                # Adding last account as big button
-                accounts_markup.add(account_list[-1])
-                break
-            # Adding accounts as two buttons in a row
-            accounts_markup.add(account_list[i], account_list[i+1])
+        accounts_markup = keyboards.get_two_row_keyboard(account_list)
 
     # Go to the next step of the form
     await ExpenseForm.next()
@@ -242,22 +222,13 @@ async def process_income_amount(message: types.Message, state: FSMContext):
         return
     
     # Defining keyboard markup
-    in_categories_markup = types.ReplyKeyboardMarkup(resize_keyboard=True,
-                                                      selective=True,
-                                                      one_time_keyboard=True)
+    in_categories_markup = types.ReplyKeyboardMarkup()
     async with state.proxy() as data:
         # Write amount data to dictionary
         data['amount'] = parsed_amount
         # Adding buttons to markup from data get before
         in_category_list = data['sheet data']['income categories']
-        for i in range(0, len(in_category_list), 2):
-            # If there is only one item left...
-            if len(in_category_list) - i == 1:
-                # Adding last category as big button
-                in_categories_markup.add(in_category_list[-1])
-                break
-            # Adding categories as two buttons in a row
-            in_categories_markup.add(in_category_list[i], in_category_list[i+1])
+        in_categories_markup = keyboards.get_two_row_keyboard(in_category_list)
 
     # Go to the next step of form and send message
     await IncomeForm.next()
@@ -271,19 +242,12 @@ async def process_income_category(message: types.Message, state: FSMContext):
     This handler is used to get the income category after calling the /income command
     """
     # Defining keyboard markup
-    accounts_markup = types.ReplyKeyboardMarkup(resize_keyboard=True,
-                                                      selective=True,
-                                                      one_time_keyboard=True)
+    accounts_markup = types.ReplyKeyboardMarkup()
     async with state.proxy() as data:
-        # Getting outcome categories from sheet data in state.proxy()
-        category_list = data['sheet data']['income categories']
-        # Setting category to None
-        data['category'] = None
-        for i in range(len(category_list)):
-            # If user entered category is similar to data from sheet
-            if message.text.lower() == category_list[i].lower():
-                data['category'] = category_list[i]
-                break
+        # Parsing income category
+        data['category'] = records._parse_income_category(
+            message.text, data['sheet data'])
+
         # If category remains None, user entered wrong category
         # Stop from getting and show main keyboard
         if data['category'] == None:
@@ -298,14 +262,7 @@ async def process_income_category(message: types.Message, state: FSMContext):
 
         # Adding buttons to markup from data get before
         account_list = data['sheet data']['accounts']
-        for i in range(0, len(account_list), 2):
-            # If there is only one item left...
-            if len(account_list) - i == 1:
-                # Adding last account as big button
-                accounts_markup.add(account_list[-1])
-                break
-            # Adding accounts as two buttons in a row
-            accounts_markup.add(account_list[i], account_list[i+1])
+        accounts_markup = keyboards.get_two_row_keyboard(account_list)
     
     # Go to the next step of the form
     await IncomeForm.next()
@@ -322,14 +279,10 @@ async def process_account(message: types.Message, state: FSMContext):
     This handler is used to get the account after calling the /expense or /income command
     """
     async with state.proxy() as data:
-        # Getting accounts from sheet data in state.proxy()
-        account_list = data['sheet data']['accounts']
-        # Setting account to None
-        data['account'] = None
-        for i in range(len(account_list)):
-            if message.text.lower() == account_list[i].lower():
-                data['account'] = account_list[i]
-                break
+        # Parsing account
+        data['account'] = records._parse_account(
+            message.text, data['sheet data'])
+            
         # If account remains None, user entered wrong account
         # Stop from getting and show main keyboard
         if data['account'] == None:
@@ -482,7 +435,7 @@ async def process_outcome_account(message: types.Message, state: FSMContext):
     # Send a message with the button for 
     await bot.send_message(
         message.chat.id,
-        "Specify the amount credited to the account\nto which the transfer was made.\n\n" +
+        "Specify the amount added to the account to which the transfer was made.\n\n" +
         'If the amounts are the same, tap "Same amount"',
         reply_markup=keyboards.get_same_amount_markup())
 
