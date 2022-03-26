@@ -38,6 +38,15 @@ async def send_welcome(message: types.Message):
                         parse_mode='Markdown',
                         reply_markup=keyboards.get_main_markup())
 
+@dp.message_handler(commands=['cancel'])
+@dp.message_handler(lambda msg: msg.text.lower() == 'cancel')
+async def send_cancel_warning(message: types.Message):
+    """Send a warning that /cancel works only if you are filling the form"""
+    await bot.send_message(
+        message.chat.id,
+        "Can cancel only while you are filling a record form.\n\n" +
+        "Nothing to cancel now!",
+        reply_markup=keyboards.get_main_markup())
 
 # Registering handler for form canceling
 dp.register_message_handler(forms.cancel_handler, commands=['cancel'], state="*")
