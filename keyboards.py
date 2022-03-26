@@ -6,11 +6,6 @@ def get_main_markup() -> ReplyKeyboardMarkup:
     main_markup.add("💱Transaction")  
     main_markup.add("/savings", "/total", "💲Available")
     return main_markup
-
-def get_cancel_markup() -> ReplyKeyboardMarkup:
-    cancel_markup = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
-    cancel_markup.add("Cancel")
-    return cancel_markup
     
 def get_description_markup() -> ReplyKeyboardMarkup:
     description_markup = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
