@@ -85,8 +85,7 @@ async def process_expense(message: types.Message, state: FSMContext):
     await ExpenseForm.amount.set()
     await bot.send_message(
             message.chat.id,
-            'Specify an amount of expense\nor type "cancel"',
-            reply_markup=keyboards.get_cancel_markup())
+            'Specify an amount of expense\nor type "cancel"')
 
     # As the user enters the amount of spending,
     # I send a query to the table to get expense categories, 
@@ -186,8 +185,7 @@ async def process_income(message: types.Message, state: FSMContext):
     await IncomeForm.amount.set()
     await bot.send_message(
             message.chat.id,
-            'Specify an amount of income\nor type "cancel"',
-            reply_markup=keyboards.get_cancel_markup())
+            'Specify an amount of income\nor type "cancel"')
 
     # As the user enters the amount of income,
     # I send a query to the table to get expense categories, 
@@ -282,7 +280,7 @@ async def process_account(message: types.Message, state: FSMContext):
         # Parsing account
         data['account'] = records._parse_account(
             message.text, data['sheet data'])
-            
+
         # If account remains None, user entered wrong account
         # Stop from getting and show main keyboard
         if data['account'] == None:
@@ -356,8 +354,7 @@ async def process_transaction(message: types.Message, state: FSMContext):
     await TransactionForm.outcome_amount.set()
     await bot.send_message(
             message.chat.id,
-            'Specify an amount of transaction\nor type "cancel"',
-            reply_markup=keyboards.get_cancel_markup())
+            'Specify an amount of transaction\nor type "cancel"')
     
     # As the user enters the amount of transaction,
     # I send a query to the table to get today date and accounts
