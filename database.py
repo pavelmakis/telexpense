@@ -10,7 +10,7 @@ cursor = conn.cursor()
 
 def get_sheet_url(user_id: str):
     """Get users sheet URL by Telegram id"""
-    cursor.executemany(f'''
+    cursor.execute(f'''
     SELECT * FROM user_sheets
     WHERE user_id={user_id}
     ''')

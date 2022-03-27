@@ -19,7 +19,7 @@ def get_same_amount_markup() -> ReplyKeyboardMarkup:
 
 def get_register_markup() -> ReplyKeyboardMarkup:
     register_markup = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
-    register_markup.add("Same amount")
+    register_markup.add("/register")
     return register_markup
 
 def get_two_row_keyboard(buttons: list) -> ReplyKeyboardMarkup:
