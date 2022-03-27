@@ -5,6 +5,7 @@ import records
 import answers
 import keyboards
 import forms
+import regist
 
 from aiogram import Bot, Dispatcher, executor, types
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
@@ -52,6 +53,9 @@ async def send_cancel_warning(message: types.Message):
 dp.register_message_handler(forms.cancel_handler, commands=['cancel'], state="*")
 dp.register_message_handler(forms.cancel_handler, 
                             lambda msg: msg.text.lower() == 'cancel', state="*")
+
+dp.register_message_handler(regist.start_registering, commands=['register'])
+dp.register_message_handler(regist.process_url, state=regist.URLForm.url)
 
 # Registering handlers for /expense form
 dp.register_message_handler(forms.process_expense, commands=['expense'])
