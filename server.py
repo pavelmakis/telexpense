@@ -5,6 +5,7 @@ import records
 import answers
 import keyboards
 import forms
+import database
 import regist
 
 from aiogram import Bot, Dispatcher, executor, types
@@ -21,17 +22,32 @@ storage = MemoryStorage()
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher(bot, storage=storage)
 
+unregistered = lambda message: not database.is_user_registered(message.from_user.id)
 
 @dp.message_handler(commands=['start'])
 async def send_welcome(message: types.Message):
     """
-    This handler will be called when user sends `/start` or `/help` command
+    This handler will be called when user sends `/start` command
     """
     await message.reply(f"Hi! I'm Telexpense bot. I can work with Google Sheet!",
-                        reply_markup=keyboards.get_main_markup())
+                        reply_markup=keyboards.get_register_markup())
+
+# Registering handlers for user registration
+dp.register_message_handler(regist.start_registering, commands=['register'])
+dp.register_message_handler(regist.process_url, state=regist.URLForm.url)
+
+@dp.message_handler(unregistered, content_types=['any'])
+async def handle_unregistered(message: types.Message):
+    await bot.send_message(
+        message.chat.id,
+        "I can work only with registered users!\n"
+        "Read the wiki or type /register",
+        reply_markup=keyboards.get_register_markup())
+    await bot.delete_message(message.chat.id, message.message_id)
+    return
 
 @dp.message_handler(commands=['help'])
-async def send_welcome(message: types.Message):
+async def send_help(message: types.Message):
     """
     This handler will be called when user sends /help command
     """
@@ -54,8 +70,7 @@ dp.register_message_handler(forms.cancel_handler, commands=['cancel'], state="*"
 dp.register_message_handler(forms.cancel_handler, 
                             lambda msg: msg.text.lower() == 'cancel', state="*")
 
-dp.register_message_handler(regist.start_registering, commands=['register'])
-dp.register_message_handler(regist.process_url, state=regist.URLForm.url)
+
 
 # Registering handlers for /expense form
 dp.register_message_handler(forms.process_expense, commands=['expense'])
