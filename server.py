@@ -29,15 +29,23 @@ async def send_welcome(message: types.Message):
     """
     This handler will be called when user sends `/start` command
     """
-    await message.reply(f"Hi! I'm Telexpense bot. I can work with Google Sheet!",
-                        reply_markup=keyboards.get_register_markup())
+    await message.reply(
+        f"Hi! I'm Telexpense bot 📠\n\n"
+        "I can work with Google Sheet.\n"
+        "If you are a new user, read the wiki "
+        "and type /register to give the URL to your sheet",
+        reply_markup=keyboards.get_register_markup())
 
 # Registering handlers for user registration
 dp.register_message_handler(regist.start_registering, commands=['register'])
 dp.register_message_handler(regist.process_url, state=regist.URLForm.url)
 
+# Asking new users to register
 @dp.message_handler(unregistered, content_types=['any'])
 async def handle_unregistered(message: types.Message):
+    """
+    This handler is used to answer to unregistered users.
+    """
     await bot.send_message(
         message.chat.id,
         "I can work only with registered users!\n"
@@ -110,9 +118,6 @@ dp.register_message_handler(forms.process_tran_income_amount,
                             state=forms.TransactionForm.income_amount)
 dp.register_message_handler(forms.process_income_account, 
                             state=forms.TransactionForm.income_account)
-
-
-
 
 @dp.message_handler(commands=['available'])
 @dp.message_handler(lambda message: message.text.startswith('💲Available'))
