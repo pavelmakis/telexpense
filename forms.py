@@ -1,5 +1,5 @@
 """
-This file contoins aiogram handlers for Income, Expense and Transaction commands
+This file contains aiogram handlers for Income, Expense and Transaction commands
 which are used to add records as a from. To add record in one command, /addinc, /addexp
 and /addtran are used.    
 """
@@ -10,7 +10,7 @@ import records
 import answers
 import keyboards
 
-from aiogram import Bot, Dispatcher, executor, types
+from aiogram import Bot, Dispatcher, types
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import State, StatesGroup
