@@ -70,8 +70,6 @@ dp.register_message_handler(forms.cancel_handler, commands=['cancel'], state="*"
 dp.register_message_handler(forms.cancel_handler, 
                             lambda msg: msg.text.lower() == 'cancel', state="*")
 
-
-
 # Registering handlers for /expense form
 dp.register_message_handler(forms.process_expense, commands=['expense'])
 dp.register_message_handler(forms.process_expense, 
