@@ -25,6 +25,12 @@ def insert_sheet_url(user_id: str, sheet_url: str):
     ''')
     conn.commit()
 
+def is_user_registered(user_id: str) -> bool:
+    """Check if users id is in database"""
+    if get_sheet_url(user_id):
+        return True
+    return False
+
 def init_if_not_exists():
     """Database initialization"""
     exec_command = '''
