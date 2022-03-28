@@ -5,9 +5,7 @@ and /addtran are used.
 """
 import os
 import logging
-import sheet
 import records
-import answers
 import keyboards
 import database
 from sheet import Sheet
