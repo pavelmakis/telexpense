@@ -4,11 +4,13 @@ import gspread
 from gspread import exceptions
 
 class Sheet:
-    def __init__(self, key='1t7TWFSfVAKbfKfbTkkDJ4amIwms0lRL7v7UGTrXRDlU') -> None:
+    def __init__(self, key) -> None:
+        """Opens user spreadhsheet"""
         self.gspread_client = gspread.service_account(filename="token.json")
         self.user_sheet = self.gspread_client.open_by_key(key)
     
     def is_right_sheet(self) -> bool:
+        """Сhecks if user has provided the correct ызкуфвырууе"""
         # Check if there are sheets that are in my template
         try:
             main_sheet = self.user_sheet.worksheet("Main")
@@ -30,16 +32,24 @@ class Sheet:
         return True
 
     def get_savings(self):
+        """To be removed soon"""
         main_sheet = self.user_sheet.worksheet("Main")
         savings_amount = main_sheet.acell('B7').value
         return savings_amount
     
     def get_total(self):
+        """To be removed soon"""
         main_sheet = self.user_sheet.worksheet("Main")
         total_amount = main_sheet.acell('B11').value
         return total_amount
 
     def get_day_accounts(self) -> dict:
+        """Get today date and account list in one query.
+        This data is ised for adding transactions.
+
+        Returns:
+            dict: 'today' and 'accounts'
+        """
         # Selectiong sheet 'Preferences'
         pref_sheet = self.user_sheet.worksheet("Preferences")
 
@@ -65,6 +75,12 @@ class Sheet:
         return parsed_data
 
     def get_account_amounts(self) -> list:
+        """Get all accounts and its amounts in one query.
+        Data is used to send available amounts to user.
+
+        Returns:
+            list: list of tuples (account, amount)
+        """
         # Selectiong sheet 'Main'
         main_sheet = self.user_sheet.worksheet("Main")
 
