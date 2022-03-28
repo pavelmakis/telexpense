@@ -31,18 +31,6 @@ class Sheet:
         
         return True
 
-    def get_savings(self):
-        """To be removed soon"""
-        main_sheet = self.user_sheet.worksheet("Main")
-        savings_amount = main_sheet.acell('B7').value
-        return savings_amount
-    
-    def get_total(self):
-        """To be removed soon"""
-        main_sheet = self.user_sheet.worksheet("Main")
-        total_amount = main_sheet.acell('B11').value
-        return total_amount
-
     def get_day_accounts(self) -> dict:
         """Get today date and account list in one query.
         This data is ised for adding transactions.
