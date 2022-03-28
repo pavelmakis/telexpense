@@ -71,7 +71,7 @@ async def process_url(message: types.Message, state: FSMContext):
     
     # Sheet multilevel check
     if message.text.startswith('https://'):
-        user_sheet = Sheet(message.text)
+        user_sheet = Sheet(utils.extract_id_from_url(message.text))
         # Check if bot is able to connect to sheet
         if user_sheet != None:
             # Check if sheet is copied from template
