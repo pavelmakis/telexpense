@@ -12,6 +12,7 @@ from aiogram import Bot, Dispatcher, types
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import State, StatesGroup
+from gspread import utils
 
 
 API_TOKEN = os.getenv('TELEXPENSE_TOKEN')
@@ -76,7 +77,8 @@ async def process_url(message: types.Message, state: FSMContext):
             # Check if sheet is copied from template
             if user_sheet.is_right_sheet() != False:
                 # Insert url to database
-                database.insert_sheet_url(message.from_user.id, message.text)
+                database.insert_sheet_id(
+                    message.from_user.id, utils.extract_id_from_url(message.text))
                 await bot.send_message(
                     message.chat.id,
                     'Great! You are in!',

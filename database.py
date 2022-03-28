@@ -8,7 +8,7 @@ import sqlite3
 conn = sqlite3.connect(os.path.join("db", "user_sheets.db"))
 cursor = conn.cursor()
 
-def get_sheet_url(user_id: str):
+def get_sheet_id(user_id: str):
     """Get users sheet URL by Telegram id"""
     cursor.execute(f'''
     SELECT * FROM user_sheets
@@ -16,18 +16,18 @@ def get_sheet_url(user_id: str):
     ''')
     return cursor.fetchone()
 
-def insert_sheet_url(user_id: str, sheet_url: str):
+def insert_sheet_id(user_id: str, sheet_id: str):
     """Add users sheet URL to database"""
     cursor.execute(f'''
     INSERT INTO user_sheets (
-        user_id, sheet_url
-    ) VALUES ('{user_id}', '{sheet_url}')
+        user_id, sheet_id
+    ) VALUES ('{user_id}', '{sheet_id}')
     ''')
     conn.commit()
 
 def is_user_registered(user_id: str) -> bool:
     """Check if users id is in database"""
-    if get_sheet_url(user_id):
+    if get_sheet_id(user_id):
         return True
     return False
 
@@ -36,7 +36,7 @@ def init_if_not_exists():
     exec_command = '''
     CREATE TABLE IF NOT EXISTS user_sheets (
         user_id     varchar(40) primary key,
-        sheet_url   text)
+        sheet_id   text)
     '''
     cursor.execute(exec_command)
     conn.commit()

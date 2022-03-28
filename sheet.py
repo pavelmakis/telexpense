@@ -4,9 +4,9 @@ import gspread
 from gspread import exceptions
 
 class Sheet:
-    def __init__(self, url='https://docs.google.com/spreadsheets/d/1DfLa0vry-8YJVZgdkPDPcQEI6vYm19n2ddTBPNWo7K8/edit#gid=0') -> None:
+    def __init__(self, key='1t7TWFSfVAKbfKfbTkkDJ4amIwms0lRL7v7UGTrXRDlU') -> None:
         self.gspread_client = gspread.service_account(filename="token.json")
-        self.user_sheet = self.gspread_client.open_by_url(url)
+        self.user_sheet = self.gspread_client.open_by_key(key)
     
     def is_right_sheet(self) -> bool:
         # Check if there are sheets that are in my template
@@ -20,7 +20,6 @@ class Sheet:
         # Check if there are specific cells 
         try:
             data = pref_sheet.batch_get(['B2', 'E15', 'H2'])
-            print(data)
         except exceptions.APIError:
             return False
         
