@@ -32,7 +32,7 @@ async def send_welcome(message: types.Message):
     start_message = (
         "Hi! I'm Telexpense bot 📺\n\n"
         "I can work with Google Sheet.\n"
-        "If you are a new user, read the wiki"
+        "If you are a new user, read the wiki "
         "or type /register to start using me")
 
     if not unregistered:
