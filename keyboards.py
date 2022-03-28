@@ -4,7 +4,7 @@ def get_main_markup() -> ReplyKeyboardMarkup:
     main_markup = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
     main_markup.add("➕Income", "➖Expense")
     main_markup.add("💱Transaction")  
-    main_markup.add("/savings", "/total", "💲Available")
+    main_markup.add("🎶Subscriptions", "💲Available")
     return main_markup
     
 def get_description_markup() -> ReplyKeyboardMarkup:
