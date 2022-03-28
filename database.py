@@ -20,7 +20,7 @@ def insert_sheet_url(user_id: str, sheet_url: str):
     """Add users sheet URL to database"""
     cursor.execute(f'''
     INSERT INTO user_sheets (
-        user_id, sheet_url"
+        user_id, sheet_url
     ) VALUES ('{user_id}', '{sheet_url}')
     ''')
     conn.commit()
