@@ -1,12 +1,12 @@
 import os
 import logging
-import sheet
 import records
 import answers
 import keyboards
 import forms
 import database
 import regist
+from sheet import Sheet
 
 from aiogram import Bot, Dispatcher, executor, types
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
@@ -129,7 +129,7 @@ dp.register_message_handler(forms.process_income_account,
 @dp.message_handler(lambda message: message.text.startswith('💲Available'))
 async def send_total(message: types.Message):
     """Send a list of accounts and its amounts from users sheet"""
-    user_sheet = sheet.Sheet()
+    user_sheet = Sheet(database.get_sheet_id(message.from_user.id))
     amounts = user_sheet.get_account_amounts()
     max_text_lenght, max_digit_lenght = 0, 0
 
@@ -164,14 +164,14 @@ async def send_total(message: types.Message):
 @dp.message_handler(commands=['savings'])
 async def send_savings(message: types.Message):
     """Send an amount of savings from users sheet"""
-    user_sheet = sheet.Sheet()
+    user_sheet = Sheet(database.get_sheet_id(message.from_user.id))
     savings_amount = user_sheet.get_savings()
     await message.answer(f"У вас сбережений: {savings_amount}")
 
 @dp.message_handler(commands=['total'])
 async def send_total(message: types.Message):
     """Send a total amount of money from users sheet"""
-    user_sheet = sheet.Sheet()
+    user_sheet = Sheet(database.get_sheet_id(message.from_user.id))
     total_amount = user_sheet.get_total()
     await message.answer(f"Всего денег: {total_amount} на всех счетах")
 
@@ -225,7 +225,7 @@ async def add_exp(message: types.Message):
         return
 
     # If successful
-    user_sheet = sheet.Sheet()
+    user_sheet = Sheet(database.get_sheet_id(message.from_user.id))
     user_sheet.add_record(parsed_expense)
     await bot.send_message(
         message.chat.id,
@@ -282,7 +282,7 @@ async def add_inc(message: types.Message):
         return
 
     # If successful
-    user_sheet = sheet.Sheet()
+    user_sheet = Sheet(database.get_sheet_id(message.from_user.id))
     user_sheet.add_record(parsed_income)
     await bot.send_message(
         message.chat.id,
@@ -344,7 +344,7 @@ async def add_tran(message: types.Message):
         return
 
     # If success
-    user_sheet = sheet.Sheet()
+    user_sheet = Sheet(database.get_sheet_id(message.from_user.id))
     user_sheet.add_transaction(parsed_transaction)
     await bot.send_message(
         message.chat.id,
