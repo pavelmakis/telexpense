@@ -11,10 +11,10 @@ cursor = conn.cursor()
 def get_sheet_id(user_id: str):
     """Get users sheet URL by Telegram id"""
     cursor.execute(f'''
-    SELECT * FROM user_sheets
-    WHERE user_id={user_id}
+    SELECT sheet_id FROM user_sheets
+    WHERE user_id='{user_id}'
     ''')
-    return cursor.fetchone()
+    return cursor.fetchone()[0]
 
 def insert_sheet_id(user_id: str, sheet_id: str):
     """Add users sheet URL to database"""
