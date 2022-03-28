@@ -12,9 +12,9 @@ I can understand theese commands:\n
 """
 
 expense_help = """
-Expenses can be added by:
+Expense can be added by:
     `/addexp amount, category, [account], [description]`
-where account and description is optional.
+where account and description are optional.
 
 Example:
     `/addexp 3.45, taxi, Revolut, From work`
@@ -26,7 +26,7 @@ Cannot understand this expense!
 
 Expense can be added by:
     `/addexp amount, category, [account], [description]`
-where account and description is optional.
+where account and description are optional.
 
 Example:
     `/addexp 3.45, taxi, Revolut, From work`
@@ -36,7 +36,7 @@ Example:
 income_help = """
 Income can be added by:
     `/addinc amount, category, [account], [description]`
-where account and description is optional.
+where account and description are optional.
 
 Example:
     `/addinc 1200, Salary, N26, First job`
@@ -48,7 +48,7 @@ Cannot understand this income!
 
 Income can be added by:
     `/addinc amount, category, [account], [description]`
-where account and description is optional.
+where account and description are optional.
 
 Example:
     `/addinc 1200, Salary, N26, First job`
