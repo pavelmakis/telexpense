@@ -1,12 +1,35 @@
 import formulas
 
 import gspread
+from gspread import exceptions
 
 class Sheet:
-    def __init__(self) -> None:
+    def __init__(self, url='https://docs.google.com/spreadsheets/d/1DfLa0vry-8YJVZgdkPDPcQEI6vYm19n2ddTBPNWo7K8/edit#gid=0') -> None:
         self.gspread_client = gspread.service_account(filename="token.json")
-        self.user_sheet = self.gspread_client.open_by_url('https://docs.google.com/spreadsheets/d/1DfLa0vry-8YJVZgdkPDPcQEI6vYm19n2ddTBPNWo7K8')
+        self.user_sheet = self.gspread_client.open_by_url(url)
     
+    def is_right_sheet(self) -> bool:
+        # Check if there are sheets that are in my template
+        try:
+            main_sheet = self.user_sheet.worksheet("Main")
+            pref_sheet = self.user_sheet.worksheet("Preferences")
+            tran_sheet = self.user_sheet.worksheet("Transactions")
+        except exceptions.WorksheetNotFound:
+            return False
+        
+        # Check if there are specific cells 
+        try:
+            data = pref_sheet.batch_get(['B2', 'E15', 'H2'])
+            print(data)
+        except exceptions.APIError:
+            return False
+        
+        # Check cells values
+        if data != [[['Categories']], [['Currency']], [['Accounts']]]:
+            return False
+        
+        return True
+
     def get_savings(self):
         main_sheet = self.user_sheet.worksheet("Main")
         savings_amount = main_sheet.acell('B7').value
