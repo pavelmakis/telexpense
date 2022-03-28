@@ -8,13 +8,16 @@ import sqlite3
 conn = sqlite3.connect(os.path.join("db", "user_sheets.db"))
 cursor = conn.cursor()
 
-def get_sheet_id(user_id: str):
+def get_sheet_id(user_id: str) -> str | None:
     """Get users sheet URL by Telegram id"""
     cursor.execute(f'''
     SELECT sheet_id FROM user_sheets
     WHERE user_id='{user_id}'
     ''')
-    return cursor.fetchone()[0]
+    sheet_id = cursor.fetchone()
+    if sheet_id:
+        return sheet_id[0]
+    return None
 
 def insert_sheet_id(user_id: str, sheet_id: str):
     """Add users sheet URL to database"""

@@ -35,7 +35,7 @@ async def send_welcome(message: types.Message):
         "If you are a new user, read the wiki "
         "or type /register to start using me")
 
-    if not unregistered:
+    if unregistered:
         await bot.send_message(
             message.chat.id,
             start_message,
