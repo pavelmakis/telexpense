@@ -6,6 +6,7 @@ import os
 import logging
 import database
 import keyboards
+from sheet import Sheet
 
 from aiogram import Bot, Dispatcher, types
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
@@ -34,25 +35,57 @@ async def start_registering(message: types.Message, state: FSMContext):
     """
     This handler is used to ask user his sheet URL
     """
+    # If user is already registered
+    if database.is_user_registered(message.from_user.id):
+        await bot.send_message(
+            message.chat.id,
+            "I know you! You are alreafy registered!)")
+        return
+
     # Starting form filling
     await URLForm.url.set()
     await bot.send_message(
         message.chat.id,
-        'Send me the URL to your table')
-    
+        "I can only work with one Google Spreadsheet template. "
+        "First of all, copy this sheet to your Google Account.\n\n"
+        "👉 [Telexpense Template Sheet](https://docs.google.com/spreadsheets/d/1DfLa0vry-8YJVZgdkPDPcQEI6vYm19n2ddTBPNWo7K8/edit#gid=0) 👈",
+        parse_mode='Markdown')
+
+    await bot.send_message(
+        message.chat.id,
+        "Make sure you have added me as an editor, "
+        "this is my email:\n\n"
+        "telexpense-bot@telexpense-bot.iam.gserviceaccount.com")
+     
 async def process_url(message: types.Message, state: FSMContext):
     """
     This handler is used to check and add users URL to database.
     """
-    async with state.proxy() as data:
-        # Write data to dictionary
-        database.insert_sheet_url(message.from_user.id, message.text)
+    # Stop form
+    await state.finish()
 
     await bot.send_message(
         message.chat.id,
-        'Added!',
-        reply_markup=keyboards.get_main_markup())
+        "Checking this sheet...")
     
-    # Stop form
-    await state.finish()
+    # Sheet multilevel check
+    if message.text.startswith('https://'):
+        user_sheet = Sheet(message.text)
+        # Check if bot is able to connect to sheet
+        if user_sheet != None:
+            # Check if sheet is copied from template
+            if user_sheet.is_right_sheet() != False:
+                # Insert url to database
+                database.insert_sheet_url(message.from_user.id, message.text)
+                await bot.send_message(
+                    message.chat.id,
+                    'Great! You are in!',
+                    reply_markup=keyboards.get_main_markup())
+                return
+
+    await bot.send_message(
+        message.chat.id,
+        "Hm. Looks like it's not a link I'm looking for...\n\n"
+        "Read the wiki and try to /register one more time!",
+        reply_markup=keyboards.get_register_markup())
     
