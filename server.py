@@ -29,12 +29,22 @@ async def send_welcome(message: types.Message):
     """
     This handler will be called when user sends `/start` command
     """
-    await message.reply(
-        f"Hi! I'm Telexpense bot 📠\n\n"
+    start_message = (
+        "Hi! I'm Telexpense bot 📺\n\n"
         "I can work with Google Sheet.\n"
-        "If you are a new user, read the wiki "
-        "and type /register to give the URL to your sheet",
-        reply_markup=keyboards.get_register_markup())
+        "If you are a new user, read the wiki"
+        "or type /register to start using me")
+
+    if not unregistered:
+        await bot.send_message(
+            message.chat.id,
+            start_message,
+            reply_markup=keyboards.get_register_markup())
+    else:
+        await bot.send_message(
+            message.chat.id,
+            start_message,
+            reply_markup=keyboards.get_main_markup())
 
 # Registering handlers for user registration
 dp.register_message_handler(regist.start_registering, commands=['register'])
@@ -48,7 +58,7 @@ async def handle_unregistered(message: types.Message):
     """
     await bot.send_message(
         message.chat.id,
-        "I can work only with registered users!\n"
+        "I can only work with registered users!\n"
         "Read the wiki or type /register",
         reply_markup=keyboards.get_register_markup())
     await bot.delete_message(message.chat.id, message.message_id)
@@ -59,9 +69,10 @@ async def send_help(message: types.Message):
     """
     This handler will be called when user sends /help command
     """
-    await message.reply(answers.help,
-                        parse_mode='Markdown',
-                        reply_markup=keyboards.get_main_markup())
+    await message.reply(
+        answers.help,
+        parse_mode='Markdown',
+        reply_markup=keyboards.get_main_markup())
 
 @dp.message_handler(commands=['cancel'])
 @dp.message_handler(lambda msg: msg.text.lower() == 'cancel')
@@ -72,11 +83,6 @@ async def send_cancel_warning(message: types.Message):
         "Can cancel only while you are filling a record form.\n\n" +
         "Nothing to cancel now!",
         reply_markup=keyboards.get_main_markup())
-
-# Registering handler for form canceling
-dp.register_message_handler(forms.cancel_handler, commands=['cancel'], state="*")
-dp.register_message_handler(forms.cancel_handler, 
-                            lambda msg: msg.text.lower() == 'cancel', state="*")
 
 # Registering handlers for /expense form
 dp.register_message_handler(forms.process_expense, commands=['expense'])
@@ -222,10 +228,10 @@ async def add_exp(message: types.Message):
     user_sheet = sheet.Sheet()
     user_sheet.add_record(parsed_expense)
     await bot.send_message(
-            message.chat.id,
-            "👍 Successfully added " +
-            f"{parsed_expense[3]} to\n"
-            f"{parsed_expense[2]}!")
+        message.chat.id,
+        "👍 Successfully added " +
+        f"{parsed_expense[3]} to\n"
+        f"{parsed_expense[2]}!")
 
 @dp.message_handler(lambda message: message.text.startswith('/addinc'))
 async def add_inc(message: types.Message):
