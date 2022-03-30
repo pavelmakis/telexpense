@@ -35,16 +35,16 @@ async def send_welcome(message: types.Message):
         "If you are a new user, read the wiki "
         "or type /register to start using me")
 
-    if unregistered:
-        await bot.send_message(
-            message.chat.id,
-            start_message,
-            reply_markup=keyboards.get_register_markup())
-    else:
+    if database.is_user_registered(message.from_user.id):
         await bot.send_message(
             message.chat.id,
             start_message,
             reply_markup=keyboards.get_main_markup())
+    else:
+        await bot.send_message(
+            message.chat.id,
+            start_message,
+            reply_markup=keyboards.get_register_markup())
 
 # Registering handlers for user registration
 dp.register_message_handler(regist.start_registering, commands=['register'])
