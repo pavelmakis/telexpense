@@ -49,6 +49,7 @@ async def send_welcome(message: types.Message):
 # Registering handlers for user registration
 dp.register_message_handler(regist.start_registering, commands=['register'])
 dp.register_message_handler(regist.process_url, state=regist.URLForm.url)
+dp.register_message_handler(regist.change_sheet, state=regist.URLForm.change)
 
 # Asking new users to register
 @dp.message_handler(unregistered, content_types=['any'])
@@ -85,6 +86,9 @@ async def send_cancel_warning(message: types.Message):
         reply_markup=keyboards.get_main_markup())
 
 # Registering handlers for /expense form
+dp.register_message_handler(forms.cancel_handler, commands=['cancel'], state='*')
+dp.register_message_handler(forms.cancel_handler,
+                            lambda message: message.text.lower() == 'cancel', state='*')
 dp.register_message_handler(forms.process_expense, commands=['expense'])
 dp.register_message_handler(forms.process_expense, 
                             lambda message: message.text.startswith('➖Expense'))
