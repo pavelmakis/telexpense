@@ -28,6 +28,14 @@ def insert_sheet_id(user_id: str, sheet_id: str):
     ''')
     conn.commit()
 
+def delete_sheet_id(user_id: str):
+    """Delete record with sheet id"""
+    cursor.execute(f'''
+    DELETE FROM user_sheets 
+    WHERE user_id='{user_id}'
+    ''')
+    conn.commit()
+
 def is_user_registered(user_id: str) -> bool:
     """Check if users id is in database"""
     if get_sheet_id(user_id):
