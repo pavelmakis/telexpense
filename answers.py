@@ -76,3 +76,12 @@ Example:
     `/addtran 1200, Revolut, N26`
     `/addtran 200, Revolut EUR, 220.3, Revolut USD`
 """
+
+register_start = "I can only work with one Google Spreadsheet template. "\
+"First of all, copy this sheet to your Google Account.\n\n"\
+"👉 [Telexpense Template Sheet](https://docs.google.com/spreadsheets/d/1DfLa0vry-8YJVZgdkPDPcQEI6vYm19n2ddTBPNWo7K8/edit#gid=0) 👈\n\n"\
+"Than give me the link to your sheet"
+
+register_email = "Make sure you have added me as an editor, "\
+"this is my email:\n\n"\
+"telexpense-bot@telexpense-bot.iam.gserviceaccount.com"
