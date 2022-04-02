@@ -22,6 +22,11 @@ def get_register_markup() -> ReplyKeyboardMarkup:
     register_markup.add("/register")
     return register_markup
 
+def get_cancel_markup() -> ReplyKeyboardMarkup:
+    cancel_markup = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
+    cancel_markup.add("Cancel")
+    return cancel_markup
+
 def get_two_row_keyboard(buttons: list) -> ReplyKeyboardMarkup:
     buttons_markup = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
     for i in range(0, len(buttons), 2):
