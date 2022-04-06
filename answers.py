@@ -11,6 +11,11 @@ I can understand theese commands:\n
 /addtran - add transaction in a single message
 """
 
+error_message = "😳 Something went wrong...\n\n \
+Please try again later.\n \
+If it does not work again, check your table or add it again via /register. \
+Maybe you have changed the table and I can no longer work with it"
+
 expense_help = """
 Expense can be added by:
     `/addexp amount, category, [account], [description]`
