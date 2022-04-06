@@ -85,6 +85,12 @@ async def send_cancel_warning(message: types.Message):
         "Nothing to cancel now!",
         reply_markup=keyboards.get_main_markup())
 
+async def send_error_mes(chat_id):
+    await bot.send_message(
+        chat_id,
+        answers.error_message,
+        reply_markup=keyboards.get_main_markup())
+
 # Registering handlers for /expense form
 dp.register_message_handler(forms.cancel_handler, commands=['cancel'], state='*')
 dp.register_message_handler(forms.cancel_handler,
@@ -142,7 +148,12 @@ async def send_subscription(message: types.Message):
 @dp.message_handler(lambda message: message.text.startswith('💲Available'))
 async def send_total(message: types.Message):
     """Send a list of accounts and its amounts from users sheet"""
+    # Openning sheet, checking for errors
     user_sheet = Sheet(database.get_sheet_id(message.from_user.id))
+    if user_sheet == None:
+        await send_error_mes(message.chat.id)
+        return
+
     amounts = user_sheet.get_account_amounts()
     max_text_lenght, max_digit_lenght = 0, 0
 
@@ -223,8 +234,12 @@ async def add_exp(message: types.Message):
             reply_markup=keyboards.get_main_markup())
         return
 
-    # If successful
+    # If successful, openning cheet, checking 
     user_sheet = Sheet(database.get_sheet_id(message.from_user.id))
+    if user_sheet == None: 
+        await send_error_mes(message.chat.id)
+        return
+
     user_sheet.add_record(parsed_expense)
     await bot.send_message(
         message.chat.id,
@@ -280,8 +295,12 @@ async def add_inc(message: types.Message):
             reply_markup=keyboards.get_main_markup())
         return
 
-    # If successful
+    # If successful, openning sheet, checking
     user_sheet = Sheet(database.get_sheet_id(message.from_user.id))
+    if user_sheet == None:
+        await send_error_mes(message.chat.id)
+        return
+
     user_sheet.add_record(parsed_income)
     await bot.send_message(
         message.chat.id,
@@ -344,6 +363,10 @@ async def add_tran(message: types.Message):
 
     # If success
     user_sheet = Sheet(database.get_sheet_id(message.from_user.id))
+    if user_sheet == None: 
+        await send_error_mes(message.chat.id)
+        return
+
     user_sheet.add_transaction(parsed_transaction)
     await bot.send_message(
         message.chat.id,

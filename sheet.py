@@ -4,13 +4,23 @@ import gspread
 from gspread import exceptions
 
 class Sheet:
-    def __init__(self, key) -> None:
-        """Opens user spreadhsheet"""
-        self.gspread_client = gspread.service_account(filename="token.json")
-        self.user_sheet = self.gspread_client.open_by_key(key)
-    
+    account = gspread.service_account(filename="token.json")
+
+    def __new__(cls, key):
+        try:
+            cls.account.open_by_key(key)
+        except exceptions.GSpreadException:
+            return None
+        
+        # If no errors, call __init__
+        return super(Sheet, cls).__new__(cls)
+
+    def __init__(self, key, gspread_client=account) -> None:
+        """Opens user sheet"""
+        self.user_sheet = gspread_client.open_by_key(key)
+
     def is_right_sheet(self) -> bool:
-        """Сhecks if user has provided the correct ызкуфвырууе"""
+        """Сhecks if user has provided the correct sheet"""
         # Check if there are sheets that are in my template
         try:
             main_sheet = self.user_sheet.worksheet("Main")
