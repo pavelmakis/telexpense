@@ -37,12 +37,12 @@ class URLForm(StatesGroup):
 def check_url(message_text: str) -> bool:
     """Sheet template check"""
     if message_text.startswith('https://'):
-            user_sheet = Sheet(utils.extract_id_from_url(message_text))
-            # Check if bot is able to connect to sheet
-            if user_sheet != None:
-                # Check if sheet is copied from template
-                if user_sheet.is_right_sheet() != False:
-                    return True
+        user_sheet = Sheet(utils.extract_id_from_url(message_text))
+        # Check if bot is able to connect to sheet
+        if user_sheet != None:
+            # Check if sheet is copied from template
+            if user_sheet.is_right_sheet() != False:
+                return True
     return False
 
 async def start_registering(message: types.Message):
