@@ -6,6 +6,7 @@ and /addtran are used.
 import os
 import logging
 import records
+import server
 import keyboards
 import database
 from sheet import Sheet
@@ -92,6 +93,10 @@ async def process_expense(message: types.Message, state: FSMContext):
     # income categories, today's date, and accounts.
     # This is done to minimize the number of requests
     user_sheet = Sheet(database.get_sheet_id(message.from_user.id))
+    if user_sheet == None:
+        await server.send_error_mes(message.chat.id)
+        await state.finish()
+        return
     user_data = user_sheet.get_day_categories_accounts()
 
     # I put the data in the state.proxy(),
@@ -192,6 +197,10 @@ async def process_income(message: types.Message, state: FSMContext):
     # income categories, today's date, and accounts.
     # This is done to minimize the number of requests
     user_sheet = Sheet(database.get_sheet_id(message.from_user.id))
+    if user_sheet == None:
+        await server.send_error_mes(message.chat.id)
+        await state.finish()
+        return
     user_data = user_sheet.get_day_categories_accounts()
 
     # I put the data in the state.proxy(),
@@ -340,6 +349,11 @@ async def process_record_description(message: types.Message, state: FSMContext):
 
     # Enter data to transactions list 
     user_sheet = Sheet(database.get_sheet_id(message.from_user.id))
+    if user_sheet == None:
+        await server.send_error_mes(message.chat.id)
+        await state.finish()
+        return
+
     user_sheet.add_record(record)
 
 # --- START OF TRANSACTION HANDLERS ---
@@ -359,6 +373,10 @@ async def process_transaction(message: types.Message, state: FSMContext):
     # As the user enters the amount of transaction,
     # I send a query to the table to get today date and accounts
     user_sheet = Sheet(database.get_sheet_id(message.from_user.id))
+    if user_sheet == None:
+        await server.send_error_mes(message.chat.id)
+        await state.finish()
+        return
     user_data = user_sheet.get_day_accounts()
     
     # I put the data in the state.proxy(),
@@ -512,6 +530,10 @@ async def process_income_account(message: types.Message, state: FSMContext):
 
     # Enter data to transactions list 
     user_sheet = Sheet(database.get_sheet_id(message.from_user.id))
+    if user_sheet == None:
+        await server.send_error_mes(message.chat.id)
+        await state.finish()
+        return
     user_sheet.add_transaction(transaction_record)
 
     # Send a message with the button for 
