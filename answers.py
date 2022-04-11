@@ -84,9 +84,19 @@ Example:
 
 register_start = "I can only work with one Google Spreadsheet template. "\
 "First of all, copy this sheet to your Google Account.\n\n"\
-"👉 [Telexpense Template Sheet](https://docs.google.com/spreadsheets/d/1DfLa0vry-8YJVZgdkPDPcQEI6vYm19n2ddTBPNWo7K8/edit#gid=0) 👈\n\n"\
+"👉 [Telexpense Template Sheet](https://docs.google.com/spreadsheets/d/1DfLa0vry-8YJVZgdkPDPcQEI6vYm19n2ddTBPNWo7K8) 👈\n\n"\
 "Than give me the link to your sheet"
 
 register_email = "Make sure you have added me as an editor, "\
 "this is my email:\n\n"\
 "telexpense-bot@telexpense-bot.iam.gserviceaccount.com"
+
+donate_mes = 'The minimum amount is 3€. If you want to donate a different amount, \
+tap "Pay" and enter the amount of the tip, \
+which will be added to the minimum amount'
+
+donate_description = "This is a voluntary donation to my creator."
+
+successfull_payment = "*🙏 Thank you for supporting my creator for \
+{total_amount} {currency}!* \n\n🤔 Maybe now he can come \
+up with even more functionality for me"
