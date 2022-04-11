@@ -138,15 +138,6 @@ dp.register_message_handler(forms.process_tran_income_amount,
 dp.register_message_handler(forms.process_income_account, 
                             state=forms.TransactionForm.income_account)
 
-@dp.message_handler(commands=['subscriptions'])
-@dp.message_handler(lambda message: message.text.startswith('🎶Subscriptions'))
-async def send_subscription(message: types.Message):
-    await bot.send_message(
-        message.chat.id,
-        "Oops, it's hidden feature... How did you know about it?\n\n"
-        "Comming soon...",
-        reply_markup=keyboards.get_main_markup())
-
 @dp.message_handler(commands=['available'])
 @dp.message_handler(lambda message: message.text.startswith('💲Available'))
 async def send_total(message: types.Message):
