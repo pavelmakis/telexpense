@@ -6,9 +6,9 @@ and /addtran are used.
 import os
 import logging
 import records
-import server
 import keyboards
 import database
+import answers
 from sheet import Sheet
 
 from aiogram import Bot, Dispatcher, types
@@ -58,6 +58,12 @@ class TransactionForm(StatesGroup):
     income_account = State()
 
 
+async def send_error_mes(chat_id):
+    await bot.send_message(
+        chat_id,
+        answers.error_message,
+        reply_markup=keyboards.get_main_markup())
+
 # --- CANCEL HANDLER ---
 async def cancel_handler(message: types.Message, state: FSMContext):
     """
@@ -94,7 +100,7 @@ async def process_expense(message: types.Message, state: FSMContext):
     # This is done to minimize the number of requests
     user_sheet = Sheet(database.get_sheet_id(message.from_user.id))
     if user_sheet == None:
-        await server.send_error_mes(message.chat.id)
+        await send_error_mes(message.chat.id)
         await state.finish()
         return
     user_data = user_sheet.get_day_categories_accounts()
@@ -198,7 +204,7 @@ async def process_income(message: types.Message, state: FSMContext):
     # This is done to minimize the number of requests
     user_sheet = Sheet(database.get_sheet_id(message.from_user.id))
     if user_sheet == None:
-        await server.send_error_mes(message.chat.id)
+        await send_error_mes(message.chat.id)
         await state.finish()
         return
     user_data = user_sheet.get_day_categories_accounts()
@@ -350,7 +356,7 @@ async def process_record_description(message: types.Message, state: FSMContext):
     # Enter data to transactions list 
     user_sheet = Sheet(database.get_sheet_id(message.from_user.id))
     if user_sheet == None:
-        await server.send_error_mes(message.chat.id)
+        await send_error_mes(message.chat.id)
         await state.finish()
         return
 
@@ -374,7 +380,7 @@ async def process_transaction(message: types.Message, state: FSMContext):
     # I send a query to the table to get today date and accounts
     user_sheet = Sheet(database.get_sheet_id(message.from_user.id))
     if user_sheet == None:
-        await server.send_error_mes(message.chat.id)
+        await send_error_mes(message.chat.id)
         await state.finish()
         return
     user_data = user_sheet.get_day_accounts()
@@ -531,7 +537,7 @@ async def process_income_account(message: types.Message, state: FSMContext):
     # Enter data to transactions list 
     user_sheet = Sheet(database.get_sheet_id(message.from_user.id))
     if user_sheet == None:
-        await server.send_error_mes(message.chat.id)
+        await send_error_mes(message.chat.id)
         await state.finish()
         return
     user_sheet.add_transaction(transaction_record)
