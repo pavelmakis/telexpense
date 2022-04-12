@@ -32,21 +32,18 @@ async def send_welcome(message: types.Message):
     """
     This handler will be called when user sends `/start` command
     """
-    start_message = (
-        "Hi! I'm Telexpense bot 📺\n\n"
-        "I can work with Google Sheet.\n"
-        "If you are a new user, read the wiki "
-        "or type /register to start using me")
 
     if database.is_user_registered(message.from_user.id):
         await bot.send_message(
             message.chat.id,
-            start_message,
+            answers.start_message,
+            parse_mode='Markdown',
             reply_markup=keyboards.get_main_markup())
     else:
         await bot.send_message(
             message.chat.id,
-            start_message,
+            answers.start_message,
+            parse_mode='Markdown',
             reply_markup=keyboards.get_register_markup())
 
 # Registering handlers for user registration

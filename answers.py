@@ -3,17 +3,30 @@ d/1lO9oTJu3CudibuQCCqk-s1t3DSuRNRoty4SLY5UvG_w"
 
 BOT_SERVICE_EMAIL = "telexpense-bot@telexpense-bot.iam.gserviceaccount.com"
 
-help = """
+BOT_WIKI = "https://github.com/pavelmakis/telexpense/wiki"
+
+start_message = f"Hi! I'm Telexpense bot 📺\n\n\
+I can work with Google Sheet.\n\
+If you are a new user, read the [wiki]({BOT_WIKI}) \
+or type /register to start using me"
+
+help = f"""
 I can help you send and receive data from the table. 
-If this is your first time here, read this wiki.\n
+If this is your first time here, read this [wiki]({BOT_WIKI}).\n
 I can understand theese commands:\n
 *Add records*
 /expense (➖Expense) - add new expense
 /income (➕Income) - add new income
 /transaction (💱Transaction) - add new transaction
+/cancel - cancel record filling
 /addexp - add expense in a single message
 /addinc - add income in a single message
-/addtran - add transaction in a single message
+/addtran - add transaction in a single message\n
+*Show balance*
+/available - show your accounts balances\n
+*Other*
+/register - connect bot to Google Sheet
+/donate - sponsor this project
 """
 
 error_message = "😳 Something went wrong...\n\n \
