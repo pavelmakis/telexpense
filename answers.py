@@ -1,3 +1,8 @@
+TEMPLATE_SHEET_LINK = "https://docs.google.com/spreadsheets/\
+d/1lO9oTJu3CudibuQCCqk-s1t3DSuRNRoty4SLY5UvG_w"
+
+BOT_SERVICE_EMAIL = "telexpense-bot@telexpense-bot.iam.gserviceaccount.com"
+
 help = """
 I can help you send and receive data from the table. 
 If this is your first time here, read this wiki.\n
@@ -82,14 +87,14 @@ Example:
     `/addtran 200, Revolut EUR, 220.3, Revolut USD`
 """
 
-register_start = "I can only work with one Google Spreadsheet template. "\
-"First of all, copy this sheet to your Google Account.\n\n"\
-"👉 [Telexpense Template Sheet](https://docs.google.com/spreadsheets/d/1DfLa0vry-8YJVZgdkPDPcQEI6vYm19n2ddTBPNWo7K8) 👈\n\n"\
-"Than give me the link to your sheet"
+register_start = f"I can only work with one Google Spreadsheet template. \
+First of all, copy this sheet to your Google Account.\n\n\
+👉 [Telexpense Template Sheet]({TEMPLATE_SHEET_LINK}) 👈\n\n\
+Than give me the link to your sheet"
 
-register_email = "Make sure you have added me as an editor, "\
-"this is my email:\n\n"\
-"telexpense-bot@telexpense-bot.iam.gserviceaccount.com"
+register_email = f"Make sure you have added me as an editor, \
+this is my email:\n\n\
+{BOT_SERVICE_EMAIL}"
 
 donate_mes = 'The minimum amount is 3€. If you want to donate a different amount, \
 tap "Pay" and enter the amount of the tip, \
