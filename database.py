@@ -5,7 +5,7 @@ user sheet URL's are stored.
 import os
 import sqlite3
 
-conn = sqlite3.connect(os.path.join("db", "user_sheets.db"))
+conn = sqlite3.connect(os.path.join(os.path.dirname(__file__), "db", "user_sheets.db"))
 cursor = conn.cursor()
 
 def get_sheet_id(user_id: str) -> str | None:

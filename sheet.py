@@ -1,10 +1,12 @@
+import os
 import formulas
 
 import gspread
 from gspread import exceptions
 
 class Sheet:
-    account = gspread.service_account(filename="token.json")
+    account = gspread.service_account(
+        filename=os.path.join(os.path.dirname(__file__), 'token.json'))
 
     def __new__(cls, key):
         try:
