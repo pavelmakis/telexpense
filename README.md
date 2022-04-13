@@ -1,6 +1,8 @@
 # Telexpense Bot
 
-Telegram bot that allows you to keep track of finances in Google Sheet. Through the bot, you can add records of expenses, income, and transactions between accounts. You can also get the amount of finances available. The bot only works with a specific Google Sheet template (read more in [Quickstart](#quickstart)). It is currently active [@telexpense_bot](https://t.me/telexpense_bot).
+*Read this in other languages: [русский](README.ru.md)*
+
+Telegram bot that allows you to keep track of finances in Google Sheet. Through the bot, you can add records of expenses, income, and transactions between accounts directly to Google Sheet which is stored in your account. You can also get the amount of finances available. The bot only works with a specific Google Sheet template (read more in [Quickstart](#quickstart)). This bot does not store any financial information and does not connect to the bank apps. All the data is provided by user himself. It is currently active [@telexpense_bot](https://t.me/telexpense_bot).
 
 This code is not intended to run locally, only for demonstration purposes.
 
