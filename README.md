@@ -25,6 +25,7 @@ To use the bot you need to complete registration. If you are already registered,
 - Start the [@telexpense_bot](https://t.me/telexpense_bot) with command /start
 - Tap or type /register
 - Paste link to copied Google Sheet from your account to bot chat
+- Add expenses and income, they will be displayed on the "Transactions" sheet
 
 ## Sponsorship
 
