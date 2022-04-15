@@ -62,6 +62,7 @@ async def start_registering(message: types.Message):
         await bot.send_message(
             message.chat.id,
             answers.register_start,
+            disable_web_page_preview=True,
             parse_mode='Markdown')
 
         await bot.send_message(

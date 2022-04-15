@@ -44,6 +44,7 @@ async def send_welcome(message: types.Message):
             message.chat.id,
             answers.start_message,
             parse_mode='Markdown',
+            disable_web_page_preview=True,
             reply_markup=keyboards.get_register_markup())
 
 # Registering handlers for user registration
@@ -73,6 +74,7 @@ async def send_help(message: types.Message):
     await message.reply(
         answers.help,
         parse_mode='Markdown',
+        disable_web_page_preview=True,
         reply_markup=keyboards.get_main_markup())
 
 @dp.message_handler(commands=['cancel'])
