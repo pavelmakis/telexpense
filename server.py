@@ -38,6 +38,7 @@ async def send_welcome(message: types.Message):
             message.chat.id,
             answers.start_message,
             parse_mode='Markdown',
+            disable_web_page_preview=True,
             reply_markup=keyboards.get_main_markup())
     else:
         await bot.send_message(
