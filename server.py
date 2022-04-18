@@ -164,7 +164,7 @@ async def send_total(message: types.Message):
     # fixed width in message
     available = "💰 Your accounts:\n\n"
     available += "```\n"
-    for i in range(len(amounts)):
+    for i in range(len(amounts)-1):
         # Current line lenght
         text_lenght = len(amounts[i][0]) + len(amounts[i][1])
         available += amounts[i][0]
@@ -173,6 +173,10 @@ async def send_total(message: types.Message):
         available += " " * (max_text_lenght + max_digit_lenght - text_lenght + 2)
         available += amounts[i][1] + '\n'
     available += "```"
+
+    # Adding "Daily available" from last item from get func
+    available += "\n*Daily available:*   "
+    available += '`' + amounts[-1] + '`'
 
     await bot.send_message(
         message.chat.id, available,

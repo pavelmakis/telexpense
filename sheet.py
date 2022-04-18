@@ -84,8 +84,8 @@ class Sheet:
         # Selectiong sheet 'Main'
         main_sheet = self.user_sheet.worksheet("Main")
 
-        # Sending query to get accounts and its amounts
-        data = main_sheet.batch_get(['N7:N26', 'O7:O26'])
+        # Sending query to get accounts and its amounts and daily available
+        data = main_sheet.batch_get(['N7:N26', 'O7:O26', 'N3'])
 
         # Parsing data
         parsed_data = []
@@ -95,7 +95,10 @@ class Sheet:
                 continue
             # Parse data as list of tuples
             parsed_data.append(tuple((data[0][i][0], data[1][i][0])))
-        
+
+        # Adding "Daily available" as last item to return
+        parsed_data.append(data[2][0][0])
+
         return parsed_data
 
     def get_day_categories_accounts(self) -> dict:
@@ -182,3 +185,6 @@ class Sheet:
         trans_list = self.user_sheet.worksheet("Transactions")
         trans_list.insert_rows([income_tran, outcome_tran], row=2, value_input_option='USER_ENTERED')
         return
+
+sh = Sheet('1DfLa0vry-8YJVZgdkPDPcQEI6vYm19n2ddTBPNWo7K8')
+sh.get_account_amounts()
