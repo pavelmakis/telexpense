@@ -1,5 +1,5 @@
 """
-This file contains aiogram handlers for Income, Expense and Transaction commands
+This file contains aiogram handlers for Income, Expense and Transfer commands
 which are used to add records as a from. To add record in one command, /addinc, /addexp
 and /addtran are used.    
 """
@@ -50,7 +50,7 @@ class IncomeForm(StatesGroup):
 
 class TransactionForm(StatesGroup):
     """
-    This form is used for transaction record
+    This form is used for transfer record
     """
     outcome_amount = State()
     outcome_account = State()
@@ -362,10 +362,10 @@ async def process_record_description(message: types.Message, state: FSMContext):
 
     user_sheet.add_record(record)
 
-# --- START OF TRANSACTION HANDLERS ---
+# --- START OF TRANSFERS HANDLERS ---
 async def process_transaction(message: types.Message, state: FSMContext):
     """
-    The handler is used to retrieve a record of transaction through a form. 
+    The handler is used to retrieve a record of transfer through a form. 
     To add a record, the user must specify the record data in multiple messages. 
     To add an entry with a single command, the /addtran handler is used
     """
@@ -374,9 +374,9 @@ async def process_transaction(message: types.Message, state: FSMContext):
     await TransactionForm.outcome_amount.set()
     await bot.send_message(
             message.chat.id,
-            'Specify an amount of transaction\nor type "cancel"')
+            'Specify an amount of transfer\nor type "cancel"')
     
-    # As the user enters the amount of transaction,
+    # As the user enters the amount of transfer,
     # I send a query to the table to get today date and accounts
     user_sheet = Sheet(database.get_sheet_id(message.from_user.id))
     if user_sheet == None:
@@ -394,8 +394,8 @@ async def process_transaction(message: types.Message, state: FSMContext):
 
 async def process_tran_outcome_amount(message: types.Message, state: FSMContext):
     """
-    This handler is used to get the transaction outcome amount after 
-    calling the /transaction command
+    This handler is used to get the transfer outcome amount after 
+    calling the /transfer command
     """
     # Parsing amount
     parsed_amount = records.parse_outcome_amount(message.text)
@@ -406,7 +406,7 @@ async def process_tran_outcome_amount(message: types.Message, state: FSMContext)
         await bot.send_message(
             message.chat.id,
             "❌ Cannot understand this amount...\n"
-            "Try to add /transaction one more time!",
+            "Try to add /transfer one more time!",
             reply_markup=keyboards.get_main_markup())
         # Stop form
         await state.finish()
@@ -431,7 +431,7 @@ async def process_tran_outcome_amount(message: types.Message, state: FSMContext)
 
 async def process_outcome_account(message: types.Message, state: FSMContext):
     """
-    This handler is used to get the outcome account after calling /transaction
+    This handler is used to get the outcome account after calling /transfer
     """
     async with state.proxy() as data:
         # Parsing account
@@ -443,7 +443,7 @@ async def process_outcome_account(message: types.Message, state: FSMContext):
             await bot.send_message(
                 message.chat.id,
                 "❌ This account doesn't exist...\n"
-                "Try to add /transaction one more time!",
+                "Try to add /transfer one more time!",
                 reply_markup=keyboards.get_main_markup())
             # Stop form
             await state.finish()
@@ -462,8 +462,8 @@ async def process_outcome_account(message: types.Message, state: FSMContext):
 
 async def process_tran_income_amount(message: types.Message, state: FSMContext):
     """
-    This handler is used to get the transaction income amount after 
-    calling the /transaction command
+    This handler is used to get the transfer income amount after 
+    calling the /transfer command
     """
     # Defining keyboard markup
     accounts_markup = types.ReplyKeyboardMarkup()
@@ -484,7 +484,7 @@ async def process_tran_income_amount(message: types.Message, state: FSMContext):
                 await bot.send_message(
                     message.chat.id,
                     "❌ Cannot understand this amount...\n"
-                    "Try to add /transaction one more time!",
+                    "Try to add /transfer one more time!",
                     reply_markup=keyboards.get_main_markup())
                 # Stop form
                 await state.finish()
@@ -505,7 +505,7 @@ async def process_tran_income_amount(message: types.Message, state: FSMContext):
 
 async def process_income_account(message: types.Message, state: FSMContext):
     """
-    This handler is used to get the income account after calling /transaction
+    This handler is used to get the income account after calling /transfer
     """
     transaction_record = []
     async with state.proxy() as data:
@@ -518,7 +518,7 @@ async def process_income_account(message: types.Message, state: FSMContext):
             await bot.send_message(
                 message.chat.id,
                 "❌ This account doesn't exist...\n"
-                "Try to add /transaction one more time!",
+                "Try to add /transfer one more time!",
                 reply_markup=keyboards.get_main_markup())
             # Stop form
             await state.finish()
@@ -526,7 +526,7 @@ async def process_income_account(message: types.Message, state: FSMContext):
 
         # If account isn't None, write account to form data
         data['income_account'] = parsed_account
-        # Prepare transaction record
+        # Prepare transfer record
         transaction_record = [data['today'], data['outcome_amount'],
                               data['outcome_account'], 
                               data['income_amount'], data['income_account']]
@@ -545,6 +545,6 @@ async def process_income_account(message: types.Message, state: FSMContext):
     # Send a message with the button for 
     await bot.send_message(
         message.chat.id,
-        "👍 Successfully added transaction\n" +
+        "👍 Successfully added transfer\n" +
         f"from {transaction_record[2]} to {transaction_record[4]}!",
         reply_markup=keyboards.get_main_markup())
