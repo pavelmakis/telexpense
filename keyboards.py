@@ -3,7 +3,7 @@ from aiogram.types import ReplyKeyboardMarkup
 def get_main_markup() -> ReplyKeyboardMarkup:
     main_markup = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
     main_markup.add("➕Income", "➖Expense")
-    main_markup.add("💱Transaction")  
+    main_markup.add("💱Transfer")  
     main_markup.add("💲Available")
     return main_markup
     
