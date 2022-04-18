@@ -126,9 +126,9 @@ dp.register_message_handler(forms.process_record_description,
 
 # Registering handlers for /transaction form
 dp.register_message_handler(forms.process_transaction, 
-                            commands=['transaction'])
+                            commands=['transfer'])
 dp.register_message_handler(forms.process_transaction, 
-                            lambda message: message.text.startswith('💱Transaction'))
+                            lambda message: message.text.startswith('💱Transfer'))
 dp.register_message_handler(forms.process_tran_outcome_amount, 
                             state=forms.TransactionForm.outcome_amount)
 dp.register_message_handler(forms.process_outcome_account, 
