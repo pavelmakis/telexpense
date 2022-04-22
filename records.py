@@ -1,4 +1,5 @@
 import sheet
+import database
 
 def parse_outcome_amount(amount: str) -> float | None:
     if amount[0] == '+' or amount[0] == '-':
@@ -39,12 +40,12 @@ def _parse_income_category(category: str, sheet_data: dict) -> str | None:
             return category
     return None
 
-def parse_record(raw_record: list, type: str) -> list:
+def parse_record(raw_record: list, user_id: str, type: str) -> list:
     for arg in range(len(raw_record)):
         raw_record[arg] = raw_record[arg].strip()
 
     parsed_data = []
-    user_sheet = sheet.Sheet()
+    user_sheet = sheet.Sheet(database.get_sheet_id(user_id))
     sheet_data = user_sheet.get_day_categories_accounts()
     match raw_record:
         case amount, category, account, description:
@@ -77,14 +78,14 @@ def parse_record(raw_record: list, type: str) -> list:
             parsed_data = [sheet_data['today'], '', category, amount, '']
     return parsed_data
 
-def parse_transaction(raw_transaction: list) -> list:
+def parse_transaction(raw_transaction: list, user_id: str) -> list:
     for arg in range(len(raw_transaction)):
         raw_transaction[arg] = raw_transaction[arg].strip()
 
     parsed_data = []
     
     # Getting account list from sheet
-    user_sheet = sheet.Sheet()
+    user_sheet = sheet.Sheet(database.get_sheet_id(user_id))
     sheet_data = user_sheet.get_day_accounts()
 
     match raw_transaction:

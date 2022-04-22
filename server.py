@@ -197,7 +197,8 @@ async def add_exp(message: types.Message):
 
     # Parsing expense
     raw_expense = message.text[7:].split(',')
-    parsed_expense = records.parse_record(raw_expense, type='outcome')
+    parsed_expense = records.parse_record(
+        raw_expense, message.from_user.id, type='outcome')
 
     # If not parsed, send help message
     if parsed_expense == []:
@@ -259,7 +260,8 @@ async def add_inc(message: types.Message):
 
     # Parsing income
     raw_income = message.text[7:].split(',')
-    parsed_income = records.parse_record(raw_income, type='income')
+    parsed_income = records.parse_record(
+        raw_income, message.from_user.id, type='income')
 
     # If not parsed, send help message
     if parsed_income == []:
@@ -318,7 +320,8 @@ async def add_tran(message: types.Message):
 
     # Parsing transaction
     raw_transaction = message.text[8:].split(',')
-    parsed_transaction = records.parse_transaction(raw_transaction)
+    parsed_transaction = records.parse_transaction(
+        raw_transaction, message.from_user.id)
 
     # If not parsed, send help message
     if parsed_transaction == []:
