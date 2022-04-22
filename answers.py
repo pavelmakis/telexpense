@@ -79,7 +79,7 @@ Example:
 """
 
 tran_help = """
-Tranfer can be added by:
+Transfer can be added by:
     `/addtran outcome_amount, outcome\\_account, [income\\_amount], income\\_account`
 where income amount is optional\\. Add it if your transaction is multicurrency\\.
 
