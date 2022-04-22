@@ -79,7 +79,7 @@ Example:
 """
 
 tran_help = """
-Transaction can be added by:
+Tranfer can be added by:
     `/addtran outcome_amount, outcome\\_account, [income\\_amount], income\\_account`
 where income amount is optional\\. Add it if your transaction is multicurrency\\.
 
@@ -91,7 +91,7 @@ Example:
 wrong_tran = """
 Cannot understand this transaction\\!
 
-Transaction can be added by:
+Transfer can be added by:
     `/addtran outcome\\_amount, outcome\\_account, [income\\_amount], income\\_account`
 where income\\_amount is optional\\. Add it if your transaction is multicurrency\\.
 
