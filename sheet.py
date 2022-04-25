@@ -178,8 +178,8 @@ class Sheet:
 
         # Preparing transaction data as two records with
         # outcome record and income record
-        outcome_tran = [data[0], '', 'Transaction', data[1], data[2]]
-        income_tran = [data[0], '', 'Transaction', data[3], data[4]]
+        outcome_tran = [data[0], '', 'Transfer', data[1], data[2]]
+        income_tran = [data[0], '', 'Transfer', data[3], data[4]]
 
         # Opening transactions sheet and inserting transaction data
         trans_list = self.user_sheet.worksheet("Transactions")
