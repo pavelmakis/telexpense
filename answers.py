@@ -100,7 +100,7 @@ Example:
     `/addtran 200, Revolut EUR, 220.3, Revolut USD`
 """
 
-register_start = f"I can only work with one Google Spreadsheet template. \
+register_start = f"I can only work with one Google Sheets template. \
 First of all, copy this sheet to your Google Account.\n\n\
 👉 [Telexpense Template Sheet]({TEMPLATE_SHEET_LINK}) 👈\n\n\
 Than give me the link to your sheet"
