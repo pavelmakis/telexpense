@@ -9,7 +9,7 @@ This code is not intended to run locally, only for demonstration purposes.
 ## Features
 
 - Adding expenses and income records
-- Adding records of transactions between accounts
+- Adding records of transfers between accounts
 - Getting a list of accounts and their balances
 
 ## Usage
