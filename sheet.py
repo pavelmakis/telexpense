@@ -186,5 +186,4 @@ class Sheet:
         trans_list.insert_rows([income_tran, outcome_tran], row=2, value_input_option='USER_ENTERED')
         return
 
-sh = Sheet('1DfLa0vry-8YJVZgdkPDPcQEI6vYm19n2ddTBPNWo7K8')
-sh.get_account_amounts()
+
