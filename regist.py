@@ -2,12 +2,8 @@
 This file contains aiogram handlers for user registration.
 When user registers into bot, his Google sheet URL is added to database.
 """
-import os
 import logging
-import database
-import keyboards
-import answers
-from sheet import Sheet
+import os
 
 from aiogram import Bot, Dispatcher, types
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
@@ -15,6 +11,10 @@ from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import State, StatesGroup
 from gspread import utils
 
+import answers
+import database
+import keyboards
+from sheet import Sheet
 
 API_TOKEN = os.getenv('TELEXPENSE_TOKEN')
 

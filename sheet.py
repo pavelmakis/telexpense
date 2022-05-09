@@ -1,8 +1,10 @@
 import os
-import formulas
 
 import gspread
 from gspread import exceptions
+
+import formulas
+
 
 class Sheet:
     account = gspread.service_account(

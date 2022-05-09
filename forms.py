@@ -3,19 +3,19 @@ This file contains aiogram handlers for Income, Expense and Transfer commands
 which are used to add records as a from. To add record in one command, /addinc, /addexp
 and /addtran are used.    
 """
-import os
 import logging
-import records
-import keyboards
-import database
-import answers
-from sheet import Sheet
+import os
 
 from aiogram import Bot, Dispatcher, types
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import State, StatesGroup
 
+import answers
+import database
+import keyboards
+import records
+from sheet import Sheet
 
 API_TOKEN = os.getenv('TELEXPENSE_TOKEN')
 
