@@ -160,6 +160,32 @@ class Sheet:
 
         return parsed_data
 
+    def get_last_transaction_type(self) -> str | None:
+        """Get type of last transaction in Transactions sheet in
+        user's Google Sheet. Could be 'transfer', 'category' or None.
+
+        Returns:
+            str: 'transfer' or 'category' depending on last record
+            in Transactions sheet
+            None: if there is no records in Transactions sheet
+        """
+        trans_list = self.user_sheet.worksheet("Transactions")
+
+        # Excepting APIError because user can delete all rows
+        try:
+            data = trans_list.get("C2:C3")
+        except exceptions.APIError:
+            return None
+
+        # If the last two cells are the same, then it is a transfer,
+        # because only the transfer adds two lines with the same category
+        transaction_type = ""
+        if data[0] == data[1]:
+            transaction_type = "transfer"
+        else:
+            transaction_type = "category"
+        return transaction_type
+
     def add_record(self, data: list):
         """Insert new row with expense or income record data to
         transactions list in Google Sheet.
@@ -194,3 +220,7 @@ class Sheet:
             [income_tran, outcome_tran], row=2, value_input_option="USER_ENTERED"
         )
         return
+
+
+user_sh = Sheet("1GX84fSn37yBLmBIhnW_7ruzY8BRX3ifLUjt0ZjyPI9U")
+print(user_sh.get_last_transaction_type())
