@@ -177,10 +177,12 @@ class Sheet:
         # If the last two cells are the same, then it is a transfer,
         # because only the transfer adds two lines with the same category
         transaction_type = ""
-        if data[0] == data[1]:
-            transaction_type = "transfer"
-        else:
-            transaction_type = "category"
+        if len(data) > 2:
+            if data[0] == data[1]:
+                transaction_type = "transfer"
+            else:
+                transaction_type = "category"
+        transaction_type = "category"
         return transaction_type
 
     def add_record(self, data: list):
@@ -216,4 +218,21 @@ class Sheet:
         trans_list.insert_rows(
             [income_tran, outcome_tran], row=2, value_input_option="USER_ENTERED"
         )
+        return
+
+    def delete_last_transaction(self, transaction_type: str):
+        """Delete last transaction record from user's Google Sheet.
+
+        Args:
+            transaction_type (str): 'category' to delete 1 row,
+            'transfer' to delete 2 rows
+        """
+        trans_list = self.user_sheet.worksheet("Transactions")
+        # If type is 'category' then delete 1 row
+        if transaction_type == "category":
+            trans_list.delete_row(2)
+        # If type is 'transfer' then delete 2 rows
+        elif transaction_type == "transfer":
+            trans_list.delete_rows(2, 3)
+
         return
