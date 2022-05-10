@@ -24,6 +24,8 @@ I can understand theese commands:\n
 /addtran - add transaction in a single message\n
 *Show balance*
 /available (💲Available) - show your accounts balances\n
+*Revert changes*
+/undo - delete last transaction from Google Sheet\n
 *Other*
 /register - connect me to Google Sheet or change connected sheet
 /donate - sponsor this project
