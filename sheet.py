@@ -110,9 +110,6 @@ class Sheet:
 
     def get_day_categories_accounts(self) -> dict:
         """Get today's date, income and outcome categories and accounts as dictionary.
-        This function replaced the previous few functions, in which many separate
-        requests were sent, which was inefficient. Now you can get all the data you need
-        in one query.
 
         Returns:
             dict: all the data needed for parsing expense or income as dictionary of lists
@@ -220,7 +217,3 @@ class Sheet:
             [income_tran, outcome_tran], row=2, value_input_option="USER_ENTERED"
         )
         return
-
-
-user_sh = Sheet("1GX84fSn37yBLmBIhnW_7ruzY8BRX3ifLUjt0ZjyPI9U")
-print(user_sh.get_last_transaction_type())
