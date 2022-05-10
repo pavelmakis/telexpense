@@ -374,6 +374,28 @@ async def add_tran(message: types.Message):
         "👍 Successfully added transaction from \n" +
         f"{parsed_transaction[2]} to {parsed_transaction[4]}!")
 
+@dp.message_handler(commands=['undo'])
+async def undo_transaction(message: types.Message):
+    user_sheet = Sheet(database.get_sheet_id(message.from_user.id))
+    await bot.send_message(
+        message.chat.id,
+        "Wait a second...")
+        
+    # Getting last transaction type
+    last_tran_type = user_sheet.get_last_transaction_type()
+    if last_tran_type == None:
+        await bot.send_message(
+            message.chat.id,
+            "🤔 Looks like there is no transactions...")
+        return
+
+    # Delete last transaction
+    user_sheet.delete_last_transaction(last_tran_type)
+
+    await bot.send_message(
+        message.chat.id,
+        "👌 Successfully deleted last transaction!")
+
 @dp.message_handler(commands=['donate'])
 async def send_invoice(message: types.Message):
     # Send help message 
