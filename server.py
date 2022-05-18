@@ -62,7 +62,8 @@ async def handle_unregistered(message: types.Message):
     await bot.send_message(
         message.chat.id,
         "I can only work with registered users!\n"
-        "Read the wiki or type /register",
+        f"Read the [wiki]({answers.BOT_WIKI}) or type /register",
+        parse_mode='Markdown',
         reply_markup=keyboards.get_register_markup())
     await bot.delete_message(message.chat.id, message.message_id)
     return
