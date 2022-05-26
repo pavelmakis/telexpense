@@ -168,22 +168,21 @@ class Sheet:
         """
         trans_list = self.user_sheet.worksheet("Transactions")
 
-        # Excepting APIError because user can delete all rows
+        # Excepting APIError because there can be no data
         try:
             data = trans_list.get("C2:C3")
         except exceptions.APIError:
             return None
 
-        # If the last two cells are the same, then it is a transfer,
-        # because only the transfer adds two lines with the same category
-        transaction_type = ""
-        if len(data) > 2:
-            if data[0] == data[1]:
-                transaction_type = "transfer"
+        # Check last transaction 'category' field
+        if len(data) >= 2:
+            #TODO: Add check for multilanguage
+            if data[0][0] == "Transfer" or "Transaction":
+                return "transfer"
             else:
-                transaction_type = "category"
-        transaction_type = "category"
-        return transaction_type
+                return "category"
+        else:
+            return "category"
 
     def add_record(self, data: list):
         """Insert new row with expense or income record data to
@@ -236,3 +235,6 @@ class Sheet:
             trans_list.delete_rows(2, 3)
 
         return
+
+sh = Sheet('1GX84fSn37yBLmBIhnW_7ruzY8BRX3ifLUjt0ZjyPI9U')
+print(sh.get_last_transaction_type())
