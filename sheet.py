@@ -235,6 +235,3 @@ class Sheet:
             trans_list.delete_rows(2, 3)
 
         return
-
-sh = Sheet('1GX84fSn37yBLmBIhnW_7ruzY8BRX3ifLUjt0ZjyPI9U')
-print(sh.get_last_transaction_type())
