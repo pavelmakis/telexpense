@@ -4,9 +4,9 @@ from aiogram.dispatcher.filters.state import State, StatesGroup
 from aiogram.types import Message
 from gspread import utils
 
-import answers
 import database
 import keyboards
+import messages
 from sheet import Sheet
 
 
@@ -46,10 +46,10 @@ async def start_registering(message: Message):
         )
 
         await message.answer(
-            answers.register_start, disable_web_page_preview=True, parse_mode="Markdown"
+            messages.register_start, disable_web_page_preview=True, parse_mode="Markdown"
         )
 
-        await message.answer(answers.register_email)
+        await message.answer(messages.register_email)
 
         # Send user to url change handler
         await URLForm.change.set()
@@ -57,9 +57,9 @@ async def start_registering(message: Message):
 
     # Starting form filling
     await URLForm.url.set()
-    await message.answer(answers.register_start, parse_mode="Markdown")
+    await message.answer(messages.register_start, parse_mode="Markdown")
 
-    await message.answer(answers.register_email)
+    await message.answer(messages.register_email)
 
 
 async def process_url(message: Message, state: FSMContext):
@@ -84,8 +84,7 @@ async def process_url(message: Message, state: FSMContext):
         return
 
     await message.answer(
-        "Hm. Looks like it's not a link I'm looking for...\n\n"
-        "Read the wiki and try to /register one more time!",
+        messages.reg_wrong_link,
         reply_markup=keyboards.get_register_markup(),
     )
 
@@ -113,14 +112,13 @@ async def change_sheet(message: Message, state: FSMContext):
         )
 
         await message.answer(
-            "Great! Your sheet successfully changed!",
+            messages.reg_sheet_changed,
             reply_markup=keyboards.get_main_markup(),
         )
         return
 
     await message.answer(
-        "Hm. Looks like it's not a link I'm looking for...\n\n"
-        "Read the wiki and try to /register one more time!",
+        messages.reg_wrong_link,
         reply_markup=keyboards.get_main_markup(),
     )
 

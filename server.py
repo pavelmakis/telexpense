@@ -5,8 +5,8 @@ from aiogram import Bot, Dispatcher, executor, types
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.types.message import ContentType
 
-import answers
 import keyboards
+import messages
 from handlers.expenses import register_expenses
 from handlers.income import register_income
 from handlers.registration import register_registration
@@ -86,7 +86,7 @@ async def process_successful_payment(message: types.Message):
     """Sends thanks message if successfull payment"""
     await bot.send_message(
         message.chat.id,
-        answers.successfull_payment.format(
+        messages.successfull_payment.format(
             total_amount=message.successful_payment.total_amount // 100,
             currency=message.successful_payment.currency
         ),

@@ -2,9 +2,9 @@ from aiogram import Dispatcher
 from aiogram.dispatcher import FSMContext
 from aiogram.types import Message
 
-import answers
 import database
 import keyboards
+import messages
 from keyboards import get_main_markup, get_register_markup
 from sheet import Sheet
 
@@ -17,7 +17,7 @@ async def cmd_start(message: Message):
     # if not - 'register' button
     is_registered = database.is_user_registered(message.from_user.id)
     await message.answer(
-        answers.start_message,
+        messages.start_message,
         parse_mode="Markdown",
         disable_web_page_preview=True,
         reply_markup=get_main_markup() if is_registered else get_register_markup(),
@@ -28,7 +28,7 @@ async def cmd_help(message: Message):
     """This handler is called when user sends /help command."""
     # TODO: Create different help message for unregistered users
     await message.reply(
-        answers.help,
+        messages.help,
         parse_mode="Markdown",
         disable_web_page_preview=True,
         reply_markup=keyboards.get_main_markup(),
@@ -72,7 +72,7 @@ async def cmd_available(message: Message):
     # Openning sheet, checking for errors
     user_sheet = Sheet(database.get_sheet_id(message.from_user.id))
     if user_sheet == None:
-        await message.answer(answers.error_message, reply_markup=get_main_markup())
+        await message.answer(messages.error_message, reply_markup=get_main_markup())
         return
 
     amounts = user_sheet.get_account_amounts()

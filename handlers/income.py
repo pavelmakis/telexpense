@@ -3,9 +3,9 @@ from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import State, StatesGroup
 from aiogram.types import Message, ReplyKeyboardMarkup
 
-import answers
 import database
 import keyboards
+import messages
 import records
 from sheet import Sheet
 
@@ -42,7 +42,7 @@ async def process_income(message: Message, state: FSMContext):
     if user_sheet == None:
         # await send_error_mes(message.chat.id)
         await message.answer(
-            answers.error_message, reply_markup=keyboards.get_main_markup()
+            messages.error_message, reply_markup=keyboards.get_main_markup()
         )
         await state.finish()
         return
@@ -212,7 +212,7 @@ async def process_record_description(message: Message, state: FSMContext):
     if user_sheet == None:
         # await send_error_mes(message.chat.id)
         await message.answer(
-            answers.error_message, reply_markup=keyboards.get_main_markup()
+            messages.error_message, reply_markup=keyboards.get_main_markup()
         )
         await state.finish()
         return
@@ -225,7 +225,7 @@ async def cmd_addinc(message: Message):
     # If user just type command
     if message.text == "/addinc":
         await message.answer(
-            answers.income_help,
+            messages.income_help,
             parse_mode="Markdown",
             reply_markup=keyboards.get_main_markup(),
         )
@@ -239,7 +239,7 @@ async def cmd_addinc(message: Message):
 
     # If not parsed, send help message
     if parsed_income == []:
-        await message.answer(answers.wrong_income, parse_mode="Markdown")
+        await message.answer(messages.wrong_income, parse_mode="Markdown")
         return
     # If wrong amount
     if parsed_income[3] == None:
@@ -269,7 +269,7 @@ async def cmd_addinc(message: Message):
     user_sheet = Sheet(database.get_sheet_id(message.from_user.id))
     if user_sheet == None:
         await message.answer(
-            answers.error_message, reply_markup=keyboards.get_main_markup()
+            messages.error_message, reply_markup=keyboards.get_main_markup()
         )
         return
 

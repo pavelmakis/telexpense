@@ -6,18 +6,18 @@ from aiogram.types import LabeledPrice, Message
 PROVIDER_TOKEN = os.getenv("TELEXPENSE_PROVIDER_TOKEN")
 PRICE = [LabeledPrice(label="Donate", amount=300)]
 
-import answers
+import messages
 from keyboards import get_main_markup
 
 
 async def send_invoice(message: Message):
     # Send help message
-    await message.answer(answers.donate_mes, reply_markup=get_main_markup())
+    await message.answer(messages.donate_mes, reply_markup=get_main_markup())
     # Send invoice
     await message.answer(
         message.chat.id,
         title="Donation to developer",
-        description=answers.donate_description,
+        description=messages.donate_description,
         provider_token=PROVIDER_TOKEN,
         currency="eur",
         is_flexible=False,
