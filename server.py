@@ -33,7 +33,7 @@ def register_all_handlers(dp):
     register_start_help(dp)
 
     # register_admin(dp)
-    
+
     # Registering commands for registration
     register_registration(dp)
 
@@ -54,27 +54,27 @@ dp = Dispatcher(bot, storage=storage)
 register_all_handlers(dp)
 
 
-@dp.message_handler(commands=['donate'])
-async def send_invoice(message: types.Message):
-    # Send help message 
-    await bot.send_message(
-        message.chat.id,
-        answers.donate_mes,
-        reply_markup=keyboards.get_main_markup()
-    )
-    # Send invoice
-    await bot.send_invoice(
-        message.chat.id,
-        title="Donation to developer",
-        description=answers.donate_description,
-        provider_token=PROVIDER_TOKEN,
-        currency='eur',
-        is_flexible=False,
-        prices=PRICE,
-        max_tip_amount=9700,
-        suggested_tip_amounts=[200, 700, 1200, 1700],
-        payload='Donate invoice sent'
-    )
+# @dp.message_handler(commands=['donate'])
+# async def send_invoice(message: types.Message):
+#     # Send help message 
+#     await bot.send_message(
+#         message.chat.id,
+#         answers.donate_mes,
+#         reply_markup=keyboards.get_main_markup()
+#     )
+#     # Send invoice
+#     await bot.send_invoice(
+#         message.chat.id,
+#         title="Donation to developer",
+#         description=answers.donate_description,
+#         provider_token=PROVIDER_TOKEN,
+#         currency='eur',
+#         is_flexible=False,
+#         prices=PRICE,
+#         max_tip_amount=9700,
+#         suggested_tip_amounts=[200, 700, 1200, 1700],
+#         payload='Donate invoice sent'
+#     )
 
 # I have a simple donate button, so I answer OK to query
 @dp.pre_checkout_query_handler(lambda query: True)

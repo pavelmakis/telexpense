@@ -12,9 +12,7 @@ unregistered = lambda message: not database.is_user_registered(message.from_user
 
 
 async def cmd_start(message: Message):
-    """
-    This handler is called when user sends `/start` command.
-    """
+    """This handler is called when user sends `/start` command."""
     # If user is registered, show main keyboard,
     # if not - 'register' button
     is_registered = database.is_user_registered(message.from_user.id)
@@ -27,9 +25,7 @@ async def cmd_start(message: Message):
 
 
 async def cmd_help(message: Message):
-    """
-    This handler is called when user sends /help command.
-    """
+    """This handler is called when user sends /help command."""
     # TODO: Create different help message for unregistered users
     await message.reply(
         answers.help,
@@ -45,9 +41,7 @@ def register_start_help(dp: Dispatcher):
 
 
 async def answer_unregistered(message: Message):
-    """
-    This handler is used to answer to unregistered users.
-    """
+    """This handler is used to answer to unregistered users."""
     await message.answer(
         "I can only work with registered users!\nRead the wiki or type /register",
         reply_markup=get_register_markup(),
@@ -55,9 +49,7 @@ async def answer_unregistered(message: Message):
 
 
 async def cmd_cancel(message: Message, state: FSMContext):
-    """
-    This handler is called to cancel states.
-    """
+    """This handler is called to cancel states."""
     current_state = await state.get_state()
 
     if current_state is None:
@@ -119,6 +111,7 @@ async def cmd_available(message: Message):
 
 
 async def undo_transaction(message: Message):
+    """This handler is used to delete last transaction from user's sheet."""
     user_sheet = Sheet(database.get_sheet_id(message.from_user.id))
     await message.answer("Wait a second...")
 
