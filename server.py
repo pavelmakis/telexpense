@@ -7,11 +7,6 @@ from aiogram.types.message import ContentType
 
 import keyboards
 import messages
-from handlers.expenses import register_expenses
-from handlers.income import register_income
-from handlers.registration import register_registration
-from handlers.transfer import register_transfer
-from handlers.user import register_start_help, register_user
 
 API_TOKEN = os.getenv('TELEXPENSE_TOKEN')
 PROVIDER_TOKEN = os.getenv('TELEXPENSE_PROVIDER_TOKEN')
@@ -51,7 +46,7 @@ bot = Bot(token=API_TOKEN)
 dp = Dispatcher(bot, storage=storage)
 
 
-register_all_handlers(dp)
+
 
 
 # @dp.message_handler(commands=['donate'])
@@ -95,4 +90,12 @@ async def process_successful_payment(message: types.Message):
     )
 
 if __name__ == '__main__':
+    from handlers.expenses import register_expenses
+    from handlers.income import register_income
+    from handlers.registration import register_registration
+    from handlers.transfer import register_transfer
+    from handlers.user import register_start_help, register_user
+
+    register_all_handlers(dp)
+
     executor.start_polling(dp, skip_updates=True)
