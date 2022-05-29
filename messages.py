@@ -118,3 +118,21 @@ donate_description = "This is a voluntary donation to my creator."
 successfull_payment = "*🙏 Thank you for supporting my creator for \
 {total_amount} {currency}!* \n\n🤔 Maybe now he can come \
 up with even more functionality for me"
+
+
+# Registration
+reg_step_1 = f"*STEP 1*\n\n\
+Copy this Google Sheet template to your Google account. \
+You do this to ensure that your financial data belongs only to you.\n\n \
+👉 [Telexpense Template Sheet]({TEMPLATE_SHEET_LINK}) 👈"
+
+reg_step_2 = "Add me as an editor"
+
+reg_step_3 = "Give me the link"
+
+reg_forget_warning = "Are you shure?"
+
+reg_wrong_link = f"Hm. Looks like it's not a link I'm looking for...\n\n \
+Read the (wiki){BOT_WIKI} and try to /register one more time!"
+
+reg_sheet_changed = "Great! Your sheet successfully changed!"
