@@ -1,4 +1,9 @@
-from aiogram.types import ReplyKeyboardMarkup
+from aiogram.types import (
+    InlineKeyboardButton,
+    InlineKeyboardMarkup,
+    ReplyKeyboardMarkup,
+    ReplyKeyboardRemove,
+)
 
 
 def get_main_markup() -> ReplyKeyboardMarkup:
@@ -33,6 +38,52 @@ def get_register_markup() -> ReplyKeyboardMarkup:
     register_markup = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
     register_markup.add("/register")
     return register_markup
+
+def get_new_sheet_inlmarkup() -> InlineKeyboardMarkup:
+    new_sheet_inlmarkup = InlineKeyboardMarkup()
+
+    btn_1 = InlineKeyboardButton("Connect new Google Sheet", callback_data="new_sheet")
+    btn_2 = InlineKeyboardButton("Cancel", callback_data="cancel")
+    new_sheet_inlmarkup.row(btn_1)
+    new_sheet_inlmarkup.row(btn_2)
+    return new_sheet_inlmarkup
+
+def get_change_sheet_inlmarkup() -> InlineKeyboardMarkup:
+    change_sheet_inlmarkup = InlineKeyboardMarkup()
+    
+    btn_1 = InlineKeyboardButton("Change connected Google Sheet", callback_data="new_sheet")
+    btn_2 = InlineKeyboardButton("Forget my Google Sheet", callback_data="forget_sheet")
+    btn_3 = InlineKeyboardButton("Cancel", callback_data="cancel")
+    change_sheet_inlmarkup.row(btn_1)
+    change_sheet_inlmarkup.row(btn_2)
+    change_sheet_inlmarkup.row(btn_3)
+    return change_sheet_inlmarkup
+
+def get_copytemplate_done_inlmarkup() -> InlineKeyboardMarkup:
+    template_done_inlmarkup = InlineKeyboardMarkup()
+    btn_done = InlineKeyboardButton("Done", callback_data='template_copied')
+    btn_cncl = InlineKeyboardButton("Cancel", callback_data='cancel')
+    template_done_inlmarkup.row(btn_done)
+    template_done_inlmarkup.row(btn_cncl)
+    return template_done_inlmarkup
+
+def get_addemail_done_inlmarkup() -> InlineKeyboardMarkup:
+    email_done_inlmarkup = InlineKeyboardMarkup()
+    btn_done = InlineKeyboardButton("Done", callback_data='email_added')
+    btn_cncl = InlineKeyboardButton("Cancel", callback_data='cancel')
+    email_done_inlmarkup.row(btn_done)
+    email_done_inlmarkup.row(btn_cncl)
+
+    return email_done_inlmarkup
+
+def get_understand_inlmarkup() -> InlineKeyboardMarkup:
+    understand_inlmarkup = InlineKeyboardMarkup()
+    btn_undr = InlineKeyboardButton("I understand", callback_data='user_understands')
+    btn_cncl = InlineKeyboardButton("Cancel", callback_data='cancel')
+    understand_inlmarkup.row(btn_undr)
+    understand_inlmarkup.row(btn_cncl)
+
+    return understand_inlmarkup
 
 
 def get_cancel_markup() -> ReplyKeyboardMarkup:
