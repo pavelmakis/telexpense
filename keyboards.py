@@ -85,6 +85,23 @@ def get_understand_inlmarkup() -> InlineKeyboardMarkup:
 
     return understand_inlmarkup
 
+def get_pay_countries_inlmarkup() -> InlineKeyboardMarkup:
+    pay_countries_inlmarkup = InlineKeyboardMarkup()
+    btn_ru = InlineKeyboardButton("🇷🇺 Russia", callback_data='russia')
+    btn_other = InlineKeyboardButton("🌍 Other world", callback_data='other')
+    btn_cncl = InlineKeyboardButton("Cancel", callback_data='cancel')
+    pay_countries_inlmarkup.row(btn_ru)
+    pay_countries_inlmarkup.row(btn_other)
+    pay_countries_inlmarkup.row(btn_cncl)
+
+    return pay_countries_inlmarkup
+
+def get_rus_donation_link_inlmarkup() -> InlineKeyboardMarkup:
+    rus_donation_link_inlmarkup = InlineKeyboardMarkup()
+    btn_payment_link = InlineKeyboardButton("Pay", url="https://yoomoney.ru/to/4100117828707672")
+    rus_donation_link_inlmarkup.row(btn_payment_link)
+
+    return rus_donation_link_inlmarkup
 
 def get_cancel_markup() -> ReplyKeyboardMarkup:
     """Get keyboard with 'Cancel' button"""
