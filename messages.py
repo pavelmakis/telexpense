@@ -109,11 +109,15 @@ register_email = f"Make sure you have added me as an editor, \
 this is my email:\n\n\
 {BOT_SERVICE_EMAIL}"
 
-donate_mes = 'The minimum amount is 3€. If you want to donate a different amount, \
+donate_mes = 'The minimum amount is 3€.\n\n\
+If you want to donate a different amount, \
 tap "Pay" and enter the amount of the tip, \
 which will be added to the minimum amount'
 
 donate_description = "This is a voluntary donation to my creator."
+
+russia_donate_message = "To transfer money tap the first button, \
+you will be redirected to the payment page"
 
 successfull_payment = "*🙏 Thank you for supporting my creator for \
 {total_amount} {currency}!* \n\n🤔 Maybe now he can come \
