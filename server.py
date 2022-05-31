@@ -5,8 +5,6 @@ from aiogram import Bot, Dispatcher, executor, types
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 
 API_TOKEN = os.getenv("TELEXPENSE_TOKEN")
-PROVIDER_TOKEN = os.getenv("TELEXPENSE_PROVIDER_TOKEN")
-PRICE = [types.LabeledPrice(label="Donate", amount=300)]
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
