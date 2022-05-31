@@ -1,3 +1,4 @@
+import os
 from asyncio import sleep
 
 from aiogram import Dispatcher, types
@@ -5,9 +6,10 @@ from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import State, StatesGroup
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
+import database
 from server import bot
 
-admin_id = int(324769925)
+admin_id = int(os.getenv("ADMIN_ID"))
 
 
 class Mailing(StatesGroup):
@@ -15,14 +17,11 @@ class Mailing(StatesGroup):
     start = State()
 
 
-# Фича для рассылки по юзерам (учитывая их язык)
-#@dp.message_handler(user_id=admin_id, commands=["sendall"])
 async def mailing(message: types.Message):
     await message.answer("Пришлите текст сообщения для рассылки")
     await Mailing.text.set()
 
 
-#@dp.message_handler(user_id=admin_id, state=Mailing.text)
 async def mailing_text(message: types.Message, state: FSMContext):
     text = message.text
     await state.update_data(text=text)
@@ -54,7 +53,6 @@ async def mailing_text(message: types.Message, state: FSMContext):
     await Mailing.start.set()
 
 
-#@dp.callback_query_handler(user_id=admin_id, state=Mailing.start)
 async def mailing_start(call: types.CallbackQuery, state: FSMContext):
     if call.data == "cancel":
         await state.reset_state()
@@ -71,8 +69,8 @@ async def mailing_start(call: types.CallbackQuery, state: FSMContext):
         await state.reset_state()
         await call.message.edit_reply_markup()
         
-        users = [324769925]
-        
+        users = database.get_all_users()
+
         for user in users:
             try:
                 await bot.send_message(user, text, parse_mode='Markdown')
