@@ -111,12 +111,46 @@ register_email = f"Make sure you have added me as an editor, \
 this is my email:\n\n\
 {BOT_SERVICE_EMAIL}"
 
-donate_mes = 'The minimum amount is 3€. If you want to donate a different amount, \
+donate_mes = 'The minimum amount is 3€.\n\n\
+If you want to donate a different amount, \
 tap "Pay" and enter the amount of the tip, \
 which will be added to the minimum amount'
 
 donate_description = "This is a voluntary donation to my creator."
 
+russia_donate_message = "To transfer money tap the first button, \
+you will be redirected to the payment page"
+
 successfull_payment = "*🙏 Thank you for supporting my creator for \
 {total_amount} {currency}!* \n\n🤔 Maybe now he can come \
 up with even more functionality for me"
+
+
+# Registration
+reg_start_registered = "You are already registered user!\n\n\
+You can either connect me to a new Google Sheet or delete \
+a connected sheet from the database"
+
+reg_start_unregistered = "Looks like you are new here...\n\n\
+If you want to use me, connect me to new Google Sheet"
+
+reg_step_1 = f"*STEP 1*\n\n\
+Copy this Google Sheet template to your Google account. \
+You do this to ensure that your financial data belongs only to you.\n\n \
+👉 [Telexpense Template Sheet]({TEMPLATE_SHEET_LINK}) 👈"
+
+reg_step_2 = f"*STEP 2*\n\n\
+Add me to the table as an editor so I can add transactions \
+and read the balance. Here is my email:\n\n\
+{BOT_SERVICE_EMAIL}"
+
+reg_step_3 = "*STEP 3*\n\n\
+Copy the link to the table in your account and send it to this chat. \
+It is necessary for me to remember you"
+
+reg_forget_warning = "Are you sure? After that you have to register again to use me"
+
+reg_wrong_link = f"Hm. Looks like it's not a link I'm looking for...\n\n\
+Read the [wiki]({BOT_WIKI}) and try to /register one more time!"
+
+reg_sheet_changed = "Great! Your sheet successfully changed!"

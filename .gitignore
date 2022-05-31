@@ -146,3 +146,4 @@ cython_debug/
 
 db/user_sheets.db
 token.json
+.DS_Store
