@@ -14,7 +14,7 @@ PROVIDER_TOKEN = os.getenv("TELEXPENSE_PROVIDER_TOKEN")
 PRICE = [LabeledPrice(label="Donate", amount=300)]
 
 
-class DonatioForm(StatesGroup):
+class DonationForm(StatesGroup):
     option = State()
 
 
@@ -25,7 +25,7 @@ async def start_donation(message: Message):
     )
 
     # Setting form on option
-    await DonatioForm.option.set()
+    await DonationForm.option.set()
 
 
 async def process_donation_cancel(call: CallbackQuery, state: FSMContext):
@@ -114,17 +114,17 @@ def register_donations(dp: Dispatcher):
     dp.register_callback_query_handler(
         process_donation_cancel,
         lambda c: c.data and c.data == "cancel",
-        state=DonatioForm.all_states,
+        state=DonationForm.all_states,
     )
     dp.register_callback_query_handler(
         process_donation_russia,
         lambda c: c.data and c.data == "russia",
-        state=DonatioForm.option,
+        state=DonationForm.option,
     )
     dp.register_callback_query_handler(
         send_invoice,
         lambda c: c.data and c.data == "other",
-        state=DonatioForm.option,
+        state=DonationForm.option,
     )
     dp.register_pre_checkout_query_handler(
         process_pre_checkout_query, lambda query: True
