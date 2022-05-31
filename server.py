@@ -21,7 +21,7 @@ def register_all_handlers(dp):
     # Registering commands available for unregistered users
     register_start_help(dp)
 
-    # register_admin(dp)
+    register_admin(dp)
 
     # Registering commands for registration
     register_registration(dp)
@@ -41,6 +41,7 @@ dp = Dispatcher(bot, storage=storage)
 
 
 if __name__ == "__main__":
+    from handlers.admin import register_admin
     from handlers.donations import register_donations
     from handlers.expenses import register_expenses
     from handlers.income import register_income
