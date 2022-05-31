@@ -11,21 +11,23 @@ If you are a new user, read the [wiki]({BOT_WIKI}) \
 or type /register to start using me"
 
 help = f"""
-I can help you send and receive data from the table. 
+I can help you send and receive data from Google Sheets. 
 If this is your first time here, read this [wiki]({BOT_WIKI}).\n
 I can understand theese commands:\n
 *Add records*
 /expense (➖Expense) - add new expense
 /income (➕Income) - add new income
-/transaction (💱Transaction) - add new transaction
+/transfer (💱Transfer) - add new transfer
 /cancel - cancel record filling
 /addexp - add expense in a single message
 /addinc - add income in a single message
 /addtran - add transaction in a single message\n
 *Show balance*
-/available - show your accounts balances\n
+/available (💲Available) - show your accounts balances\n
+*Revert changes*
+/undo - delete last transaction from Google Sheet\n
 *Other*
-/register - connect bot to Google Sheet
+/register - connect me to Google Sheet or change connected sheet
 /donate - sponsor this project
 """
 
