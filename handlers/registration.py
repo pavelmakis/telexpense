@@ -12,8 +12,6 @@ from keyboards.user import main_keyb, register_keyb
 from server import bot
 from sheet import Sheet
 
-unregistered = lambda message: not database.is_user_registered(message.from_user.id)
-
 
 class RegistrationForm(StatesGroup):
     """This form if used for registration"""
@@ -70,9 +68,9 @@ async def process_user_option(call: CallbackQuery):
             # file_id field
             call.from_user.id,
             # for test bot
-            video="CgACAgQAAxkDAAICnmKTrx5fRvoBSbfcmGHrpNOTrmByAAKGAwACxs6cUOdnAc6h666dJAQ",
+            #video="CgACAgQAAxkDAAICnmKTrx5fRvoBSbfcmGHrpNOTrmByAAKGAwACxs6cUOdnAc6h666dJAQ",
             # for telexpense
-            #video="CgACAgQAAxkDAAIk8GKTsJeiKNiFtQV5r3Y5TxnzI6WwAAKGAwACxs6cUJBCE840i8xkJAQ",
+            video="CgACAgQAAxkDAAIk8GKTsJeiKNiFtQV5r3Y5TxnzI6WwAAKGAwACxs6cUJBCE840i8xkJAQ",
             width=1512,
             height=946,
             caption=messages.reg_step_1,
@@ -104,13 +102,13 @@ async def process_cancel(call: CallbackQuery, state: FSMContext):
     # Delete message with inline keyboard
     await bot.delete_message(call.from_user.id, call.message.message_id)
 
+    registered = database.is_user_registered(call.from_user.id)
+
     # Send message with reply markup
     await bot.send_message(
         call.from_user.id,
         "OK, next time",
-        reply_markup=register_keyb()
-        if unregistered
-        else main_keyb(),
+        reply_markup=main_keyb() if registered else register_keyb(),
     )
 
     # End state machine
@@ -124,9 +122,9 @@ async def add_bot_email(call: CallbackQuery):
     await bot.edit_message_media(
         InputMediaVideo(
             # for test bot
-            "CgACAgQAAxkDAAICpmKTsnx3QJm2mI8cA61YzzZpK9IyAAJtAwAC7SukUMWd2HYBF9nqJAQ",
+            #"CgACAgQAAxkDAAICpmKTsnx3QJm2mI8cA61YzzZpK9IyAAJtAwAC7SukUMWd2HYBF9nqJAQ",
             # for telexpense
-            #"CgACAgQAAxkDAAIk-2KTuhq5jmAyOt2GS2xD73Vo6cCIAAJtAwAC7SukULuOaMN-Ao5_JAQ",
+            "CgACAgQAAxkDAAIk-2KTuhq5jmAyOt2GS2xD73Vo6cCIAAJtAwAC7SukULuOaMN-Ao5_JAQ",
             caption=messages.reg_step_2,
             parse_mode="Markdown",
         ),
