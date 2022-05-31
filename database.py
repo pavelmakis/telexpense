@@ -74,5 +74,3 @@ def init_if_not_exists():
 
 
 init_if_not_exists()
-
-print(get_all_users())
