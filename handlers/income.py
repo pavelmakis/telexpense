@@ -4,9 +4,9 @@ from aiogram.dispatcher.filters.state import State, StatesGroup
 from aiogram.types import Message, ReplyKeyboardMarkup
 
 import database
-import keyboards
 import messages
 import records
+from keyboards import user
 from sheet import Sheet
 
 
@@ -41,9 +41,7 @@ async def process_income(message: Message, state: FSMContext):
     user_sheet = Sheet(database.get_sheet_id(message.from_user.id))
     if user_sheet == None:
         # await send_error_mes(message.chat.id)
-        await message.answer(
-            messages.error_message, reply_markup=keyboards.get_main_markup()
-        )
+        await message.answer(messages.error_message, reply_markup=user.main_keyb())
         await state.finish()
         return
     user_data = user_sheet.get_day_categories_accounts()
@@ -68,7 +66,7 @@ async def process_income_amount(message: Message, state: FSMContext):
         await message.answer(
             # message.chat.id,
             "❌ Cannot understand this amount...\n" "Try to add /income one more time!",
-            reply_markup=keyboards.get_main_markup(),
+            reply_markup=user.main_keyb(),
         )
         # Stop form
         await state.finish()
@@ -81,7 +79,7 @@ async def process_income_amount(message: Message, state: FSMContext):
         data["amount"] = parsed_amount
         # Adding buttons to markup from data get before
         in_category_list = data["sheet data"]["income categories"]
-        in_categories_markup = keyboards.get_two_row_keyboard(in_category_list)
+        in_categories_markup = user.two_row_keyb(in_category_list)
 
     # Go to the next step of form and send message
     await IncomeForm.next()
@@ -111,7 +109,7 @@ async def process_income_category(message: Message, state: FSMContext):
                 # message.chat.id,
                 "❌ This income category doesn't exist...\n"
                 "Try to add /income one more time!",
-                reply_markup=keyboards.get_main_markup(),
+                reply_markup=user.main_keyb(),
             )
             # Finish form
             await state.finish()
@@ -119,7 +117,7 @@ async def process_income_category(message: Message, state: FSMContext):
 
         # Adding buttons to markup from data get before
         account_list = data["sheet data"]["accounts"]
-        accounts_markup = keyboards.get_two_row_keyboard(account_list)
+        accounts_markup = user.two_row_keyb(account_list)
 
     # Go to the next step of the form
     await IncomeForm.next()
@@ -148,7 +146,7 @@ async def process_account(message: Message, state: FSMContext):
             await message.answer(
                 # message.chat.id,
                 "❌ This account doesn't exist...\n" "Try to add record one more time!",
-                reply_markup=keyboards.get_main_markup(),
+                reply_markup=user.main_keyb(),
             )
             # Stop form
             await state.finish()
@@ -165,7 +163,7 @@ async def process_account(message: Message, state: FSMContext):
     await message.answer(
         # message.chat.id,
         "Specify a description",
-        reply_markup=keyboards.get_description_markup(),
+        reply_markup=user.no_description_keyb(),
     )
 
 
@@ -201,7 +199,7 @@ async def process_record_description(message: Message, state: FSMContext):
         await message.answer(
             # message.chat.id,
             answer_message,
-            reply_markup=keyboards.get_main_markup(),
+            reply_markup=user.main_keyb(),
         )
 
     # Stop form filling
@@ -211,9 +209,7 @@ async def process_record_description(message: Message, state: FSMContext):
     user_sheet = Sheet(database.get_sheet_id(message.from_user.id))
     if user_sheet == None:
         # await send_error_mes(message.chat.id)
-        await message.answer(
-            messages.error_message, reply_markup=keyboards.get_main_markup()
-        )
+        await message.answer(messages.error_message, reply_markup=user.main_keyb())
         await state.finish()
         return
 
@@ -227,7 +223,7 @@ async def cmd_addinc(message: Message):
         await message.answer(
             messages.income_help,
             parse_mode="Markdown",
-            reply_markup=keyboards.get_main_markup(),
+            reply_markup=user.main_keyb(),
         )
         return
 
@@ -245,7 +241,7 @@ async def cmd_addinc(message: Message):
     if parsed_income[3] == None:
         await message.answer(
             "Cannot understand this income!\n" + "Looks like amount is wrong!",
-            reply_markup=keyboards.get_main_markup(),
+            reply_markup=user.main_keyb(),
         )
         return
     # If wrong category
@@ -253,7 +249,7 @@ async def cmd_addinc(message: Message):
         await message.answer(
             "Cannot understand this income!\n"
             + "Looks like this income category doesn't exist!",
-            reply_markup=keyboards.get_main_markup(),
+            reply_markup=user.main_keyb(),
         )
         return
     # If wrong account
@@ -261,16 +257,14 @@ async def cmd_addinc(message: Message):
         await message.answer(
             "Cannot understand this income!\n"
             + "Looks like this account doesn't exist!",
-            reply_markup=keyboards.get_main_markup(),
+            reply_markup=user.main_keyb(),
         )
         return
 
     # If successful, openning sheet, checking
     user_sheet = Sheet(database.get_sheet_id(message.from_user.id))
     if user_sheet == None:
-        await message.answer(
-            messages.error_message, reply_markup=keyboards.get_main_markup()
-        )
+        await message.answer(messages.error_message, reply_markup=user.main_keyb())
         return
 
     user_sheet.add_record(parsed_income)

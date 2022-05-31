@@ -6,8 +6,9 @@ from aiogram.types.input_media import InputMediaVideo
 from gspread.utils import extract_id_from_url
 
 import database
-import keyboards
 import messages
+from keyboards import registration
+from keyboards.user import main_keyb, register_keyb
 from server import bot
 from sheet import Sheet
 
@@ -43,12 +44,12 @@ async def start_registration(message: Message):
     if database.is_user_registered(message.from_user.id):
         await message.answer(
             messages.reg_start_registered,
-            reply_markup=keyboards.get_change_sheet_inlmarkup(),
+            reply_markup=registration.change_sheet_keyb(),
         )
     else:
         await message.answer(
             messages.reg_start_unregistered,
-            reply_markup=keyboards.get_new_sheet_inlmarkup(),
+            reply_markup=registration.new_sheet_keyb(),
         )
 
     # Setting form on the begining
@@ -69,14 +70,14 @@ async def process_user_option(call: CallbackQuery):
             # file_id field
             call.from_user.id,
             # for test bot
-            # video="CgACAgQAAxkDAAICnmKTrx5fRvoBSbfcmGHrpNOTrmByAAKGAwACxs6cUOdnAc6h666dJAQ",
+            video="CgACAgQAAxkDAAICnmKTrx5fRvoBSbfcmGHrpNOTrmByAAKGAwACxs6cUOdnAc6h666dJAQ",
             # for telexpense
-            video="CgACAgQAAxkDAAIk8GKTsJeiKNiFtQV5r3Y5TxnzI6WwAAKGAwACxs6cUJBCE840i8xkJAQ",
+            #video="CgACAgQAAxkDAAIk8GKTsJeiKNiFtQV5r3Y5TxnzI6WwAAKGAwACxs6cUJBCE840i8xkJAQ",
             width=1512,
             height=946,
             caption=messages.reg_step_1,
             parse_mode="Markdown",
-            reply_markup=keyboards.get_copytemplate_done_inlmarkup(),
+            reply_markup=registration.copytemplate_done_keyb(),
         )
 
         # Deleting previous message because I cant edit it
@@ -92,7 +93,7 @@ async def process_user_option(call: CallbackQuery):
             messages.reg_forget_warning,
             call.from_user.id,
             call.message.message_id,
-            reply_markup=keyboards.get_understand_inlmarkup(),
+            reply_markup=registration.understand_keyb(),
         )
 
         # Setting state
@@ -107,9 +108,9 @@ async def process_cancel(call: CallbackQuery, state: FSMContext):
     await bot.send_message(
         call.from_user.id,
         "OK, next time",
-        reply_markup=keyboards.get_register_markup()
+        reply_markup=register_keyb()
         if unregistered
-        else keyboards.get_main_markup(),
+        else main_keyb(),
     )
 
     # End state machine
@@ -123,15 +124,15 @@ async def add_bot_email(call: CallbackQuery):
     await bot.edit_message_media(
         InputMediaVideo(
             # for test bot
-            # "CgACAgQAAxkDAAICpmKTsnx3QJm2mI8cA61YzzZpK9IyAAJtAwAC7SukUMWd2HYBF9nqJAQ",
+            "CgACAgQAAxkDAAICpmKTsnx3QJm2mI8cA61YzzZpK9IyAAJtAwAC7SukUMWd2HYBF9nqJAQ",
             # for telexpense
-            "CgACAgQAAxkDAAIk-2KTuhq5jmAyOt2GS2xD73Vo6cCIAAJtAwAC7SukULuOaMN-Ao5_JAQ",
+            #"CgACAgQAAxkDAAIk-2KTuhq5jmAyOt2GS2xD73Vo6cCIAAJtAwAC7SukULuOaMN-Ao5_JAQ",
             caption=messages.reg_step_2,
             parse_mode="Markdown",
         ),
         call.from_user.id,
         call.message.message_id,
-        reply_markup=keyboards.get_addemail_done_inlmarkup(),
+        reply_markup=registration.addemail_done_keyb(),
     )
 
     await RegistrationForm.get_link.set()
@@ -164,9 +165,11 @@ async def process_sheet_url(message: Message, state: FSMContext):
 
     await message.answer("Checking this sheet...")
 
+    registered = database.is_user_registered(message.from_user.id)
+
     # Sheet check
     if check_url(message.text):
-        if database.is_user_registered(message.from_user.id):
+        if registered:
             # Removing previous record if user was registered
             database.delete_sheet_id(message.from_user.id)
 
@@ -176,15 +179,13 @@ async def process_sheet_url(message: Message, state: FSMContext):
 
             await message.answer(
                 "Your Google Sheet successfully updated!",
-                reply_markup=keyboards.get_main_markup(),
+                reply_markup=main_keyb(),
             )
         else:
             database.insert_sheet_id(
                 message.from_user.id, extract_id_from_url(message.text)
             )
-            await message.answer(
-                "Great! You are in!", reply_markup=keyboards.get_main_markup()
-            )
+            await message.answer("Great! You are in!", reply_markup=main_keyb())
 
         return
 
@@ -192,7 +193,7 @@ async def process_sheet_url(message: Message, state: FSMContext):
         messages.reg_wrong_link,
         disable_web_page_preview=True,
         parse_mode="Markdown",
-        reply_markup=keyboards.get_register_markup(),
+        reply_markup=main_keyb() if registered else register_keyb(),
     )
 
 
@@ -209,7 +210,7 @@ async def forget_user_sheet(call: CallbackQuery, state: FSMContext):
     await bot.send_message(
         call.from_user.id,
         "See you next time!",
-        reply_markup=keyboards.get_register_markup(),
+        reply_markup=register_keyb(),
     )
 
 

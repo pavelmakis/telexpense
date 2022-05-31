@@ -5,7 +5,7 @@ from aiogram.types import Message
 import database
 import keyboards
 import messages
-from keyboards import get_main_markup, get_register_markup
+from keyboards.user import main_keyb, register_keyb
 from sheet import Sheet
 
 unregistered = lambda message: not database.is_user_registered(message.from_user.id)
@@ -20,7 +20,7 @@ async def cmd_start(message: Message):
         messages.start_message,
         parse_mode="Markdown",
         disable_web_page_preview=True,
-        reply_markup=get_main_markup() if is_registered else get_register_markup(),
+        reply_markup=main_keyb() if is_registered else register_keyb(),
     )
 
 
@@ -44,7 +44,7 @@ async def answer_unregistered(message: Message):
     """This handler is used to answer to unregistered users."""
     await message.answer(
         "I can only work with registered users!\nRead the wiki or type /register",
-        reply_markup=get_register_markup(),
+        reply_markup=register_keyb(),
     )
 
 
@@ -56,14 +56,14 @@ async def cmd_cancel(message: Message, state: FSMContext):
         await message.answer(
             "Can cancel only while you are filling a record form.\n\n"
             + "Nothing to cancel now!",
-            reply_markup=get_main_markup(),
+            reply_markup=main_keyb(),
         )
     else:
         # Cancel state and inform user about it
         await state.finish()
         await message.answer(
             "Cancelled",
-            reply_markup=get_main_markup(),
+            reply_markup=main_keyb(),
         )
 
 
@@ -72,7 +72,7 @@ async def cmd_available(message: Message):
     # Openning sheet, checking for errors
     user_sheet = Sheet(database.get_sheet_id(message.from_user.id))
     if user_sheet == None:
-        await message.answer(messages.error_message, reply_markup=get_main_markup())
+        await message.answer(messages.error_message, reply_markup=main_keyb())
         return
 
     amounts = user_sheet.get_account_amounts()
@@ -105,9 +105,7 @@ async def cmd_available(message: Message):
     available += "\n*Daily available:*   "
     available += "`" + amounts[-1] + "`"
 
-    await message.answer(
-        available, parse_mode="MarkdownV2", reply_markup=get_main_markup()
-    )
+    await message.answer(available, parse_mode="MarkdownV2", reply_markup=main_keyb())
 
 
 async def undo_transaction(message: Message):

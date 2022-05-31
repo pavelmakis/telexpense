@@ -4,9 +4,9 @@ from aiogram.dispatcher.filters.state import State, StatesGroup
 from aiogram.types import Message, ReplyKeyboardMarkup
 
 import database
-import keyboards
 import messages
 import records
+from keyboards import user
 from sheet import Sheet
 
 
@@ -36,9 +36,7 @@ async def process_transaction(message: Message, state: FSMContext):
     # I send a query to the table to get today date and accounts
     user_sheet = Sheet(database.get_sheet_id(message.from_user.id))
     if user_sheet == None:
-        await message.answer(
-            messages.error_message, reply_markup=keyboards.get_main_markup()
-        )
+        await message.answer(messages.error_message, reply_markup=user.main_keyb())
         await state.finish()
         return
     user_data = user_sheet.get_day_accounts()
@@ -65,7 +63,7 @@ async def process_tran_outcome_amount(message: Message, state: FSMContext):
         await message.answer(
             "❌ Cannot understand this amount...\n"
             "Try to add /transfer one more time!",
-            reply_markup=keyboards.get_main_markup(),
+            reply_markup=user.main_keyb(),
         )
         # Stop form
         await state.finish()
@@ -79,7 +77,7 @@ async def process_tran_outcome_amount(message: Message, state: FSMContext):
         # Write amount data to dictionary
         data["outcome_amount"] = parsed_amount
         # Adding buttons to markup from data get before
-        accounts_markup = keyboards.get_two_row_keyboard(data["accounts"])
+        accounts_markup = user.two_row_keyb(data["accounts"])
 
     # Go to the next step of form and send message
     await TransferForm.next()
@@ -103,7 +101,7 @@ async def process_outcome_account(message: Message, state: FSMContext):
             await message.answer(
                 "❌ This account doesn't exist...\n"
                 "Try to add /transfer one more time!",
-                reply_markup=keyboards.get_main_markup(),
+                reply_markup=user.main_keyb(),
             )
             # Stop form
             await state.finish()
@@ -117,7 +115,7 @@ async def process_outcome_account(message: Message, state: FSMContext):
     await message.answer(
         "Specify the amount added to the account to which the transfer was made.\n\n"
         + 'If the amounts are the same, tap "Same amount"',
-        reply_markup=keyboards.get_same_amount_markup(),
+        reply_markup=user.same_amount_keyb(),
     )
 
 
@@ -146,7 +144,7 @@ async def process_tran_income_amount(message: Message, state: FSMContext):
                 await message.answer(
                     "❌ Cannot understand this amount...\n"
                     "Try to add /transfer one more time!",
-                    reply_markup=keyboards.get_main_markup(),
+                    reply_markup=user.main_keyb(),
                 )
                 # Stop form
                 await state.finish()
@@ -156,7 +154,7 @@ async def process_tran_income_amount(message: Message, state: FSMContext):
             data["income_amount"] = parsed_amount
 
         # Forming two column markup from data get before
-        accounts_markup = keyboards.get_two_row_keyboard(data["accounts"])
+        accounts_markup = user.two_row_keyb(data["accounts"])
 
     # Go to the next step of form and send message
     await TransferForm.next()
@@ -181,7 +179,7 @@ async def process_income_account(message: Message, state: FSMContext):
             await message.answer(
                 "❌ This account doesn't exist...\n"
                 "Try to add /transfer one more time!",
-                reply_markup=keyboards.get_main_markup(),
+                reply_markup=user.main_keyb(),
             )
             # Stop form
             await state.finish()
@@ -204,9 +202,7 @@ async def process_income_account(message: Message, state: FSMContext):
     # Enter data to transactions list
     user_sheet = Sheet(database.get_sheet_id(message.from_user.id))
     if user_sheet == None:
-        await message.answer(
-            messages.error_message, reply_markup=keyboards.get_main_markup()
-        )
+        await message.answer(messages.error_message, reply_markup=user.main_keyb())
         await state.finish()
         return
     user_sheet.add_transaction(transaction_record)
@@ -215,7 +211,7 @@ async def process_income_account(message: Message, state: FSMContext):
     await message.answer(
         "👍 Successfully added transfer\n"
         + f"from {transaction_record[2]} to {transaction_record[4]}!",
-        reply_markup=keyboards.get_main_markup(),
+        reply_markup=user.main_keyb(),
     )
 
 
@@ -225,7 +221,7 @@ async def cmd_addtran(message: Message):
         await message.answer(
             messages.tran_help,
             parse_mode="MarkdownV2",
-            reply_markup=keyboards.get_main_markup(),
+            reply_markup=user.main_keyb(),
         )
         return
 
@@ -275,9 +271,7 @@ async def cmd_addtran(message: Message):
     # If success
     user_sheet = Sheet(database.get_sheet_id(message.from_user.id))
     if user_sheet == None:
-        await message.answer(
-            messages.error_message, reply_markup=keyboards.get_main_markup()
-        )
+        await message.answer(messages.error_message, reply_markup=user.main_keyb())
         return
 
     user_sheet.add_transaction(parsed_transaction)

@@ -4,9 +4,9 @@ from aiogram.dispatcher.filters.state import State, StatesGroup
 from aiogram.types import Message, ReplyKeyboardMarkup
 
 import database
-import keyboards
 import messages
 import records
+from keyboards import user
 from sheet import Sheet
 
 
@@ -65,7 +65,7 @@ async def process_expense_amount(message: Message, state: FSMContext):
         await message.answer(
             # message.chat.id,
             "❌ Cannot understand this amount...\n" "Try to add /expense one more time!",
-            reply_markup=keyboards.get_main_markup(),
+            reply_markup=user.main_keyb(),
         )
 
         # Stop form
@@ -80,7 +80,7 @@ async def process_expense_amount(message: Message, state: FSMContext):
 
         # Getting keyboard markup from data get before
         out_category_list = data["sheet data"]["outcome categories"]
-        out_categories_markup = keyboards.get_two_row_keyboard(out_category_list)
+        out_categories_markup = user.two_row_keyb(out_category_list)
 
     # Go to the next step of form and send message
     await ExpenseForm.next()
@@ -110,7 +110,7 @@ async def process_expense_category(message: Message, state: FSMContext):
                 # message.chat.id,
                 "❌ This outcome category doesn't exist...\n"
                 "Try to add /expense one more time!",
-                reply_markup=keyboards.get_main_markup(),
+                reply_markup=user.main_keyb(),
             )
 
             # Finish form
@@ -119,7 +119,7 @@ async def process_expense_category(message: Message, state: FSMContext):
 
         # Getting keyboard markup from data get before
         account_list = data["sheet data"]["accounts"]
-        accounts_markup = keyboards.get_two_row_keyboard(account_list)
+        accounts_markup = user.two_row_keyb(account_list)
 
     # Go to the next step of the form
     await ExpenseForm.next()
@@ -146,7 +146,7 @@ async def process_account(message: Message, state: FSMContext):
             await message.answer(
                 # message.chat.id,
                 "❌ This account doesn't exist...\n" "Try to add record one more time!",
-                reply_markup=keyboards.get_main_markup(),
+                reply_markup=user.main_keyb(),
             )
             # Stop form
             await state.finish()
@@ -163,7 +163,7 @@ async def process_account(message: Message, state: FSMContext):
     await message.answer(
         # message.chat.id,
         "Specify a description",
-        reply_markup=keyboards.get_description_markup(),
+        reply_markup=user.no_description_keyb(),
     )
 
 
@@ -199,7 +199,7 @@ async def process_record_description(message: Message, state: FSMContext):
         await message.answer(
             # message.chat.id,
             answer_message,
-            reply_markup=keyboards.get_main_markup(),
+            reply_markup=user.main_keyb(),
         )
 
     # Stop form filling
@@ -208,9 +208,7 @@ async def process_record_description(message: Message, state: FSMContext):
     # Enter data to transactions list
     user_sheet = Sheet(database.get_sheet_id(message.from_user.id))
     if user_sheet == None:
-        await message.answer(
-            messages.error_message, reply_markup=keyboards.get_main_markup()
-        )
+        await message.answer(messages.error_message, reply_markup=user.main_keyb())
         await state.finish()
         return
 
@@ -224,7 +222,7 @@ async def cmd_addexp(message: Message):
         await message.answer(
             messages.expense_help,
             parse_mode="Markdown",
-            reply_markup=keyboards.get_main_markup(),
+            reply_markup=user.main_keyb(),
         )
         return
 
@@ -239,14 +237,14 @@ async def cmd_addexp(message: Message):
         await message.answer(
             messages.wrong_expense,
             parse_mode="Markdown",
-            reply_markup=keyboards.get_main_markup(),
+            reply_markup=user.main_keyb(),
         )
         return
     # If wrong amount
     if parsed_expense[3] == None:
         await message.answer(
             "Cannot understand this expense!\n" + "Looks like amount is wrong!",
-            reply_markup=keyboards.get_main_markup(),
+            reply_markup=user.main_keyb(),
         )
         return
     # If wrong category
@@ -254,7 +252,7 @@ async def cmd_addexp(message: Message):
         await message.answer(
             "Cannot understand this expense!\n"
             + "Looks like this category doesn't exist!",
-            reply_markup=keyboards.get_main_markup(),
+            reply_markup=user.main_keyb(),
         )
         return
     # If wrong account
@@ -262,16 +260,14 @@ async def cmd_addexp(message: Message):
         await message.answer(
             "Cannot understand this expense!\n"
             + "Looks like this account doesn't exist!",
-            reply_markup=keyboards.get_main_markup(),
+            reply_markup=user.main_keyb(),
         )
         return
 
     # If successful, openning cheet, checking
     user_sheet = Sheet(database.get_sheet_id(message.from_user.id))
     if user_sheet == None:
-        await message.answer(
-            messages.error_message, reply_markup=keyboards.get_main_markup()
-        )
+        await message.answer(messages.error_message, reply_markup=user.main_keyb())
         return
 
     user_sheet.add_record(parsed_expense)

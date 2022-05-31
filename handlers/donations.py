@@ -6,8 +6,8 @@ from aiogram.dispatcher.filters.state import State, StatesGroup
 from aiogram.types import CallbackQuery, LabeledPrice, Message, PreCheckoutQuery
 from aiogram.types.message import ContentType
 
-import keyboards
 import messages
+from keyboards import donation, user
 from server import bot
 
 PROVIDER_TOKEN = os.getenv("TELEXPENSE_PROVIDER_TOKEN")
@@ -21,7 +21,7 @@ class DonatioForm(StatesGroup):
 async def start_donation(message: Message):
     await message.answer(
         "Where do you want to make the payment from?",
-        reply_markup=keyboards.get_pay_countries_inlmarkup(),
+        reply_markup=donation.pay_countries_inlkeyb(),
     )
 
     # Setting form on option
@@ -39,7 +39,7 @@ async def process_donation_cancel(call: CallbackQuery, state: FSMContext):
     await bot.send_message(
         call.from_user.id,
         "OK, next time",
-        reply_markup=keyboards.get_main_markup(),
+        reply_markup=user.main_keyb(),
     )
 
     # End state machine
@@ -58,7 +58,7 @@ async def process_donation_russia(call: CallbackQuery, state: FSMContext):
         messages.russia_donate_message,
         call.from_user.id,
         call.message.message_id,
-        reply_markup=keyboards.get_rus_donation_link_inlmarkup(),
+        reply_markup=donation.ru_donation_link_inlkeyb(),
     )
 
 
@@ -76,7 +76,7 @@ async def process_successful_payment(message: Message):
             currency=message.successful_payment.currency,
         ),
         parse_mode="Markdown",
-        reply_markup=keyboards.get_main_markup(),
+        reply_markup=user.main_keyb(),
     )
 
 
