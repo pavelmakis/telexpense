@@ -35,6 +35,15 @@ def insert_sheet_id(user_id: str, sheet_id: str):
     conn.commit()
 
 
+def get_all_users() -> list:
+    cursor.execute(f"SELECT user_id FROM user_sheets")
+    data, users = cursor.fetchall(), []
+    for user in data:
+        users.append(int(user[0]))
+
+    return users
+
+
 def delete_sheet_id(user_id: str):
     """Delete record with Google Sheet id"""
     cursor.execute(
@@ -65,3 +74,5 @@ def init_if_not_exists():
 
 
 init_if_not_exists()
+
+print(get_all_users())
