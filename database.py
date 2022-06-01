@@ -80,5 +80,3 @@ def init_if_not_exists():
 
 
 init_if_not_exists()
-
-print(get_user_count())
