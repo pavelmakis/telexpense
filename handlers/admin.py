@@ -35,14 +35,18 @@ async def mailing_text(message: types.Message, state: FSMContext):
     # )
 
     markup = InlineKeyboardMarkup(
-        inline_keyboard=
-        [
-            [InlineKeyboardButton("Начать рассылку", callback_data='start')],
-            [InlineKeyboardButton("Отмена", callback_data='cancel')]
+        inline_keyboard=[
+            [InlineKeyboardButton("Начать рассылку", callback_data="start")],
+            [InlineKeyboardButton("Отмена", callback_data="cancel")],
         ]
     )
 
-    await bot.send_message(message.from_user.id, f"Сообщение будет выглядеть так:\n\n{text}", parse_mode="Markdown", reply_markup=markup)
+    await bot.send_message(
+        message.from_user.id,
+        f"Сообщение будет выглядеть так:\n\n{text}",
+        parse_mode="Markdown",
+        reply_markup=markup,
+    )
 
     # await message.answer("Пользователям на каком языке разослать это сообщение?\n\n"
     #                        "Текст:\n"
@@ -56,7 +60,7 @@ async def mailing_text(message: types.Message, state: FSMContext):
 async def mailing_start(call: types.CallbackQuery, state: FSMContext):
     if call.data == "cancel":
         await state.reset_state()
-        #await state.finish()
+        # await state.finish()
 
         await bot.edit_message_text(
             "OK, cancelled!",
@@ -68,19 +72,25 @@ async def mailing_start(call: types.CallbackQuery, state: FSMContext):
         text = data.get("text")
         await state.reset_state()
         await call.message.edit_reply_markup()
-        
+
         users = database.get_all_users()
 
         for user in users:
             try:
-                await bot.send_message(user, text, parse_mode='Markdown')
+                await bot.send_message(
+                    user, text, disable_notification=True, parse_mode="Markdown"
+                )
+                # Disable notifications
                 await sleep(0.3)
             except Exception as e:
                 print(e)
                 pass
         await call.message.answer("Рассылка выполнена")
 
+
 def register_admin(dp: Dispatcher):
     dp.register_message_handler(mailing, user_id=admin_id, commands=["sendall"])
     dp.register_message_handler(mailing_text, user_id=admin_id, state=Mailing.text)
-    dp.register_callback_query_handler(mailing_start, user_id=admin_id, state=Mailing.start)
+    dp.register_callback_query_handler(
+        mailing_start, user_id=admin_id, state=Mailing.start
+    )
