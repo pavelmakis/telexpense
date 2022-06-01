@@ -4,7 +4,7 @@ from asyncio import sleep
 from aiogram import Dispatcher, types
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import State, StatesGroup
-from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 
 import database
 from server import bot
@@ -74,18 +74,30 @@ async def mailing_start(call: types.CallbackQuery, state: FSMContext):
         await call.message.edit_reply_markup()
 
         users = database.get_all_users()
+        sent_counter, del_counter = 0, 0
 
         for user in users:
             try:
                 await bot.send_message(
                     user, text, disable_notification=True, parse_mode="Markdown"
                 )
-                # Disable notifications
+
                 await sleep(0.3)
-            except Exception as e:
-                print(e)
-                pass
-        await call.message.answer("Рассылка выполнена")
+            except Exception:
+                # database.delete_sheet_id()
+                del_counter += 1
+                continue
+            sent_counter += 1
+        await call.message.answer(
+            "Рассылка завершена.\n\n"
+            f"Сообщение отправлено {sent_counter} раз, "
+            f"{del_counter} пользователей удалено."
+        )
+
+async def count_users(message: Message):
+    users = len(database.get_all_users())
+
+    await message.answer(f"Пользователей в базе: {users}")
 
 
 def register_admin(dp: Dispatcher):
@@ -94,3 +106,4 @@ def register_admin(dp: Dispatcher):
     dp.register_callback_query_handler(
         mailing_start, user_id=admin_id, state=Mailing.start
     )
+    dp.register_message_handler(count_users, user_id=admin_id, commands=["countusers"])
