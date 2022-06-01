@@ -13,7 +13,7 @@ def get_sheet_id(user_id: str) -> str | None:
     """Get users Google Sheet id by Telegram id"""
     cursor.execute(
         f"""
-    SELECT sheet_id FROM user_sheets
+    SELECT sheet_id FROM bot_users
     WHERE user_id='{user_id}'
     """
     )
@@ -27,7 +27,7 @@ def insert_sheet_id(user_id: str, sheet_id: str):
     """Add users Google Sheet id to database"""
     cursor.execute(
         f"""
-    INSERT INTO user_sheets (
+    INSERT INTO bot_users (
         user_id, sheet_id
     ) VALUES ('{user_id}', '{sheet_id}')
     """
@@ -36,7 +36,7 @@ def insert_sheet_id(user_id: str, sheet_id: str):
 
 
 def get_all_users() -> list:
-    cursor.execute(f"SELECT user_id FROM user_sheets")
+    cursor.execute(f"SELECT user_id FROM bot_users")
     data, users = cursor.fetchall(), []
     for user in data:
         users.append(int(user[0]))
@@ -48,7 +48,7 @@ def delete_sheet_id(user_id: str):
     """Delete record with Google Sheet id"""
     cursor.execute(
         f"""
-    DELETE FROM user_sheets 
+    DELETE FROM bot_users 
     WHERE user_id='{user_id}'
     """
     )
@@ -65,7 +65,7 @@ def is_user_registered(user_id: str) -> bool:
 def init_if_not_exists():
     """Initialize the database"""
     exec_command = """
-    CREATE TABLE IF NOT EXISTS user_sheets (
+    CREATE TABLE IF NOT EXISTS bot_users (
         user_id     varchar(40) primary key,
         sheet_id   text)
     """
