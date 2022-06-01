@@ -95,7 +95,7 @@ async def mailing_start(call: types.CallbackQuery, state: FSMContext):
         )
 
 async def count_users(message: Message):
-    users = len(database.get_all_users())
+    users = database.get_user_count()
 
     await message.answer(f"Пользователей в базе: {users}")
 

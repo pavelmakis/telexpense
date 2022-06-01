@@ -43,6 +43,11 @@ def get_all_users() -> list:
 
     return users
 
+def get_user_count() -> int:
+    cursor.execute("SELECT COUNT(user_id) FROM bot_users")
+    count = cursor.fetchone()
+
+    return count[0]
 
 def delete_sheet_id(user_id: str):
     """Delete record with Google Sheet id"""
@@ -66,11 +71,14 @@ def init_if_not_exists():
     """Initialize the database"""
     exec_command = """
     CREATE TABLE IF NOT EXISTS bot_users (
-        user_id     varchar(40) primary key,
-        sheet_id   text)
+        user_id    varchar(40) primary key,
+        sheet_id   text,
+        language   varchar(10))
     """
     cursor.execute(exec_command)
     conn.commit()
 
 
 init_if_not_exists()
+
+print(get_user_count())
