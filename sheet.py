@@ -7,7 +7,7 @@ import os
 import gspread
 from gspread import exceptions
 
-import formulas
+from messages import to_main_currency_f
 
 
 class Sheet:
@@ -192,7 +192,7 @@ class Sheet:
             data (list): parsed data for inserting in user's sheet.
         """
         # Appending formula which calculates amounts to main currency
-        data.append(formulas.to_main_currency)
+        data.append(to_main_currency_f)
 
         # Opening transactions sheet and inserting transaction data
         trans_list = self.user_sheet.worksheet("Transactions")
