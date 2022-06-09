@@ -176,14 +176,14 @@ async def process_sheet_url(message: Message, state: FSMContext):
             )
 
             await message.answer(
-                "Your Google Sheet successfully updated!",
+                messages.reg_update_success,
                 reply_markup=main_keyb(),
             )
         else:
             database.insert_sheet_id(
                 message.from_user.id, extract_id_from_url(message.text)
             )
-            await message.answer("Great! You are in!", reply_markup=main_keyb())
+            await message.answer(messages.reg_success, reply_markup=main_keyb())
 
         return
 
