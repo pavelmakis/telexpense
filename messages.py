@@ -31,8 +31,8 @@ I can understand theese commands:\n
 /donate - sponsor this project
 """
 
-error_message = "😳 Something went wrong...\n\n \
-Please try again later.\n \
+error_message = "😳 Something went wrong...\n\n\
+Please try again later.\n\
 If it does not work again, check your table or add it again via /register. \
 Maybe you have changed the table and I can no longer work with it"
 
@@ -148,12 +148,31 @@ reg_step_3 = "*STEP 3*\n\n\
 Copy the link to the table in your account and send it to this chat. \
 It is necessary for me to remember you"
 
+reg_success = "Great, youre in!\n\n\
+Don't forget to select the main currency and its format in /currency"
+
+reg_update_success = "Your sheet successfully changed!\n\n\
+Don't forget to select the main currency and its format in /currency"
+
 reg_forget_warning = "Are you sure? After that you have to register again to use me"
 
 reg_wrong_link = f"Hm. Looks like it's not a link I'm looking for...\n\n\
 Read the [wiki]({BOT_WIKI}) and try to /register one more time!"
 
 reg_sheet_changed = "Great! Your sheet successfully changed!"
+
+# Currency
+ask_currency = "What is the main currency of your finances?\n\n\
+If your currency is not in the list, unfortunately, you will have \
+to adjust the currency and format manually in the table"
+
+wrong_currency = "😥 Sorry, this currency cannot be set up through me yet. \n\n\
+You can do this manually on the Preferences page in your sheet."
+
+ask_format = "Please select a currency format that suits you best"
+
+wrong_pattern = "😳 Sorry, I cannot understand this format.\n\n\
+Change something and try /currency again later"
 
 to_main_currency_f = '=D2*IFNA(GOOGLEFINANCE("CURRENCY:"&IFS(E2 = Preferences!$H$4; \
 Preferences!$J$4; E2 = Preferences!$H$5; Preferences!$J$5; E2 = Preferences!$H$6; \
