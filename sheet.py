@@ -3,9 +3,11 @@ This module is used for working with user's Google Sheet.
 It contains all functions that writes and reads data in sheet.
 """
 import os
+from copy import deepcopy
 
 import gspread
 from gspread import exceptions
+from requests import request
 
 from messages import to_main_currency_f
 
@@ -176,7 +178,7 @@ class Sheet:
 
         # Check last transaction 'category' field
         if len(data) >= 2:
-            #TODO: Add check for multilanguage
+            # TODO: Add check for multilanguage
             if data[0][0] == "Transfer" or "Transaction":
                 return "transfer"
             else:
@@ -235,3 +237,87 @@ class Sheet:
             trans_list.delete_rows(2, 3)
 
         return
+
+    def set_main_cur(self, pattern: str):
+        main_sheet_id = self.user_sheet.worksheet("Main").id
+
+        #pattern = str("#,##0.00 [$€]")
+
+        sheet_ranges = [
+            {
+                "sheetId": main_sheet_id,
+                "startRowIndex": 2,
+                "endRowIndex": 3,
+                "startColumnIndex": 1,
+                "endColumnIndex": 3,
+            },
+            {
+                "sheetId": main_sheet_id,
+                "startRowIndex": 2,
+                "endRowIndex": 3,
+                "startColumnIndex": 5,
+                "endColumnIndex": 7,
+            },
+            {
+                "sheetId": main_sheet_id,
+                "startRowIndex": 2,
+                "endRowIndex": 3,
+                "startColumnIndex": 9,
+                "endColumnIndex": 11,
+            },
+            {
+                "sheetId": main_sheet_id,
+                "startRowIndex": 2,
+                "endRowIndex": 3,
+                "startColumnIndex": 13,
+                "endColumnIndex": 15,
+            },
+            {
+                "sheetId": main_sheet_id,
+                "startRowIndex": 6,
+                "endRowIndex": 7,
+                "startColumnIndex": 9,
+                "endColumnIndex": 11,
+            },
+            {
+                "sheetId": main_sheet_id,
+                "startRowIndex": 10,
+                "endRowIndex": 11,
+                "startColumnIndex": 9,
+                "endColumnIndex": 11,
+            },
+            {
+                "sheetId": main_sheet_id,
+                "startRowIndex": 6,
+                "endRowIndex": 26,
+                "startColumnIndex": 15,
+                "endColumnIndex": 16,
+            },
+        ]
+
+        dry_request = {
+            "repeatCell": {
+                "range": {},
+                "cell": {
+                    "userEnteredFormat": {
+                        "numberFormat": {
+                            "type": "CURRENCY",
+                            "pattern": f"{pattern}",
+                        }
+                    }
+                },
+                "fields": "userEnteredFormat.numberFormat",
+            }
+        }
+
+        requests = []
+
+        for i in range(len(sheet_ranges)):
+            # Copying request template
+            req_cp = deepcopy(dry_request)
+
+            # Editing range and appending
+            req_cp["repeatCell"]["range"] = sheet_ranges[i]
+            requests.append(req_cp)
+
+        self.user_sheet.batch_update({"requests": requests})
