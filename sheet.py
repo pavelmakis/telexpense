@@ -7,7 +7,6 @@ from copy import deepcopy
 
 import gspread
 from gspread import exceptions
-from requests import request
 
 from messages import to_main_currency_f
 
@@ -238,10 +237,13 @@ class Sheet:
 
         return
 
-    def set_main_cur(self, pattern: str):
-        main_sheet_id = self.user_sheet.worksheet("Main").id
+    def set_main_cur(self, currency: str):
+        """Update cell with main currency type"""
+        pref_sheet = self.user_sheet.worksheet("Preferences")
+        pref_sheet.update("F16", currency)
 
-        #pattern = str("#,##0.00 [$€]")
+    def set_main_cur_format(self, pattern: str):
+        main_sheet_id = self.user_sheet.worksheet("Main").id
 
         sheet_ranges = [
             {
