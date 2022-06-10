@@ -10,7 +10,7 @@ API_TOKEN = os.getenv("TELEXPENSE_TOKEN")
 logging.basicConfig(level=logging.INFO)
 
 # def register_all_middlewares(dp):
-#     dp.setup_middleware(DbMiddleware())
+#     setup_language(dp)
 
 
 # def register_all_filters(dp):
@@ -50,6 +50,13 @@ if __name__ == "__main__":
     from handlers.registration import register_registration
     from handlers.transfer import register_transfer
     from handlers.user import register_start_help, register_user
+    from middlewares.language import setup_language
+
+    # Setup language
+    i18n = setup_language(dp)
+    _ = i18n.gettext
+
+    #register_all_middlewares(dp)
 
     register_all_handlers(dp)
 
