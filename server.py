@@ -1,8 +1,10 @@
 import logging
 import os
 
-from aiogram import Bot, Dispatcher, executor, types
+from aiogram import Bot, Dispatcher, executor
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
+
+from middlewares.language import setup_language
 
 API_TOKEN = os.getenv("TELEXPENSE_TOKEN")
 
@@ -40,6 +42,9 @@ storage = MemoryStorage()
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher(bot, storage=storage)
 
+# Setup language
+i18n = setup_language(dp)
+_ = i18n.gettext
 
 if __name__ == "__main__":
     from handlers.admin import register_admin
@@ -50,11 +55,6 @@ if __name__ == "__main__":
     from handlers.registration import register_registration
     from handlers.transfer import register_transfer
     from handlers.user import register_start_help, register_user
-    from middlewares.language import setup_language
-
-    # Setup language
-    i18n = setup_language(dp)
-    _ = i18n.gettext
 
     #register_all_middlewares(dp)
 
