@@ -2,6 +2,7 @@ from aiogram import Dispatcher
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import State, StatesGroup
 from aiogram.types import Message, ReplyKeyboardMarkup
+from gspread.exceptions import GSpreadException
 
 import database
 import messages
@@ -9,6 +10,7 @@ import records
 from keyboards import user
 from sheet import Sheet
 
+# TODO: Needs refactoring
 
 class TransferForm(StatesGroup):
     """
@@ -35,11 +37,13 @@ async def process_transaction(message: Message, state: FSMContext):
     # As the user enters the amount of transfer,
     # I send a query to the table to get today date and accounts
     user_sheet = Sheet(database.get_sheet_id(message.from_user.id))
-    if user_sheet == None:
-        await message.answer(messages.error_message, reply_markup=user.main_keyb())
+
+    try:
+        user_data = user_sheet.get_day_accounts()
+    except GSpreadException:
         await state.finish()
+        await message.answer(messages.error_message, reply_markup=user.main_keyb())
         return
-    user_data = user_sheet.get_day_accounts()
 
     # I put the data in the state.proxy(),
     # I have not found a better way to store the data,
@@ -201,11 +205,12 @@ async def process_income_account(message: Message, state: FSMContext):
 
     # Enter data to transactions list
     user_sheet = Sheet(database.get_sheet_id(message.from_user.id))
-    if user_sheet == None:
+
+    try:
+        user_sheet.add_transaction(transaction_record)
+    except GSpreadException:
         await message.answer(messages.error_message, reply_markup=user.main_keyb())
-        await state.finish()
         return
-    user_sheet.add_transaction(transaction_record)
 
     # Send a message with the button for
     await message.answer(

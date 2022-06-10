@@ -2,6 +2,7 @@ from aiogram import Dispatcher
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import State, StatesGroup
 from aiogram.types import Message, ReplyKeyboardMarkup
+from gspread.exceptions import GSpreadException
 
 import database
 import messages
@@ -9,6 +10,7 @@ import records
 from keyboards import user
 from sheet import Sheet
 
+# TODO: Needs refactoring
 
 class ExpenseForm(StatesGroup):
     """
@@ -39,11 +41,13 @@ async def process_expense(message: Message, state: FSMContext):
     # income categories, today's date, and accounts.
     # This is done to minimize the number of requests
     user_sheet = Sheet(database.get_sheet_id(message.from_user.id))
-    if user_sheet == None:
-        # await send_error_mes(message.chat.id)
+
+    try:
+        user_data = user_sheet.get_day_categories_accounts()
+    except GSpreadException:
         await state.finish()
+        await message.answer(messages.error_message, reply_markup=user.main_keyb())
         return
-    user_data = user_sheet.get_day_categories_accounts()
 
     # I put the data in the state.proxy(),
     # I have not found a better way to store the data,
@@ -189,6 +193,16 @@ async def process_record_description(message: Message, state: FSMContext):
             data["account"],
         ]
 
+        # Enter data to transactions list
+        user_sheet = Sheet(database.get_sheet_id(message.from_user.id))
+
+        try:
+            user_sheet.add_record(record)
+        except GSpreadException:
+            await state.finish()
+            await message.answer(messages.error_message, reply_markup=user.main_keyb())
+            return
+
         # Send finish message and show main keyboard
         current_state = await state.get_state()
         answer_message = ""
@@ -204,15 +218,6 @@ async def process_record_description(message: Message, state: FSMContext):
 
     # Stop form filling
     await state.finish()
-
-    # Enter data to transactions list
-    user_sheet = Sheet(database.get_sheet_id(message.from_user.id))
-    if user_sheet == None:
-        await message.answer(messages.error_message, reply_markup=user.main_keyb())
-        await state.finish()
-        return
-
-    user_sheet.add_record(record)
 
 
 async def cmd_addexp(message: Message):
@@ -266,11 +271,13 @@ async def cmd_addexp(message: Message):
 
     # If successful, openning cheet, checking
     user_sheet = Sheet(database.get_sheet_id(message.from_user.id))
-    if user_sheet == None:
+
+    try:
+        user_sheet.add_record(parsed_expense)
+    except GSpreadException:
         await message.answer(messages.error_message, reply_markup=user.main_keyb())
         return
 
-    user_sheet.add_record(parsed_expense)
     await message.answer(
         "👍 Successfully added " + f"{parsed_expense[3]} to\n" f"{parsed_expense[2]}!"
     )
