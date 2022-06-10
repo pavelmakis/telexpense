@@ -8,7 +8,7 @@ from aiogram.types.message import ContentType
 
 import messages
 from keyboards import donation, user
-from server import bot
+from server import _, bot
 
 PROVIDER_TOKEN = os.getenv("TELEXPENSE_PROVIDER_TOKEN")
 PRICE = [LabeledPrice(label="Donate", amount=300)]
@@ -20,7 +20,7 @@ class DonationForm(StatesGroup):
 
 async def start_donation(message: Message):
     await message.answer(
-        "Where do you want to make the payment from?",
+        _("Where do you want to make the payment from?"),
         reply_markup=donation.pay_countries_inlkeyb(),
     )
 
@@ -38,7 +38,7 @@ async def process_donation_cancel(call: CallbackQuery, state: FSMContext):
     # Send message with reply markup
     await bot.send_message(
         call.from_user.id,
-        "OK, next time",
+        _("OK, next time"),
         reply_markup=user.main_keyb(),
     )
 
@@ -97,7 +97,7 @@ async def send_invoice(call: CallbackQuery, state: FSMContext):
     # Send invoice
     await bot.send_invoice(
         call.from_user.id,
-        title="Donation to developer",
+        title=_("Donation to developer"),
         description=messages.donate_description,
         provider_token=PROVIDER_TOKEN,
         currency="eur",

@@ -9,7 +9,7 @@ import database
 import messages
 from keyboards import registration
 from keyboards.user import main_keyb, register_keyb
-from server import bot
+from server import _, bot
 from sheet import Sheet
 
 
@@ -107,7 +107,7 @@ async def process_cancel(call: CallbackQuery, state: FSMContext):
     # Send message with reply markup
     await bot.send_message(
         call.from_user.id,
-        "OK, next time",
+        _("OK, next time"),
         reply_markup=main_keyb() if registered else register_keyb(),
     )
 
@@ -161,7 +161,7 @@ async def process_sheet_url(message: Message, state: FSMContext):
     # Stop form
     await state.finish()
 
-    await message.answer("Checking this sheet...")
+    await message.answer(_("Checking this sheet..."))
 
     registered = database.is_user_registered(message.from_user.id)
 
@@ -207,7 +207,7 @@ async def forget_user_sheet(call: CallbackQuery, state: FSMContext):
 
     await bot.send_message(
         call.from_user.id,
-        "See you next time!",
+        _("See you next time!"),
         reply_markup=register_keyb(),
     )
 

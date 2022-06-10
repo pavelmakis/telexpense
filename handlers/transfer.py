@@ -8,9 +8,11 @@ import database
 import messages
 import records
 from keyboards import user
+from server import _
 from sheet import Sheet
 
 # TODO: Needs refactoring
+
 
 class TransferForm(StatesGroup):
     """
@@ -32,7 +34,7 @@ async def process_transaction(message: Message, state: FSMContext):
 
     # Starting form filling
     await TransferForm.outcome_amount.set()
-    await message.answer('Specify an amount of transfer\nor type "cancel"')
+    await message.answer(_('Specify an amount of transfer\nor type "cancel"'))
 
     # As the user enters the amount of transfer,
     # I send a query to the table to get today date and accounts
@@ -65,8 +67,10 @@ async def process_tran_outcome_amount(message: Message, state: FSMContext):
     # stop filling out the form and send main keyboard
     if parsed_amount is None:
         await message.answer(
-            "❌ Cannot understand this amount...\n"
-            "Try to add /transfer one more time!",
+            _(
+                "❌ Cannot understand this amount...\n"
+                "Try to add /transfer one more time!"
+            ),
             reply_markup=user.main_keyb(),
         )
         # Stop form
@@ -86,7 +90,7 @@ async def process_tran_outcome_amount(message: Message, state: FSMContext):
     # Go to the next step of form and send message
     await TransferForm.next()
     await message.answer(
-        "Specify the account from which\nthe money was transferred",
+        _("Specify the account from which\nthe money was transferred"),
         reply_markup=accounts_markup,
     )
 
@@ -103,8 +107,10 @@ async def process_outcome_account(message: Message, state: FSMContext):
         # Stop from getting and show main keyboard
         if parsed_account == None:
             await message.answer(
-                "❌ This account doesn't exist...\n"
-                "Try to add /transfer one more time!",
+                _(
+                    "❌ This account doesn't exist...\n"
+                    "Try to add /transfer one more time!"
+                ),
                 reply_markup=user.main_keyb(),
             )
             # Stop form
@@ -117,8 +123,10 @@ async def process_outcome_account(message: Message, state: FSMContext):
     await TransferForm.next()
     # Send a message with the button for
     await message.answer(
-        "Specify the amount added to the account to which the transfer was made.\n\n"
-        + 'If the amounts are the same, tap "Same amount"',
+        _(
+            "Specify the amount added to the account to which the transfer was made.\n\n"
+            + 'If the amounts are the same, tap "Same amount"'
+        ),
         reply_markup=user.same_amount_keyb(),
     )
 
@@ -146,8 +154,10 @@ async def process_tran_income_amount(message: Message, state: FSMContext):
             # stop filling out the form and send main keyboard
             if parsed_amount is None:
                 await message.answer(
-                    "❌ Cannot understand this amount...\n"
-                    "Try to add /transfer one more time!",
+                    _(
+                        "❌ Cannot understand this amount...\n"
+                        "Try to add /transfer one more time!"
+                    ),
                     reply_markup=user.main_keyb(),
                 )
                 # Stop form
@@ -163,7 +173,7 @@ async def process_tran_income_amount(message: Message, state: FSMContext):
     # Go to the next step of form and send message
     await TransferForm.next()
     await message.answer(
-        "Specify the account to which\nthe money was transferred",
+        _("Specify the account to which\nthe money was transferred"),
         reply_markup=accounts_markup,
     )
 
@@ -181,8 +191,10 @@ async def process_income_account(message: Message, state: FSMContext):
         # Stop from getting and show main keyboard
         if parsed_account == None:
             await message.answer(
-                "❌ This account doesn't exist...\n"
-                "Try to add /transfer one more time!",
+                _(
+                    "❌ This account doesn't exist...\n"
+                    "Try to add /transfer one more time!"
+                ),
                 reply_markup=user.main_keyb(),
             )
             # Stop form
@@ -214,8 +226,11 @@ async def process_income_account(message: Message, state: FSMContext):
 
     # Send a message with the button for
     await message.answer(
-        "👍 Successfully added transfer\n"
-        + f"from {transaction_record[2]} to {transaction_record[4]}!",
+        _(
+            "👍 Successfully added transfer\nfrom {account1} to {account2}!".format(
+                account1=transaction_record[2], account2=transaction_record[4]
+            )
+        ),
         reply_markup=user.main_keyb(),
     )
 
@@ -244,32 +259,40 @@ async def cmd_addtran(message: Message):
     # If wrong outcome amount
     if parsed_transaction[1] == None:
         await message.answer(
-            "Cannot understand this transaction!\n"
-            + "Looks like outcome amount is wrong!"
+            _(
+                "Cannot understand this transaction!\n"
+                + "Looks like outcome amount is wrong!"
+            )
         )
         return
 
     # If wrong account
     if parsed_transaction[2] == None:
         await message.answer(
-            "Cannot understand this transaction!\n"
-            + "Looks like this outcome account doesn't exist!"
+            _(
+                "Cannot understand this transaction!\n"
+                + "Looks like this outcome account doesn't exist!"
+            )
         )
         return
 
     # If wrong account
     if parsed_transaction[3] == None:
         await message.answer(
-            "Cannot understand this transaction!\n"
-            + "Looks like income amount is wrong!"
+            _(
+                "Cannot understand this transaction!\n"
+                + "Looks like income amount is wrong!"
+            )
         )
         return
 
     # If wrong account
     if parsed_transaction[4] == None:
         await message.answer(
-            "Cannot understand this transaction!\n"
-            + "Looks like this income account doesn't exist!"
+            _(
+                "Cannot understand this transaction!\n"
+                + "Looks like this income account doesn't exist!"
+            )
         )
         return
 
@@ -281,8 +304,11 @@ async def cmd_addtran(message: Message):
 
     user_sheet.add_transaction(parsed_transaction)
     await message.answer(
-        "👍 Successfully added transaction from \n"
-        + f"{parsed_transaction[2]} to {parsed_transaction[4]}!"
+        _(
+            "👍 Successfully added transaction from \n{account1} to {account2}!".format(
+                account1=parsed_transaction[2], account2=parsed_transaction[4]
+            )
+        )
     )
 
 
@@ -293,6 +319,9 @@ def register_transfer(dp: Dispatcher):
     dp.register_message_handler(process_transaction, commands=["transfer"])
     dp.register_message_handler(
         process_transaction, lambda message: message.text.startswith("💱Transfer")
+    )
+    dp.register_message_handler(
+        process_transaction, lambda message: message.text.startswith("💱Перевод")
     )
     dp.register_message_handler(
         process_tran_outcome_amount, state=TransferForm.outcome_amount

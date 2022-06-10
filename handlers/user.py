@@ -136,4 +136,7 @@ def register_user(dp: Dispatcher):
     dp.register_message_handler(
         cmd_available, lambda message: message.text.startswith("💲Available")
     )
+    dp.register_message_handler(
+        cmd_available, lambda message: message.text.startswith("💲Баланс")
+    )
     dp.register_message_handler(undo_transaction, commands=["undo"])

@@ -8,7 +8,7 @@ import database
 import messages
 from keyboards import currencies
 from keyboards.user import main_keyb
-from server import bot
+from server import _, bot
 from sheet import Sheet
 
 allowed_currencies = {
@@ -34,7 +34,7 @@ class MainCurrencyForm(StatesGroup):
 
 async def process_cur_cancel(message: Message, state: FSMContext):
     await state.finish()
-    await message.answer("OK, nex time!", reply_markup=main_keyb())
+    await message.answer(_("OK, nex time!"), reply_markup=main_keyb())
 
 
 async def ask_currency(message: Message):
@@ -76,7 +76,7 @@ async def update_format(message: Message, state: FSMContext):
         await message.answer(messages.wrong_pattern, reply_markup=main_keyb())
         return
 
-    await message.answer("Setting main currency...")
+    await message.answer(_("Setting main currency..."))
 
     # Updating currency in sheet
     user_sheet = Sheet(database.get_sheet_id(message.from_user.id))
@@ -89,10 +89,10 @@ async def update_format(message: Message, state: FSMContext):
     # Updating formats
     try:
         await bot.edit_message_text(
-            "Updating formats...", message.chat.id, message.message_id + 1
+            _("Updating formats..."), message.chat.id, message.message_id + 1
         )
     except MessageToEditNotFound:
-        await bot.send_message(message.chat.id, "Updating formats...")
+        await bot.send_message(message.chat.id, _("Updating formats..."))
 
     sym = "$" + allowed_currencies[currency]
     try:
@@ -107,7 +107,7 @@ async def update_format(message: Message, state: FSMContext):
         await bot.delete_message(message.chat.id, message.message_id + 1)
     except MessageToDeleteNotFound:
         pass
-    await bot.send_message(message.chat.id, "Success!", reply_markup=main_keyb())
+    await bot.send_message(message.chat.id, _("Success!"), reply_markup=main_keyb())
 
 
 def register_maincurrency(dp: Dispatcher):

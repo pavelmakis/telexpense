@@ -8,9 +8,11 @@ import database
 import messages
 import records
 from keyboards import user
+from server import _
 from sheet import Sheet
 
 # TODO: Needs refactoring
+
 
 class IncomeForm(StatesGroup):
     """
@@ -31,10 +33,7 @@ async def process_income(message: Message, state: FSMContext):
     """
     # Starting form filling
     await IncomeForm.amount.set()
-    await message.answer(
-        # message.chat.id,
-        'Specify an amount of income\nor type "cancel"'
-    )
+    await message.answer(_('Specify an amount of income\nor type "cancel"'))
 
     # As the user enters the amount of income,
     # I send a query to the table to get expense categories,
@@ -67,8 +66,7 @@ async def process_income_amount(message: Message, state: FSMContext):
     # stop filling out the form and send main keyboard
     if parsed_amount is None:
         await message.answer(
-            # message.chat.id,
-            "❌ Cannot understand this amount...\n" "Try to add /income one more time!",
+            _("❌ Cannot understand this amount...\nTry to add /income one more time!"),
             reply_markup=user.main_keyb(),
         )
         # Stop form
@@ -87,8 +85,7 @@ async def process_income_amount(message: Message, state: FSMContext):
     # Go to the next step of form and send message
     await IncomeForm.next()
     await message.answer(
-        # message.chat.id,
-        "Specify a category of income",
+        _("Specify a category of income"),
         reply_markup=in_categories_markup,
     )
 
@@ -109,9 +106,10 @@ async def process_income_category(message: Message, state: FSMContext):
         # Stop from getting and show main keyboard
         if data["category"] == None:
             await message.answer(
-                # message.chat.id,
-                "❌ This income category doesn't exist...\n"
-                "Try to add /income one more time!",
+                _(
+                    "❌ This income category doesn't exist...\n"
+                    "Try to add /income one more time!"
+                ),
                 reply_markup=user.main_keyb(),
             )
             # Finish form
@@ -126,8 +124,7 @@ async def process_income_category(message: Message, state: FSMContext):
     await IncomeForm.next()
     # Send message with the buttons with accounts titles
     await message.answer(
-        # message.chat.id,
-        "Specify an account",
+        _("Specify an account"),
         reply_markup=accounts_markup,
     )
 
@@ -147,25 +144,18 @@ async def process_account(message: Message, state: FSMContext):
         # Stop from getting and show main keyboard
         if data["account"] == None:
             await message.answer(
-                # message.chat.id,
-                "❌ This account doesn't exist...\n" "Try to add record one more time!",
+                _("❌ This account doesn't exist...\nTry to add /income one more time!"),
                 reply_markup=user.main_keyb(),
             )
             # Stop form
             await state.finish()
             return
 
-    # This handler is used both for income and expense form
-    # Go to the next step depending on which form is now working
-    current_state = await state.get_state()
-    # if "IncomeForm" in current_state:
     await IncomeForm.next()
-    # else:
-    #     await ExpenseForm.next()
+
     # Send a message with the button for cancelling description
     await message.answer(
-        # message.chat.id,
-        "Specify a description",
+        _("Specify a description"),
         reply_markup=user.no_description_keyb(),
     )
 
@@ -203,14 +193,12 @@ async def process_record_description(message: Message, state: FSMContext):
             return
 
         # Send finish message and show main keyboard
-        current_state = await state.get_state()
-        answer_message = ""
-        if "IncomeForm" in current_state:
-            answer_message = f"👍 Successfully added {data['amount']} to \n {data['category']} to {data['account']}!"
-        else:
-            answer_message = f"👍 Successfully added {data['amount']} to \n {data['category']} from {data['account']}!"
         await message.answer(
-            answer_message,
+            _(
+                "👍 Successfully added {amount} to \n {category} to {account}!".format(
+                    amount=data["amount"], cat=data["category"], account=data["account"]
+                )
+            ),
             reply_markup=user.main_keyb(),
         )
 
@@ -242,23 +230,27 @@ async def cmd_addinc(message: Message):
     # If wrong amount
     if parsed_income[3] == None:
         await message.answer(
-            "Cannot understand this income!\n" + "Looks like amount is wrong!",
+            _("Cannot understand this income!\nLooks like amount is wrong!"),
             reply_markup=user.main_keyb(),
         )
         return
     # If wrong category
     if parsed_income[2] == None:
         await message.answer(
-            "Cannot understand this income!\n"
-            + "Looks like this income category doesn't exist!",
+            _(
+                "Cannot understand this income!\n"
+                + "Looks like this income category doesn't exist!"
+            ),
             reply_markup=user.main_keyb(),
         )
         return
     # If wrong account
     if parsed_income[4] == None:
         await message.answer(
-            "Cannot understand this income!\n"
-            + "Looks like this account doesn't exist!",
+            _(
+                "Cannot understand this income!\n"
+                + "Looks like this account doesn't exist!"
+            ),
             reply_markup=user.main_keyb(),
         )
         return
@@ -273,7 +265,11 @@ async def cmd_addinc(message: Message):
         return
 
     await message.answer(
-        f"👍 Successfully added {parsed_income[3]} to\n" + f"{parsed_income[2]}!"
+        _(
+            "👍 Successfully added {amount}} to {category}!".format(
+                amount=parsed_income[3], category=parsed_income[2]
+            )
+        )
     )
 
 
@@ -284,6 +280,9 @@ def register_income(dp: Dispatcher):
     dp.register_message_handler(process_income, commands=["income"])
     dp.register_message_handler(
         process_income, lambda message: message.text.startswith("➕Income")
+    )
+    dp.register_message_handler(
+        process_income, lambda message: message.text.startswith("➕Доход")
     )
     dp.register_message_handler(process_income_amount, state=IncomeForm.amount)
     dp.register_message_handler(process_income_category, state=IncomeForm.category)
