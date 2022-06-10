@@ -6,7 +6,7 @@ from aiogram.contrib.middlewares.i18n import I18nMiddleware
 import database
 
 I18N_DOMAIN = 'telexpense'
-BASE_DIR = Path(__file__).parent
+BASE_DIR = Path(__file__).parent.parent
 LOCALES_DIR = BASE_DIR / 'locales'
 
 
@@ -17,14 +17,11 @@ class ACLMiddleware(I18nMiddleware):
         # Getting current user language
         user_lang = database.get_user_lang(user.id)
 
-        # If user is not registered
-        if user_lang is None:
-            return "en"
-
-        return user_lang
+        # If None, return english
+        return user_lang or "en"
 
 
-def setup_middleware(dp):
+def setup_language(dp):
     i18n = ACLMiddleware(I18N_DOMAIN, LOCALES_DIR)
     dp.middleware.setup(i18n)
     return i18n
