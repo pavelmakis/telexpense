@@ -3,9 +3,9 @@ from aiogram.dispatcher import FSMContext
 from aiogram.types import Message
 
 import database
-import keyboards
 import messages
 from keyboards.user import main_keyb, register_keyb
+from server import _
 from sheet import Sheet
 
 unregistered = lambda message: not database.is_user_registered(message.from_user.id)
@@ -31,7 +31,7 @@ async def cmd_help(message: Message):
         messages.help,
         parse_mode="Markdown",
         disable_web_page_preview=True,
-        reply_markup=keyboards.get_main_markup(),
+        reply_markup=main_keyb(),
     )
 
 
@@ -43,7 +43,7 @@ def register_start_help(dp: Dispatcher):
 async def answer_unregistered(message: Message):
     """This handler is used to answer to unregistered users."""
     await message.answer(
-        "I can only work with registered users!\nRead the wiki or type /register",
+        messages.for_inregistered,
         reply_markup=register_keyb(),
     )
 
@@ -54,8 +54,7 @@ async def cmd_cancel(message: Message, state: FSMContext):
 
     if current_state is None:
         await message.answer(
-            "Can cancel only while you are filling a record form.\n\n"
-            + "Nothing to cancel now!",
+            messages.cmd_cancel,
             reply_markup=main_keyb(),
         )
     else:
@@ -89,7 +88,7 @@ async def cmd_available(message: Message):
     # Combining answer string
     # ``` is used for parsing string in markdown to get
     # fixed width in message
-    available = "💰 Your accounts:\n\n"
+    available = _("💰 Your accounts:\n\n")
     available += "```\n"
     for i in range(len(amounts) - 1):
         # Current line lenght
@@ -102,7 +101,7 @@ async def cmd_available(message: Message):
     available += "```"
 
     # Adding "Daily available" from last item from get func
-    available += "\n*Daily available:*   "
+    available += _("\n*Daily available:*   ")
     available += "`" + amounts[-1] + "`"
 
     await message.answer(available, parse_mode="MarkdownV2", reply_markup=main_keyb())
@@ -111,18 +110,18 @@ async def cmd_available(message: Message):
 async def undo_transaction(message: Message):
     """This handler is used to delete last transaction from user's sheet."""
     user_sheet = Sheet(database.get_sheet_id(message.from_user.id))
-    await message.answer("Wait a second...")
+    await message.answer(_("Wait a second..."))
 
     # Getting last transaction type
     last_tran_type = user_sheet.get_last_transaction_type()
     if last_tran_type == None:
-        await message.answer("🤔 Looks like there is no transactions...")
+        await message.answer(_("🤔 Looks like there is no transactions..."))
         return
 
     # Delete last transaction
     user_sheet.delete_last_transaction(last_tran_type)
 
-    await message.answer("👌 Successfully deleted last transaction!")
+    await message.answer(_("👌 Successfully deleted last transaction!"))
 
 
 def register_user(dp: Dispatcher):
