@@ -172,7 +172,7 @@ It is necessary for me to remember you"
 )
 
 reg_success = _(
-    "Great, youre in!\n\n\
+    "Great, you are in!\n\n\
 Don't forget to select the main currency and its format in /currency \
 and set bots language in /language"
 )
@@ -192,10 +192,6 @@ Read the [wiki]({wiki}) and try to /register one more time!".format(
     )
 )
 
-reg_sheet_changed = _(
-    "Great! Your sheet successfully changed!\n\n\
-Don't forget to select the main currency and its format in /currency"
-)
 
 # Currency
 ask_currency = _(
