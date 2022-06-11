@@ -266,7 +266,7 @@ async def cmd_addinc(message: Message):
 
     await message.answer(
         _(
-            "👍 Successfully added {amount}} to {category}!".format(
+            "👍 Successfully added {amount} to {category}!".format(
                 amount=parsed_income[3], category=parsed_income[2]
             )
         )
