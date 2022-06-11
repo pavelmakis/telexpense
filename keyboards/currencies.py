@@ -1,5 +1,7 @@
 from aiogram.types import KeyboardButton, ReplyKeyboardMarkup
 
+from server import _
+
 allowed_patterns = {
     "1,234.00{s}": "#,##0.00[{s}]",
     "1,234.00 {s}": "#,##0.00 [{s}]",
@@ -20,7 +22,7 @@ def currencies() -> ReplyKeyboardMarkup:
             [KeyboardButton("🇨🇭 CHF"), KeyboardButton("🇨🇦 CAD")],
             [KeyboardButton("🇨🇿 CZK"), KeyboardButton("🇧🇾 BYN")],
             [KeyboardButton("🇺🇦 UAH"), KeyboardButton("🇰🇿 KZT")],
-            [KeyboardButton("Cancel")]
+            [KeyboardButton(_("Cancel"))]
         ],
         resize_keyboard=True,
         one_time_keyboard=True,
