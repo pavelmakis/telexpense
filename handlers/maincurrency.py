@@ -103,8 +103,10 @@ async def update_format(message: Message, state: FSMContext):
     except Exception:
         await message.answer(
             _(
-                "😳 Sorry, I cannot understand this format.\n\n"
-                "Change something and try /currency again later"
+                "😳 Something went wrong...\n\n"
+                "Please try again later.\n"
+                "If it does not work again, check your table or add it again via /register. "
+                "Maybe you have changed the table and I can no longer work with it"
             )
         )
         return
@@ -125,8 +127,10 @@ async def update_format(message: Message, state: FSMContext):
     except Exception:
         await message.answer(
             _(
-                "😳 Sorry, I cannot understand this format.\n\n"
-                "Change something and try /currency again later"
+                "😳 Something went wrong...\n\n"
+                "Please try again later.\n"
+                "If it does not work again, check your table or add it again via /register. "
+                "Maybe you have changed the table and I can no longer work with it"
             ),
         )
         return
