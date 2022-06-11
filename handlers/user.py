@@ -1,11 +1,12 @@
 from aiogram import Dispatcher
 from aiogram.dispatcher import FSMContext
 from aiogram.types import Message
+from aiogram.utils.exceptions import MessageToEditNotFound
 
 import database
 import messages
 from keyboards.user import main_keyb, register_keyb
-from server import _
+from server import _, bot
 from sheet import Sheet
 
 unregistered = lambda message: not database.is_user_registered(message.from_user.id)
@@ -115,13 +116,28 @@ async def undo_transaction(message: Message):
     # Getting last transaction type
     last_tran_type = user_sheet.get_last_transaction_type()
     if last_tran_type == None:
-        await message.answer(_("🤔 Looks like there is no transactions..."))
+        try:
+            await bot.edit_message_text(
+                _("🤔 Looks like there is no transactions..."),
+                message.chat.id,
+                message.message_id + 1,
+            )
+        except MessageToEditNotFound:
+            await message.answer(_("🤔 Looks like there is no transactions..."))
+
         return
 
     # Delete last transaction
     user_sheet.delete_last_transaction(last_tran_type)
 
-    await message.answer(_("👌 Successfully deleted last transaction!"))
+    try:
+        await bot.edit_message_text(
+            _("👌 Successfully deleted last transaction!"),
+            message.chat.id,
+            message.message_id + 1,
+        )
+    except MessageToEditNotFound:
+        await message.answer(_("👌 Successfully deleted last transaction!"))
 
 
 def register_user(dp: Dispatcher):
@@ -131,6 +147,9 @@ def register_user(dp: Dispatcher):
     dp.register_message_handler(cmd_cancel, commands=["cancel"], state="*")
     dp.register_message_handler(
         cmd_cancel, lambda msg: msg.text.lower() == "cancel", state="*"
+    )
+    dp.register_message_handler(
+        cmd_cancel, lambda msg: msg.text.lower() == "отмена", state="*"
     )
     dp.register_message_handler(cmd_available, commands=["available"])
     dp.register_message_handler(
