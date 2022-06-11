@@ -6,7 +6,6 @@ from aiogram.dispatcher.filters.state import State, StatesGroup
 from aiogram.types import CallbackQuery, LabeledPrice, Message, PreCheckoutQuery
 from aiogram.types.message import ContentType
 
-import messages
 from keyboards import donation, user
 from server import _, bot
 

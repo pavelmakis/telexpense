@@ -5,7 +5,6 @@ from aiogram.types import Message
 from aiogram.utils.exceptions import MessageToDeleteNotFound, MessageToEditNotFound
 
 import database
-import messages
 from keyboards import currencies
 from keyboards.user import main_keyb
 from server import _, bot

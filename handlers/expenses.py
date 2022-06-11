@@ -1,5 +1,3 @@
-from unicodedata import category
-
 from aiogram import Dispatcher
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import State, StatesGroup
@@ -7,7 +5,6 @@ from aiogram.types import Message, ReplyKeyboardMarkup
 from gspread.exceptions import GSpreadException
 
 import database
-import messages
 import records
 from keyboards import user
 from server import _

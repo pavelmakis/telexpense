@@ -6,7 +6,6 @@ from aiogram.types.input_media import InputMediaVideo
 from gspread.utils import extract_id_from_url
 
 import database
-import messages
 from keyboards import registration
 from keyboards.user import main_keyb, register_keyb
 from server import _, bot

@@ -5,7 +5,6 @@ from aiogram.types import Message, ReplyKeyboardMarkup
 from gspread.exceptions import GSpreadException
 
 import database
-import messages
 import records
 from keyboards import user
 from server import _

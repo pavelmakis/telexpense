@@ -4,7 +4,6 @@ from aiogram.types import Message
 from aiogram.utils.exceptions import MessageToEditNotFound
 
 import database
-import messages
 from keyboards.user import main_keyb, register_keyb
 from server import _, bot
 from sheet import Sheet
