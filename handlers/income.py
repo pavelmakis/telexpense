@@ -176,7 +176,7 @@ async def process_record_description(message: Message, state: FSMContext):
     async with state.proxy() as data:
         # If not negative answer, add description to form
         data["description"] = ""
-        if message.text != "No description":
+        if message.text != "No description" or "Без описания":
             data["description"] = message.text
 
         # Creating list with expense or income data
@@ -207,7 +207,7 @@ async def process_record_description(message: Message, state: FSMContext):
         # Send finish message and show main keyboard
         await message.answer(
             _(
-                "👍 Successfully added {amount} to \n {category} to {account}!".format(
+                "👍 Successfully added {amount} to \n {cat} to {account}!".format(
                     amount=data["amount"], cat=data["category"], account=data["account"]
                 )
             ),

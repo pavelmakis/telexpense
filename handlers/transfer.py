@@ -149,7 +149,7 @@ async def process_tran_income_amount(message: Message, state: FSMContext):
 
     async with state.proxy() as data:
         # If amount is same
-        if message.text == "Same amount":
+        if message.text == "Same amount" or "Такая же сумма":
             data["income_amount"] = records.parse_income_amount(
                 str(data["outcome_amount"])
             )

@@ -16,7 +16,7 @@ def main_keyb() -> ReplyKeyboardMarkup:
 def no_description_keyb() -> ReplyKeyboardMarkup:
     """Get keyboard with 'No description' button"""
     markup = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
-    markup.add("No description")
+    markup.add(_("No description"))
 
     return markup
 
@@ -24,7 +24,7 @@ def no_description_keyb() -> ReplyKeyboardMarkup:
 def same_amount_keyb() -> ReplyKeyboardMarkup:
     """Get keyboard with 'Same amount' button"""
     markup = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
-    markup.add("Same amount")
+    markup.add(_("Same amount"))
 
     return markup
 
