@@ -8,8 +8,6 @@ from copy import deepcopy
 import gspread
 from gspread import exceptions
 
-from messages import to_main_currency_f
-
 
 class Sheet:
     account = gspread.service_account(
@@ -323,3 +321,16 @@ class Sheet:
             requests.append(req_cp)
 
         self.user_sheet.batch_update({"requests": requests})
+
+
+to_main_currency_f = '=D2*IFNA(GOOGLEFINANCE("CURRENCY:"&IFS(E2 = Preferences!$H$4; \
+Preferences!$J$4; E2 = Preferences!$H$5; Preferences!$J$5; E2 = Preferences!$H$6; \
+Preferences!$J$6; E2 = Preferences!$H$7; Preferences!$J$7; E2 = Preferences!$H$8; \
+Preferences!$J$8; E2 = Preferences!$H$9; Preferences!$J$9; E2 = Preferences!$H$10; \
+Preferences!$J$10; E2 = Preferences!$H$11; Preferences!$J$11; E2 = Preferences!$H$12; \
+Preferences!$J$12; E2 = Preferences!$H$13; Preferences!$J$13; E2 = Preferences!$H$14; \
+Preferences!$J$14; E2 = Preferences!$H$15; Preferences!$J$15; E2 = Preferences!$H$16; \
+Preferences!$J$16; E2 = Preferences!$H$17; Preferences!$J$17; E2 = Preferences!$H$18; \
+Preferences!$J$18; E2 = Preferences!$H$19; Preferences!$J$19; E2 = Preferences!$H$20; \
+Preferences!$J$20; E2 = Preferences!$H$21; Preferences!$J$21; E2 = Preferences!$H$22; \
+Preferences!$J$22)&Preferences!$F$16); 1)'
