@@ -149,7 +149,7 @@ def register_maincurrency(dp: Dispatcher):
     )
     dp.register_message_handler(
         process_cur_cancel,
-        lambda msg: msg.text.lower() == "cancel",
+        lambda msg: msg.text.lower() == "cancel" or "отмена",
         state=MainCurrencyForm.all_states,
     )
 
