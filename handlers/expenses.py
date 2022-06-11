@@ -188,7 +188,7 @@ async def process_record_description(message: Message, state: FSMContext):
     async with state.proxy() as data:
         # If not negative answer, add description to form
         data["description"] = ""
-        if message.text != "No description":
+        if message.text != "No description" or "Без описания":
             data["description"] = message.text
 
         # Creating list with expense or income data
