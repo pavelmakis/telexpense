@@ -45,7 +45,13 @@ async def process_income(message: Message, state: FSMContext):
         user_data = user_sheet.get_day_categories_accounts()
     except GSpreadException:
         await state.finish()
-        await message.answer(messages.error_message, reply_markup=user.main_keyb())
+        await message.answer(
+            _(
+                "😳 Sorry, I cannot understand this format.\n\n"
+                "Change something and try /currency again later"
+            ),
+            reply_markup=user.main_keyb(),
+        )
         return
 
     # I put the data in the state.proxy(),
@@ -189,7 +195,13 @@ async def process_record_description(message: Message, state: FSMContext):
             user_sheet.add_record(record)
         except GSpreadException:
             await state.finish()
-            await message.answer(messages.error_message, reply_markup=user.main_keyb())
+            await message.answer(
+                _(
+                    "😳 Sorry, I cannot understand this format.\n\n"
+                    "Change something and try /currency again later"
+                ),
+                reply_markup=user.main_keyb(),
+            )
             return
 
         # Send finish message and show main keyboard
@@ -211,7 +223,14 @@ async def cmd_addinc(message: Message):
     # If user just type command
     if message.text == "/addinc":
         await message.answer(
-            messages.income_help,
+            _(
+                "Income can be added by:\n"
+                "    `/addinc amount, category, [account], [description]`\n"
+                "where account and description are optional.\n\n"
+                "Example:\n"
+                "    `/addinc 1200, Salary, N26, First job`\n"
+                "    `/addinc 20.20, Cashback, Revolut`"
+            ),
             parse_mode="Markdown",
             reply_markup=user.main_keyb(),
         )
@@ -225,8 +244,20 @@ async def cmd_addinc(message: Message):
 
     # If not parsed, send help message
     if parsed_income == []:
-        await message.answer(messages.wrong_income, parse_mode="Markdown")
+        await message.answer(
+            _(
+                "Cannot understand this income!\n\n"
+                "Income can be added by:\n"
+                "    `/addinc amount, category, [account], [description]`\n"
+                "where account and description are optional.\n\n"
+                "Example:\n"
+                "    `/addinc 1200, Salary, N26, First job`\n"
+                "    `/addinc 20.20, Cashback, Revolut`"
+            ),
+            parse_mode="Markdown",
+        )
         return
+
     # If wrong amount
     if parsed_income[3] == None:
         await message.answer(
@@ -261,7 +292,13 @@ async def cmd_addinc(message: Message):
     try:
         user_sheet.add_record(parsed_income)
     except GSpreadException:
-        await message.answer(messages.error_message, reply_markup=user.main_keyb())
+        await message.answer(
+            _(
+                "😳 Sorry, I cannot understand this format.\n\n"
+                "Change something and try /currency again later"
+            ),
+            reply_markup=user.main_keyb(),
+        )
         return
 
     await message.answer(

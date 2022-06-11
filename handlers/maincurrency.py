@@ -39,7 +39,14 @@ async def process_cur_cancel(message: Message, state: FSMContext):
 
 async def ask_currency(message: Message):
     # Sending keyboard with available languages
-    await message.answer(messages.ask_currency, reply_markup=currencies.currencies())
+    await message.answer(
+        _(
+            "What is the main currency of your finances?\n\n"
+            "If your currency is not in the list, unfortunately, you will have "
+            "to adjust the currency and format manually in the table"
+        ),
+        reply_markup=currencies.currencies(),
+    )
 
     await MainCurrencyForm.currency.set()
 
@@ -49,14 +56,20 @@ async def ask_format(message: Message, state: FSMContext):
     currency = message.text[-3:]
 
     if currency not in allowed_currencies.keys():
-        await message.answer(messages.wrong_currency, reply_markup=main_keyb())
+        await message.answer(
+            _(
+                "😥 Sorry, this currency cannot be set up through me yet.\n\n"
+                "You can do this manually on the Preferences page in your sheet."
+            ),
+            reply_markup=main_keyb(),
+        )
         await state.finish()
 
     # Saving user currency to memory
     await state.update_data(cur=currency)
 
     await message.answer(
-        messages.ask_format,
+        _("Please select a currency format that suits you best"),
         reply_markup=currencies.curr_formats(allowed_currencies[currency]),
     )
     await MainCurrencyForm.format.set()
@@ -73,7 +86,13 @@ async def update_format(message: Message, state: FSMContext):
 
     # If user gave another pattern
     if pattern not in list(currencies.allowed_patterns.keys()):
-        await message.answer(messages.wrong_pattern, reply_markup=main_keyb())
+        await message.answer(
+            _(
+                "😳 Sorry, I cannot understand this format.\n\n"
+                "Change something and try /currency again later"
+            ),
+            reply_markup=main_keyb(),
+        )
         return
 
     await message.answer(_("Setting main currency..."))
@@ -83,7 +102,12 @@ async def update_format(message: Message, state: FSMContext):
     try:
         user_sheet.set_main_cur(currency)
     except Exception:
-        await message.answer(messages.error_message)
+        await message.answer(
+            _(
+                "😳 Sorry, I cannot understand this format.\n\n"
+                "Change something and try /currency again later"
+            )
+        )
         return
 
     # Updating formats
@@ -100,7 +124,12 @@ async def update_format(message: Message, state: FSMContext):
             currencies.allowed_patterns[pattern].format(s=sym)
         )
     except Exception:
-        await message.answer(messages.error_message)
+        await message.answer(
+            _(
+                "😳 Sorry, I cannot understand this format.\n\n"
+                "Change something and try /currency again later"
+            ),
+        )
         return
 
     try:

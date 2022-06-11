@@ -44,7 +44,15 @@ async def process_transaction(message: Message, state: FSMContext):
         user_data = user_sheet.get_day_accounts()
     except GSpreadException:
         await state.finish()
-        await message.answer(messages.error_message, reply_markup=user.main_keyb())
+        await message.answer(
+            _(
+                "😳 Something went wrong...\n\n"
+                "Please try again later.\n"
+                "If it does not work again, check your table or add it again via /register. "
+                "Maybe you have changed the table and I can no longer work with it"
+            ),
+            reply_markup=user.main_keyb(),
+        )
         return
 
     # I put the data in the state.proxy(),
@@ -221,7 +229,15 @@ async def process_income_account(message: Message, state: FSMContext):
     try:
         user_sheet.add_transaction(transaction_record)
     except GSpreadException:
-        await message.answer(messages.error_message, reply_markup=user.main_keyb())
+        await message.answer(
+            _(
+                "😳 Something went wrong...\n\n"
+                "Please try again later.\n"
+                "If it does not work again, check your table or add it again via /register. "
+                "Maybe you have changed the table and I can no longer work with it"
+            ),
+            reply_markup=user.main_keyb(),
+        )
         return
 
     # Send a message with the button for
@@ -239,7 +255,14 @@ async def cmd_addtran(message: Message):
     # If user just type command
     if message.text == "/addtran":
         await message.answer(
-            messages.tran_help,
+            _(
+                "Transfer can be added by:\n"
+                "    `/addtran outcome_amount, outcome\\_account, [income\\_amount], income\\_account`\n"
+                "where income amount is optional\\. Add it if your transaction is multicurrency\\.\n\n"
+                "Example:\n"
+                "    `/addtran 1200, Revolut, N26`\n"
+                "    `/addtran 200, Revolut EUR, 220.3, Revolut USD`"
+            ),
             parse_mode="MarkdownV2",
             reply_markup=user.main_keyb(),
         )
@@ -253,7 +276,18 @@ async def cmd_addtran(message: Message):
 
     # If not parsed, send help message
     if parsed_transaction == []:
-        await message.answer(messages.wrong_tran, parse_mode="MarkdownV2")
+        await message.answer(
+            _(
+                "Cannot understand this transaction\\!\n\n"
+                "Transfer can be added by:\n"
+                "    `/addtran outcome\\_amount, outcome\\_account, [income\\_amount], income\\_account`\n"
+                "where income\\_amount is optional\\. Add it if your transaction is multicurrency\\.\n\n"
+                "Example:\n"
+                "    `/addtran 1200, Revolut, N26`\n"
+                "    `/addtran 200, Revolut EUR, 220.3, Revolut USD`\n"
+            ),
+            parse_mode="MarkdownV2",
+        )
         return
 
     # If wrong outcome amount
@@ -299,7 +333,15 @@ async def cmd_addtran(message: Message):
     # If success
     user_sheet = Sheet(database.get_sheet_id(message.from_user.id))
     if user_sheet == None:
-        await message.answer(messages.error_message, reply_markup=user.main_keyb())
+        await message.answer(
+            _(
+                "😳 Something went wrong...\n\n"
+                "Please try again later.\n"
+                "If it does not work again, check your table or add it again via /register. "
+                "Maybe you have changed the table and I can no longer work with it"
+            ),
+            reply_markup=user.main_keyb(),
+        )
         return
 
     user_sheet.add_transaction(parsed_transaction)

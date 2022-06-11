@@ -12,6 +12,11 @@ from keyboards.user import main_keyb, register_keyb
 from server import _, bot
 from sheet import Sheet
 
+TEMPLATE_SHEET_LINK = "https://docs.google.com/spreadsheets/\
+d/1lO9oTJu3CudibuQCCqk-s1t3DSuRNRoty4SLY5UvG_w"
+BOT_SERVICE_EMAIL = "telexpense-bot@telexpense-bot.iam.gserviceaccount.com"
+BOT_WIKI = "https://github.com/pavelmakis/telexpense/wiki"
+
 
 class RegistrationForm(StatesGroup):
     """This form if used for registration"""
@@ -41,12 +46,19 @@ async def start_registration(message: Message):
     # registered or not
     if database.is_user_registered(message.from_user.id):
         await message.answer(
-            messages.reg_start_registered,
+            _(
+                "You are already registered user!\n\n"
+                "You can either connect me to a new Google Sheet or delete "
+                "a connected sheet from the database"
+            ),
             reply_markup=registration.change_sheet_keyb(),
         )
     else:
         await message.answer(
-            messages.reg_start_unregistered,
+            _(
+                "Looks like you are new here...\n\n"
+                "If you want to use me, connect me to new Google Sheet"
+            ),
             reply_markup=registration.new_sheet_keyb(),
         )
 
@@ -68,12 +80,19 @@ async def process_user_option(call: CallbackQuery):
             # file_id field
             call.from_user.id,
             # for test bot
-            #video="CgACAgQAAxkDAAICnmKTrx5fRvoBSbfcmGHrpNOTrmByAAKGAwACxs6cUOdnAc6h666dJAQ",
+            # video="CgACAgQAAxkDAAICnmKTrx5fRvoBSbfcmGHrpNOTrmByAAKGAwACxs6cUOdnAc6h666dJAQ",
             # for telexpense
             video="CgACAgQAAxkDAAIk8GKTsJeiKNiFtQV5r3Y5TxnzI6WwAAKGAwACxs6cUJBCE840i8xkJAQ",
             width=1512,
             height=946,
-            caption=messages.reg_step_1,
+            caption=_(
+                "*STEP 1*\n\n"
+                "Copy this Google Sheet template to your Google account. "
+                "You do this to ensure that your financial data belongs only to you.\n\n"
+                "👉 [Telexpense Template Sheet]({sheet}) 👈".format(
+                    sheet=TEMPLATE_SHEET_LINK
+                )
+            ),
             parse_mode="Markdown",
             reply_markup=registration.copytemplate_done_keyb(),
         )
@@ -88,7 +107,7 @@ async def process_user_option(call: CallbackQuery):
     elif call.data == "forget_sheet":
         # Sending warning to user
         await bot.edit_message_text(
-            messages.reg_forget_warning,
+            _("Are you sure? After that you have to /register again to use me"),
             call.from_user.id,
             call.message.message_id,
             reply_markup=registration.understand_keyb(),
@@ -122,10 +141,15 @@ async def add_bot_email(call: CallbackQuery):
     await bot.edit_message_media(
         InputMediaVideo(
             # for test bot
-            #"CgACAgQAAxkDAAICpmKTsnx3QJm2mI8cA61YzzZpK9IyAAJtAwAC7SukUMWd2HYBF9nqJAQ",
+            # "CgACAgQAAxkDAAICpmKTsnx3QJm2mI8cA61YzzZpK9IyAAJtAwAC7SukUMWd2HYBF9nqJAQ",
             # for telexpense
             "CgACAgQAAxkDAAIk-2KTuhq5jmAyOt2GS2xD73Vo6cCIAAJtAwAC7SukULuOaMN-Ao5_JAQ",
-            caption=messages.reg_step_2,
+            caption=_(
+                "*STEP 2*\n\n"
+                "Add me to the table as an editor so I can add transactions "
+                "and read the balance. Here is my email:\n\n"
+                "{email}".format(email=BOT_SERVICE_EMAIL)
+            ),
             parse_mode="Markdown",
         ),
         call.from_user.id,
@@ -143,7 +167,11 @@ async def ask_sheet_url(call: CallbackQuery):
     # Send message with step 3 of instructions
     await bot.send_message(
         call.from_user.id,
-        messages.reg_step_3,
+        _(
+            "*STEP 3*\n\n"
+            "Copy the link to the table in your account and send it to this chat. "
+            "It is necessary for me to remember you"
+        ),
         parse_mode="Markdown",
         reply_markup=ReplyKeyboardRemove(),
     )
@@ -169,7 +197,7 @@ async def process_sheet_url(message: Message, state: FSMContext):
     if check_url(message.text):
         if registered:
             # Removing previous record if user was registered
-            #TODO: Update db record, not rewrite
+            # TODO: Update db record, not rewrite
             database.delete_sheet_id(message.from_user.id)
 
             database.insert_sheet_id(
@@ -177,19 +205,35 @@ async def process_sheet_url(message: Message, state: FSMContext):
             )
 
             await message.answer(
-                messages.reg_update_success,
+                _(
+                    "Your sheet successfully changed!\n\n"
+                    "Don't forget to select the main currency and its format in /currency "
+                    "and set bots language in /language"
+                ),
                 reply_markup=main_keyb(),
             )
         else:
             database.insert_sheet_id(
                 message.from_user.id, extract_id_from_url(message.text)
             )
-            await message.answer(messages.reg_success, reply_markup=main_keyb())
+            await message.answer(
+                _(
+                    "Great, you are in!\n\n"
+                    "Don't forget to select the main currency and its format in /currency "
+                    "and set bots language in /language"
+                ),
+                reply_markup=main_keyb(),
+            )
 
         return
 
     await message.answer(
-        messages.reg_wrong_link,
+        _(
+            "Hm. Looks like it's not a link I'm looking for...\n\n"
+            "Read the [wiki]({wiki}) and try to /register one more time!".format(
+                wiki=BOT_WIKI
+            )
+        ),
         disable_web_page_preview=True,
         parse_mode="Markdown",
         reply_markup=main_keyb() if registered else register_keyb(),

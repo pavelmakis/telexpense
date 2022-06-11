@@ -55,7 +55,10 @@ async def process_donation_russia(call: CallbackQuery, state: FSMContext):
 
     # Sending button with payment link
     await bot.edit_message_text(
-        messages.russia_donate_message,
+        _(
+            "To transfer money tap the first button, "
+            "you will be redirected to the payment page"
+        ),
         call.from_user.id,
         call.message.message_id,
         reply_markup=donation.ru_donation_link_inlkeyb(),
@@ -71,9 +74,13 @@ async def process_successful_payment(message: Message):
     """Sends thanks message if successfull payment"""
     await bot.send_message(
         message.chat.id,
-        messages.successfull_payment.format(
-            total_amount=message.successful_payment.total_amount // 100,
-            currency=message.successful_payment.currency,
+        _(
+            "*🙏 Thank you for supporting my creator for "
+            "{total_amount} {currency}!*\n\n🤔 Maybe now he can come "
+            "up with even more functionality for me".format(
+                total_amount=message.successful_payment.total_amount // 100,
+                currency=message.successful_payment.currency,
+            )
         ),
         parse_mode="Markdown",
         reply_markup=user.main_keyb(),
@@ -89,7 +96,12 @@ async def send_invoice(call: CallbackQuery, state: FSMContext):
 
     # Send help message
     await bot.edit_message_text(
-        messages.donate_mes,
+        _(
+            "The minimum amount is 3€.\n\n"
+            "If you want to donate a different amount, "
+            'tap "Pay" and enter the amount of the tip, '
+            "which will be added to the minimum amount"
+        ),
         call.from_user.id,
         call.message.message_id,
     )
@@ -98,7 +110,7 @@ async def send_invoice(call: CallbackQuery, state: FSMContext):
     await bot.send_invoice(
         call.from_user.id,
         title=_("Donation to developer"),
-        description=messages.donate_description,
+        description=_("This is a voluntary donation to my creator."),
         provider_token=PROVIDER_TOKEN,
         currency="eur",
         is_flexible=False,

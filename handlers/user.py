@@ -10,6 +10,7 @@ from server import _, bot
 from sheet import Sheet
 
 unregistered = lambda message: not database.is_user_registered(message.from_user.id)
+BOT_WIKI = "https://github.com/pavelmakis/telexpense/wiki"
 
 
 async def cmd_start(message: Message):
@@ -18,7 +19,12 @@ async def cmd_start(message: Message):
     # if not - 'register' button
     is_registered = database.is_user_registered(message.from_user.id)
     await message.answer(
-        messages.start_message,
+        _(
+            "Hi! I'm Telexpense bot 📺\n\n"
+            "I can help you manage your finances in Google Sheet.\n"
+            "If you are a new user, read the [wiki]({wiki}) "
+            "or type /register to start using me".format(wiki=BOT_WIKI)
+        ),
         parse_mode="Markdown",
         disable_web_page_preview=True,
         reply_markup=main_keyb() if is_registered else register_keyb(),
@@ -29,7 +35,29 @@ async def cmd_help(message: Message):
     """This handler is called when user sends /help command."""
     # TODO: Create different help message for unregistered users
     await message.reply(
-        messages.help,
+        _(
+            "I can help you manage your finances in Google Sheet.\n\n"
+            "If you don't understand something, check out [this wiki]({wiki})\n\n"
+            "I can understand these commands:\n\n"
+            "*Add records*\n"
+            "/expense (➖Expense) - add new expense\n"
+            "/income (➕Income) - add new income\n"
+            "/transfer (💱Transfer) - add new transfer\n"
+            "/cancel - cancel record filling\n"
+            "/addexp - add expense in a single message\n"
+            "/addinc - add income in a single message\n"
+            "/addtran - add transaction in a single message\n\n"
+            "*Show balance*\n"
+            "/available (💲Available) - show your accounts balances\n\n"
+            "*Revert changes*\n"
+            "/undo - delete last transaction from Google Sheet\n\n"
+            "*Settings*\n"
+            "/currency - set main currency and its format\n"
+            "/language - set bot's language\n"
+            "/register - connect me to Google Sheet or change connected sheet\n\n"
+            "*Other*\n"
+            "/donate - sponsor this project".format(wiki=BOT_WIKI)
+        ),
         parse_mode="Markdown",
         disable_web_page_preview=True,
         reply_markup=main_keyb(),
@@ -44,7 +72,10 @@ def register_start_help(dp: Dispatcher):
 async def answer_unregistered(message: Message):
     """This handler is used to answer to unregistered users."""
     await message.answer(
-        messages.for_inregistered,
+        _(
+            "I can only work with registered users!\n"
+            "Read the [wiki]({wiki}) or type /register".format(wiki=BOT_WIKI)
+        ),
         reply_markup=register_keyb(),
     )
 
@@ -55,14 +86,14 @@ async def cmd_cancel(message: Message, state: FSMContext):
 
     if current_state is None:
         await message.answer(
-            messages.cmd_cancel,
+            _("Can cancel only while filling a form.\n\nNothing to cancel now!"),
             reply_markup=main_keyb(),
         )
     else:
         # Cancel state and inform user about it
         await state.finish()
         await message.answer(
-            "Cancelled",
+            _("Cancelled"),
             reply_markup=main_keyb(),
         )
 
@@ -72,7 +103,15 @@ async def cmd_available(message: Message):
     # Openning sheet, checking for errors
     user_sheet = Sheet(database.get_sheet_id(message.from_user.id))
     if user_sheet == None:
-        await message.answer(messages.error_message, reply_markup=main_keyb())
+        await message.answer(
+            _(
+                "😳 Something went wrong...\n\n"
+                "Please try again later.\n"
+                "If it does not work again, check your table or add it again via /register. "
+                "Maybe you have changed the table and I can no longer work with it"
+            ),
+            reply_markup=main_keyb(),
+        )
         return
 
     amounts = user_sheet.get_account_amounts()
