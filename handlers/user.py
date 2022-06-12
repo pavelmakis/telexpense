@@ -76,6 +76,7 @@ async def answer_unregistered(message: Message):
             "Read the [wiki]({wiki}) or type /register".format(wiki=BOT_WIKI)
         ),
         parse_mode='Markdown',
+        disable_web_page_preview=True,
         reply_markup=register_keyb(),
     )
 
