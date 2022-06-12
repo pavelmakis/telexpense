@@ -195,11 +195,8 @@ async def process_sheet_url(message: Message, state: FSMContext):
     # Sheet check
     if check_url(message.text):
         if registered:
-            # Removing previous record if user was registered
-            # TODO: Update db record, not rewrite
-            database.delete_sheet_id(message.from_user.id)
-
-            database.insert_sheet_id(
+            # Updating previous record if user was registered
+            database.update_sheet_id(
                 message.from_user.id, extract_id_from_url(message.text)
             )
 
