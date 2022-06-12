@@ -29,6 +29,7 @@ def register_all_handlers(dp):
     register_registration(dp)
 
     # Registering comands for all users
+    register_language_cmd(dp)
     register_maincurrency(dp)
     register_user(dp)
     register_expenses(dp)
@@ -51,6 +52,7 @@ if __name__ == "__main__":
     from handlers.donations import register_donations
     from handlers.expenses import register_expenses
     from handlers.income import register_income
+    from handlers.language import register_language_cmd
     from handlers.maincurrency import register_maincurrency
     from handlers.registration import register_registration
     from handlers.transfer import register_transfer
