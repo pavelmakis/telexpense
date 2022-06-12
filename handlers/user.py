@@ -75,6 +75,7 @@ async def answer_unregistered(message: Message):
             "I can only work with registered users!\n"
             "Read the [wiki]({wiki}) or type /register".format(wiki=BOT_WIKI)
         ),
+        parse_mode='Markdown',
         reply_markup=register_keyb(),
     )
 
