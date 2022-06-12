@@ -3,11 +3,10 @@ This module is used for working with user's Google Sheet.
 It contains all functions that writes and reads data in sheet.
 """
 import os
+from copy import deepcopy
 
 import gspread
 from gspread import exceptions
-
-from messages import to_main_currency_f
 
 
 class Sheet:
@@ -176,7 +175,7 @@ class Sheet:
 
         # Check last transaction 'category' field
         if len(data) >= 2:
-            #TODO: Add check for multilanguage
+            # TODO: Add check for multilanguage
             if data[0][0] == "Transfer" or "Transaction":
                 return "transfer"
             else:
@@ -235,3 +234,103 @@ class Sheet:
             trans_list.delete_rows(2, 3)
 
         return
+
+    def set_main_cur(self, currency: str):
+        """Update cell with main currency type"""
+        pref_sheet = self.user_sheet.worksheet("Preferences")
+        pref_sheet.update("F16", currency)
+
+    def set_main_cur_format(self, pattern: str):
+        main_sheet_id = self.user_sheet.worksheet("Main").id
+
+        sheet_ranges = [
+            {
+                "sheetId": main_sheet_id,
+                "startRowIndex": 2,
+                "endRowIndex": 3,
+                "startColumnIndex": 1,
+                "endColumnIndex": 3,
+            },
+            {
+                "sheetId": main_sheet_id,
+                "startRowIndex": 2,
+                "endRowIndex": 3,
+                "startColumnIndex": 5,
+                "endColumnIndex": 7,
+            },
+            {
+                "sheetId": main_sheet_id,
+                "startRowIndex": 2,
+                "endRowIndex": 3,
+                "startColumnIndex": 9,
+                "endColumnIndex": 11,
+            },
+            {
+                "sheetId": main_sheet_id,
+                "startRowIndex": 2,
+                "endRowIndex": 3,
+                "startColumnIndex": 13,
+                "endColumnIndex": 15,
+            },
+            {
+                "sheetId": main_sheet_id,
+                "startRowIndex": 6,
+                "endRowIndex": 7,
+                "startColumnIndex": 9,
+                "endColumnIndex": 11,
+            },
+            {
+                "sheetId": main_sheet_id,
+                "startRowIndex": 10,
+                "endRowIndex": 11,
+                "startColumnIndex": 9,
+                "endColumnIndex": 11,
+            },
+            {
+                "sheetId": main_sheet_id,
+                "startRowIndex": 6,
+                "endRowIndex": 26,
+                "startColumnIndex": 15,
+                "endColumnIndex": 16,
+            },
+        ]
+
+        dry_request = {
+            "repeatCell": {
+                "range": {},
+                "cell": {
+                    "userEnteredFormat": {
+                        "numberFormat": {
+                            "type": "CURRENCY",
+                            "pattern": f"{pattern}",
+                        }
+                    }
+                },
+                "fields": "userEnteredFormat.numberFormat",
+            }
+        }
+
+        requests = []
+
+        for i in range(len(sheet_ranges)):
+            # Copying request template
+            req_cp = deepcopy(dry_request)
+
+            # Editing range and appending
+            req_cp["repeatCell"]["range"] = sheet_ranges[i]
+            requests.append(req_cp)
+
+        self.user_sheet.batch_update({"requests": requests})
+
+
+to_main_currency_f = '=D2*IFNA(GOOGLEFINANCE("CURRENCY:"&IFS(E2 = Preferences!$H$4; \
+Preferences!$J$4; E2 = Preferences!$H$5; Preferences!$J$5; E2 = Preferences!$H$6; \
+Preferences!$J$6; E2 = Preferences!$H$7; Preferences!$J$7; E2 = Preferences!$H$8; \
+Preferences!$J$8; E2 = Preferences!$H$9; Preferences!$J$9; E2 = Preferences!$H$10; \
+Preferences!$J$10; E2 = Preferences!$H$11; Preferences!$J$11; E2 = Preferences!$H$12; \
+Preferences!$J$12; E2 = Preferences!$H$13; Preferences!$J$13; E2 = Preferences!$H$14; \
+Preferences!$J$14; E2 = Preferences!$H$15; Preferences!$J$15; E2 = Preferences!$H$16; \
+Preferences!$J$16; E2 = Preferences!$H$17; Preferences!$J$17; E2 = Preferences!$H$18; \
+Preferences!$J$18; E2 = Preferences!$H$19; Preferences!$J$19; E2 = Preferences!$H$20; \
+Preferences!$J$20; E2 = Preferences!$H$21; Preferences!$J$21; E2 = Preferences!$H$22; \
+Preferences!$J$22)&Preferences!$F$16); 1)'

@@ -1,8 +1,10 @@
 import logging
 import os
 
-from aiogram import Bot, Dispatcher, executor, types
+from aiogram import Bot, Dispatcher, executor
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
+
+from middlewares.language import setup_language
 
 API_TOKEN = os.getenv("TELEXPENSE_TOKEN")
 
@@ -10,7 +12,7 @@ API_TOKEN = os.getenv("TELEXPENSE_TOKEN")
 logging.basicConfig(level=logging.INFO)
 
 # def register_all_middlewares(dp):
-#     dp.setup_middleware(DbMiddleware())
+#     setup_language(dp)
 
 
 # def register_all_filters(dp):
@@ -27,6 +29,8 @@ def register_all_handlers(dp):
     register_registration(dp)
 
     # Registering comands for all users
+    register_language_cmd(dp)
+    register_maincurrency(dp)
     register_user(dp)
     register_expenses(dp)
     register_income(dp)
@@ -39,15 +43,22 @@ storage = MemoryStorage()
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher(bot, storage=storage)
 
+# Setup language
+i18n = setup_language(dp)
+_ = i18n.gettext
 
 if __name__ == "__main__":
     from handlers.admin import register_admin
     from handlers.donations import register_donations
     from handlers.expenses import register_expenses
     from handlers.income import register_income
+    from handlers.language import register_language_cmd
+    from handlers.maincurrency import register_maincurrency
     from handlers.registration import register_registration
     from handlers.transfer import register_transfer
     from handlers.user import register_start_help, register_user
+
+    #register_all_middlewares(dp)
 
     register_all_handlers(dp)
 

@@ -6,9 +6,8 @@ from aiogram.dispatcher.filters.state import State, StatesGroup
 from aiogram.types import CallbackQuery, LabeledPrice, Message, PreCheckoutQuery
 from aiogram.types.message import ContentType
 
-import messages
 from keyboards import donation, user
-from server import bot
+from server import _, bot
 
 PROVIDER_TOKEN = os.getenv("TELEXPENSE_PROVIDER_TOKEN")
 PRICE = [LabeledPrice(label="Donate", amount=300)]
@@ -20,7 +19,7 @@ class DonationForm(StatesGroup):
 
 async def start_donation(message: Message):
     await message.answer(
-        "Where do you want to make the payment from?",
+        _("Where do you want to make the payment from?"),
         reply_markup=donation.pay_countries_inlkeyb(),
     )
 
@@ -38,7 +37,7 @@ async def process_donation_cancel(call: CallbackQuery, state: FSMContext):
     # Send message with reply markup
     await bot.send_message(
         call.from_user.id,
-        "OK, next time",
+        _("OK, next time"),
         reply_markup=user.main_keyb(),
     )
 
@@ -55,7 +54,10 @@ async def process_donation_russia(call: CallbackQuery, state: FSMContext):
 
     # Sending button with payment link
     await bot.edit_message_text(
-        messages.russia_donate_message,
+        _(
+            "To transfer money tap the first button, "
+            "you will be redirected to the payment page"
+        ),
         call.from_user.id,
         call.message.message_id,
         reply_markup=donation.ru_donation_link_inlkeyb(),
@@ -71,9 +73,13 @@ async def process_successful_payment(message: Message):
     """Sends thanks message if successfull payment"""
     await bot.send_message(
         message.chat.id,
-        messages.successfull_payment.format(
-            total_amount=message.successful_payment.total_amount // 100,
-            currency=message.successful_payment.currency,
+        _(
+            "*🙏 Thank you for supporting my creator for "
+            "{total_amount} {currency}!*\n\n🤔 Maybe now he can come "
+            "up with even more functionality for me".format(
+                total_amount=message.successful_payment.total_amount // 100,
+                currency=message.successful_payment.currency,
+            )
         ),
         parse_mode="Markdown",
         reply_markup=user.main_keyb(),
@@ -89,7 +95,12 @@ async def send_invoice(call: CallbackQuery, state: FSMContext):
 
     # Send help message
     await bot.edit_message_text(
-        messages.donate_mes,
+        _(
+            "The minimum amount is 3€.\n\n"
+            "If you want to donate a different amount, "
+            'tap "Pay" and enter the amount of the tip, '
+            "which will be added to the minimum amount"
+        ),
         call.from_user.id,
         call.message.message_id,
     )
@@ -97,8 +108,8 @@ async def send_invoice(call: CallbackQuery, state: FSMContext):
     # Send invoice
     await bot.send_invoice(
         call.from_user.id,
-        title="Donation to developer",
-        description=messages.donate_description,
+        title=_("Donation to developer"),
+        description=_("This is a voluntary donation to my creator."),
         provider_token=PROVIDER_TOKEN,
         currency="eur",
         is_flexible=False,

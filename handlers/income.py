@@ -2,12 +2,15 @@ from aiogram import Dispatcher
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import State, StatesGroup
 from aiogram.types import Message, ReplyKeyboardMarkup
+from gspread.exceptions import GSpreadException
 
 import database
-import messages
 import records
 from keyboards import user
+from server import _
 from sheet import Sheet
+
+# TODO: Needs refactoring
 
 
 class IncomeForm(StatesGroup):
@@ -29,22 +32,28 @@ async def process_income(message: Message, state: FSMContext):
     """
     # Starting form filling
     await IncomeForm.amount.set()
-    await message.answer(
-        # message.chat.id,
-        'Specify an amount of income\nor type "cancel"'
-    )
+    await message.answer(_('Specify an amount of income\nor type "cancel"'))
 
     # As the user enters the amount of income,
     # I send a query to the table to get expense categories,
     # income categories, today's date, and accounts.
     # This is done to minimize the number of requests
     user_sheet = Sheet(database.get_sheet_id(message.from_user.id))
-    if user_sheet == None:
-        # await send_error_mes(message.chat.id)
-        await message.answer(messages.error_message, reply_markup=user.main_keyb())
+
+    try:
+        user_data = user_sheet.get_day_categories_accounts()
+    except GSpreadException:
         await state.finish()
+        await message.answer(
+            _(
+                "😳 Something went wrong...\n\n"
+                "Please try again later.\n"
+                "If it does not work again, check your table or add it again via /register. "
+                "Maybe you have changed the table and I can no longer work with it"
+            ),
+            reply_markup=user.main_keyb(),
+        )
         return
-    user_data = user_sheet.get_day_categories_accounts()
 
     # I put the data in the state.proxy(),
     # I have not found a better way to store the data,
@@ -64,8 +73,7 @@ async def process_income_amount(message: Message, state: FSMContext):
     # stop filling out the form and send main keyboard
     if parsed_amount is None:
         await message.answer(
-            # message.chat.id,
-            "❌ Cannot understand this amount...\n" "Try to add /income one more time!",
+            _("❌ Cannot understand this amount...\nTry to add /income one more time!"),
             reply_markup=user.main_keyb(),
         )
         # Stop form
@@ -84,8 +92,7 @@ async def process_income_amount(message: Message, state: FSMContext):
     # Go to the next step of form and send message
     await IncomeForm.next()
     await message.answer(
-        # message.chat.id,
-        "Specify a category of income",
+        _("Specify a category of income"),
         reply_markup=in_categories_markup,
     )
 
@@ -106,9 +113,10 @@ async def process_income_category(message: Message, state: FSMContext):
         # Stop from getting and show main keyboard
         if data["category"] == None:
             await message.answer(
-                # message.chat.id,
-                "❌ This income category doesn't exist...\n"
-                "Try to add /income one more time!",
+                _(
+                    "❌ This income category doesn't exist...\n"
+                    "Try to add /income one more time!"
+                ),
                 reply_markup=user.main_keyb(),
             )
             # Finish form
@@ -123,8 +131,7 @@ async def process_income_category(message: Message, state: FSMContext):
     await IncomeForm.next()
     # Send message with the buttons with accounts titles
     await message.answer(
-        # message.chat.id,
-        "Specify an account",
+        _("Specify an account"),
         reply_markup=accounts_markup,
     )
 
@@ -144,25 +151,18 @@ async def process_account(message: Message, state: FSMContext):
         # Stop from getting and show main keyboard
         if data["account"] == None:
             await message.answer(
-                # message.chat.id,
-                "❌ This account doesn't exist...\n" "Try to add record one more time!",
+                _("❌ This account doesn't exist...\nTry to add /income one more time!"),
                 reply_markup=user.main_keyb(),
             )
             # Stop form
             await state.finish()
             return
 
-    # This handler is used both for income and expense form
-    # Go to the next step depending on which form is now working
-    current_state = await state.get_state()
-    # if "IncomeForm" in current_state:
     await IncomeForm.next()
-    # else:
-    #     await ExpenseForm.next()
+
     # Send a message with the button for cancelling description
     await message.answer(
-        # message.chat.id,
-        "Specify a description",
+        _("Specify a description"),
         reply_markup=user.no_description_keyb(),
     )
 
@@ -177,7 +177,7 @@ async def process_record_description(message: Message, state: FSMContext):
     async with state.proxy() as data:
         # If not negative answer, add description to form
         data["description"] = ""
-        if message.text != "No description":
+        if message.text != "No description" or "Без описания":
             data["description"] = message.text
 
         # Creating list with expense or income data
@@ -189,31 +189,36 @@ async def process_record_description(message: Message, state: FSMContext):
             data["account"],
         ]
 
+        # Enter data to transactions list
+        user_sheet = Sheet(database.get_sheet_id(message.from_user.id))
+
+        try:
+            user_sheet.add_record(record)
+        except GSpreadException:
+            await state.finish()
+            await message.answer(
+                _(
+                    "😳 Something went wrong...\n\n"
+                    "Please try again later.\n"
+                    "If it does not work again, check your table or add it again via /register. "
+                    "Maybe you have changed the table and I can no longer work with it"
+                ),
+                reply_markup=user.main_keyb(),
+            )
+            return
+
         # Send finish message and show main keyboard
-        current_state = await state.get_state()
-        answer_message = ""
-        if "IncomeForm" in current_state:
-            answer_message = f"👍 Successfully added {data['amount']} to \n {data['category']} to {data['account']}!"
-        else:
-            answer_message = f"👍 Successfully added {data['amount']} to \n {data['category']} from {data['account']}!"
         await message.answer(
-            # message.chat.id,
-            answer_message,
+            _(
+                "👍 Successfully added {amount} to \n {cat} to {account}!".format(
+                    amount=data["amount"], cat=data["category"], account=data["account"]
+                )
+            ),
             reply_markup=user.main_keyb(),
         )
 
     # Stop form filling
     await state.finish()
-
-    # Enter data to transactions list
-    user_sheet = Sheet(database.get_sheet_id(message.from_user.id))
-    if user_sheet == None:
-        # await send_error_mes(message.chat.id)
-        await message.answer(messages.error_message, reply_markup=user.main_keyb())
-        await state.finish()
-        return
-
-    user_sheet.add_record(record)
 
 
 async def cmd_addinc(message: Message):
@@ -221,7 +226,14 @@ async def cmd_addinc(message: Message):
     # If user just type command
     if message.text == "/addinc":
         await message.answer(
-            messages.income_help,
+            _(
+                "Income can be added by:\n"
+                "    `/addinc amount, category, [account], [description]`\n"
+                "where account and description are optional.\n\n"
+                "Example:\n"
+                "    `/addinc 1200, Salary, N26, First job`\n"
+                "    `/addinc 20.20, Cashback, Revolut`"
+            ),
             parse_mode="Markdown",
             reply_markup=user.main_keyb(),
         )
@@ -235,41 +247,71 @@ async def cmd_addinc(message: Message):
 
     # If not parsed, send help message
     if parsed_income == []:
-        await message.answer(messages.wrong_income, parse_mode="Markdown")
+        await message.answer(
+            _(
+                "Cannot understand this income!\n\n"
+                "Income can be added by:\n"
+                "    `/addinc amount, category, [account], [description]`\n"
+                "where account and description are optional.\n\n"
+                "Example:\n"
+                "    `/addinc 1200, Salary, N26, First job`\n"
+                "    `/addinc 20.20, Cashback, Revolut`"
+            ),
+            parse_mode="Markdown",
+        )
         return
+
     # If wrong amount
     if parsed_income[3] == None:
         await message.answer(
-            "Cannot understand this income!\n" + "Looks like amount is wrong!",
+            _("Cannot understand this income!\nLooks like amount is wrong!"),
             reply_markup=user.main_keyb(),
         )
         return
     # If wrong category
     if parsed_income[2] == None:
         await message.answer(
-            "Cannot understand this income!\n"
-            + "Looks like this income category doesn't exist!",
+            _(
+                "Cannot understand this income!\n"
+                + "Looks like this income category doesn't exist!"
+            ),
             reply_markup=user.main_keyb(),
         )
         return
     # If wrong account
     if parsed_income[4] == None:
         await message.answer(
-            "Cannot understand this income!\n"
-            + "Looks like this account doesn't exist!",
+            _(
+                "Cannot understand this income!\n"
+                + "Looks like this account doesn't exist!"
+            ),
             reply_markup=user.main_keyb(),
         )
         return
 
     # If successful, openning sheet, checking
     user_sheet = Sheet(database.get_sheet_id(message.from_user.id))
-    if user_sheet == None:
-        await message.answer(messages.error_message, reply_markup=user.main_keyb())
+
+    try:
+        user_sheet.add_record(parsed_income)
+    except GSpreadException:
+        await message.answer(
+            _(
+                "😳 Something went wrong...\n\n"
+                "Please try again later.\n"
+                "If it does not work again, check your table or add it again via /register. "
+                "Maybe you have changed the table and I can no longer work with it"
+            ),
+            reply_markup=user.main_keyb(),
+        )
         return
 
-    user_sheet.add_record(parsed_income)
     await message.answer(
-        f"👍 Successfully added {parsed_income[3]} to\n" + f"{parsed_income[2]}!"
+        _(
+            "👍 Successfully added {amount} to {category}!".format(
+                amount=parsed_income[3], category=parsed_income[2]
+            )
+        )
     )
 
 
@@ -280,6 +322,9 @@ def register_income(dp: Dispatcher):
     dp.register_message_handler(process_income, commands=["income"])
     dp.register_message_handler(
         process_income, lambda message: message.text.startswith("➕Income")
+    )
+    dp.register_message_handler(
+        process_income, lambda message: message.text.startswith("➕Доход")
     )
     dp.register_message_handler(process_income_amount, state=IncomeForm.amount)
     dp.register_message_handler(process_income_category, state=IncomeForm.category)

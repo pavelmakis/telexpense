@@ -35,9 +35,20 @@ def insert_sheet_id(user_id: str, sheet_id: str):
     conn.commit()
 
 
+def update_sheet_id(user_id: str, sheet_id: str):
+    """Update users sheet_id"""
+    cursor.execute(
+        f"""
+    UPDATE bot_users SET sheet_id="{sheet_id}" WHERE
+        user_id="{user_id}"
+    """
+    )
+    conn.commit()
+
+
 def get_all_users() -> list:
     """Get all users as list"""
-    cursor.execute(f"SELECT user_id FROM bot_users")
+    cursor.execute("SELECT user_id FROM bot_users")
     data, users = cursor.fetchall(), []
     for user in data:
         users.append(int(user[0]))
@@ -63,6 +74,17 @@ def get_user_count() -> int:
     count = cursor.fetchone()
 
     return count[0]
+
+
+def get_user_lang(user_id: str) -> str | None:
+    """Get user language by user id"""
+    cursor.execute(f'SELECT language FROM bot_users WHERE user_id = "{user_id}"')
+    lang = cursor.fetchone()
+
+    if lang is None:
+        return lang
+
+    return lang[0]
 
 
 def update_language(user_id: str, lang: str):
