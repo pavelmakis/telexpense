@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2022-06-12 12:06+0300\n"
+"POT-Creation-Date: 2022-06-12 13:41+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -64,7 +64,7 @@ msgstr ""
 #: handlers/income.py:48 handlers/income.py:200 handlers/income.py:299
 #: handlers/maincurrency.py:105 handlers/maincurrency.py:129
 #: handlers/transfer.py:47 handlers/transfer.py:232 handlers/transfer.py:336
-#: handlers/user.py:106
+#: handlers/user.py:108
 msgid ""
 "😳 Something went wrong...\n"
 "\n"
@@ -251,8 +251,11 @@ msgstr ""
 msgid "Setting selected language..."
 msgstr ""
 
-#: handlers/language.py:47 handlers/maincurrency.py:142
-msgid "Success!"
+#: handlers/language.py:49
+msgid ""
+"Success!\n"
+"\n"
+"For the changes to take effect, run any command"
 msgstr ""
 
 #: handlers/maincurrency.py:36
@@ -291,6 +294,10 @@ msgstr ""
 
 #: handlers/maincurrency.py:117 handlers/maincurrency.py:120
 msgid "Updating formats..."
+msgstr ""
+
+#: handlers/maincurrency.py:142
+msgid "Success!"
 msgstr ""
 
 #: handlers/registration.py:48
@@ -344,7 +351,7 @@ msgstr ""
 msgid "Checking this sheet..."
 msgstr ""
 
-#: handlers/registration.py:207
+#: handlers/registration.py:204
 msgid ""
 "Your sheet successfully changed!\n"
 "\n"
@@ -352,7 +359,7 @@ msgid ""
 "set bots language in /language"
 msgstr ""
 
-#: handlers/registration.py:219
+#: handlers/registration.py:216
 msgid ""
 "Great, you are in!\n"
 "\n"
@@ -360,14 +367,14 @@ msgid ""
 "set bots language in /language"
 msgstr ""
 
-#: handlers/registration.py:232
+#: handlers/registration.py:229
 msgid ""
 "Hm. Looks like it's not a link I'm looking for...\n"
 "\n"
 "Read the [wiki]({wiki}) and try to /register one more time!"
 msgstr ""
 
-#: handlers/registration.py:254
+#: handlers/registration.py:251
 msgid "See you next time!"
 msgstr ""
 
@@ -519,38 +526,38 @@ msgid ""
 "Read the [wiki]({wiki}) or type /register"
 msgstr ""
 
-#: handlers/user.py:88
+#: handlers/user.py:90
 msgid ""
 "Can cancel only while filling a form.\n"
 "\n"
 "Nothing to cancel now!"
 msgstr ""
 
-#: handlers/user.py:95
+#: handlers/user.py:97
 msgid "Cancelled"
 msgstr ""
 
-#: handlers/user.py:130
+#: handlers/user.py:132
 msgid ""
 "💰 Your accounts:\n"
 "\n"
 msgstr ""
 
-#: handlers/user.py:143
+#: handlers/user.py:145
 msgid ""
 "\n"
 "*Daily available:*   "
 msgstr ""
 
-#: handlers/user.py:152
+#: handlers/user.py:154
 msgid "Wait a second..."
 msgstr ""
 
-#: handlers/user.py:159 handlers/user.py:164
+#: handlers/user.py:161 handlers/user.py:166
 msgid "🤔 Looks like there is no transactions..."
 msgstr ""
 
-#: handlers/user.py:173 handlers/user.py:178
+#: handlers/user.py:175 handlers/user.py:180
 msgid "👌 Successfully deleted last transaction!"
 msgstr ""
 
