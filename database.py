@@ -35,6 +35,17 @@ def insert_sheet_id(user_id: str, sheet_id: str):
     conn.commit()
 
 
+def update_sheet_id(user_id: str, sheet_id: str):
+    """Update users sheet_id"""
+    cursor.execute(
+        f"""
+    UPDATE bot_users SET sheet_id="{sheet_id}" WHERE
+        user_id="{user_id}"
+    """
+    )
+    conn.commit()
+
+
 def get_all_users() -> list:
     """Get all users as list"""
     cursor.execute("SELECT user_id FROM bot_users")
