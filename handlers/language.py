@@ -44,7 +44,7 @@ async def process_language(call: CallbackQuery):
     # Writing language to database
     database.update_language(str(call.from_user.id), call.data[-2:])
 
-    await bot.send_message(call.from_user.id, _("Success"), reply_markup=main_keyb())
+    await bot.send_message(call.from_user.id, _("Success!"), reply_markup=main_keyb())
     await bot.delete_message(call.from_user.id, call.message.message_id)
 
 
