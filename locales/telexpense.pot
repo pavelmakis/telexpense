@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2022-06-12 13:41+0300\n"
+"POT-Creation-Date: 2022-06-13 22:49+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -60,10 +60,10 @@ msgid ""
 "or type \"cancel\""
 msgstr ""
 
-#: handlers/expenses.py:48 handlers/expenses.py:210 handlers/expenses.py:307
-#: handlers/income.py:48 handlers/income.py:200 handlers/income.py:299
+#: handlers/expenses.py:48 handlers/expenses.py:212 handlers/expenses.py:310
+#: handlers/income.py:48 handlers/income.py:202 handlers/income.py:299
 #: handlers/maincurrency.py:105 handlers/maincurrency.py:129
-#: handlers/transfer.py:47 handlers/transfer.py:232 handlers/transfer.py:336
+#: handlers/transfer.py:47 handlers/transfer.py:234 handlers/transfer.py:336
 #: handlers/user.py:108
 msgid ""
 "😳 Something went wrong...\n"
@@ -104,13 +104,13 @@ msgstr ""
 msgid "Specify a description"
 msgstr ""
 
-#: handlers/expenses.py:222
+#: handlers/expenses.py:187
 msgid ""
 "👍 Successfully added {amount} to \n"
 "{cat} from {account}!"
 msgstr ""
 
-#: handlers/expenses.py:237
+#: handlers/expenses.py:240
 msgid ""
 "Expense can be added by:\n"
 "    `/addexp amount, category, [account], [description]`\n"
@@ -121,7 +121,7 @@ msgid ""
 "    `/addexp 9.87, Groceries, N26`"
 msgstr ""
 
-#: handlers/expenses.py:259
+#: handlers/expenses.py:262
 msgid ""
 "Cannot understand this expense!\n"
 "\n"
@@ -134,25 +134,25 @@ msgid ""
 "    `/addexp 9.87, Groceries, N26`"
 msgstr ""
 
-#: handlers/expenses.py:275
+#: handlers/expenses.py:278
 msgid ""
 "Cannot understand this expense!\n"
 "Looks like amount is wrong!"
 msgstr ""
 
-#: handlers/expenses.py:282
+#: handlers/expenses.py:285
 msgid ""
 "Cannot understand this expense!\n"
 "Looks like this category doesn't exist!"
 msgstr ""
 
-#: handlers/expenses.py:292
+#: handlers/expenses.py:295
 msgid ""
 "Cannot understand this expense!\n"
 "Looks like this account doesn't exist!"
 msgstr ""
 
-#: handlers/expenses.py:319 handlers/income.py:311
+#: handlers/expenses.py:322 handlers/income.py:311
 msgid "👍 Successfully added {amount} to {category}!"
 msgstr ""
 
@@ -184,7 +184,7 @@ msgid ""
 "Try to add /income one more time!"
 msgstr ""
 
-#: handlers/income.py:213
+#: handlers/income.py:177
 msgid ""
 "👍 Successfully added {amount} to \n"
 " {cat} to {account}!"
@@ -396,7 +396,7 @@ msgid ""
 "the money was transferred"
 msgstr ""
 
-#: handlers/transfer.py:117 handlers/transfer.py:201
+#: handlers/transfer.py:117 handlers/transfer.py:203
 msgid ""
 "❌ This account doesn't exist...\n"
 "Try to add /transfer one more time!"
@@ -415,7 +415,7 @@ msgid ""
 "the money was transferred"
 msgstr ""
 
-#: handlers/transfer.py:245
+#: handlers/transfer.py:193
 msgid ""
 "👍 Successfully added transfer\n"
 "from {account1} to {account2}!"

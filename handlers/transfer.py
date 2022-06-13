@@ -190,6 +190,8 @@ async def process_income_account(message: Message, state: FSMContext):
     This handler is used to get the income account after calling /transfer
     """
     transaction_record = []
+    answer_message = _("👍 Successfully added transfer\nfrom {account1} to {account2}!")
+
     async with state.proxy() as data:
         # Parsing account
         parsed_account = records._parse_account(message.text, data)
@@ -241,10 +243,8 @@ async def process_income_account(message: Message, state: FSMContext):
 
     # Send a message with the button for
     await message.answer(
-        _(
-            "👍 Successfully added transfer\nfrom {account1} to {account2}!".format(
-                account1=transaction_record[2], account2=transaction_record[4]
-            )
+        answer_message.format(
+            account1=transaction_record[2], account2=transaction_record[4]
         ),
         reply_markup=user.main_keyb(),
     )

@@ -184,6 +184,8 @@ async def process_record_description(message: Message, state: FSMContext):
     after calling the /expense or /income command.
     """
     record = []
+    answer_message = _("👍 Successfully added {amount} to \n{cat} from {account}!")
+
     async with state.proxy() as data:
         # If not negative answer, add description to form
         data["description"] = ""
@@ -218,12 +220,13 @@ async def process_record_description(message: Message, state: FSMContext):
             return
 
         # Send finish message and show main keyboard
-        answer_message = _(
-            "👍 Successfully added {amount} to \n{cat} from {account}!".format(
-                amount=data["amount"], cat=data["category"], account=data["account"]
-            )
-        )
-        await message.answer(answer_message, reply_markup=user.main_keyb())
+
+    await message.answer(
+        answer_message.format(
+            amount=data["amount"], cat=data["category"], account=data["account"]
+        ),
+        reply_markup=user.main_keyb(),
+    )
 
     # Stop form filling
     await state.finish()
