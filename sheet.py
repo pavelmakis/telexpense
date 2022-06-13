@@ -176,7 +176,7 @@ class Sheet:
         # Check last transaction 'category' field
         if len(data) >= 2:
             # TODO: Add check for multilanguage
-            if data[0][0] == "Transfer" or "Transaction":
+            if data[0][0] in ["Transfer", "Transaction", "Перевод"]:
                 return "transfer"
             else:
                 return "category"
