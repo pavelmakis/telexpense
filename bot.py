@@ -44,7 +44,7 @@ def register_all_filters(dp: Dispatcher) -> None:
 
 def register_all_handlers(dp: Dispatcher) -> None:
     register_start(dp)
-    pass
+    register_expense(dp)
 
 
 async def on_startup(app: Application) -> None:
@@ -87,6 +87,7 @@ dp = Dispatcher(bot, storage=storage)
 
 if __name__ == "__main__":
     # from core.filters.isadmin import IsAdmin
+    from telexpense.handlers.expense import register_expense
     from telexpense.handlers.start import register_start
 
     register_all_middlewares(dp)
