@@ -5,16 +5,14 @@ BASE_DIR = Path(__file__).parent
 
 # Bot configurations
 API_TOKEN = environ["API_TOKEN"]
-# PAYMENTS_TOKEN = environ["PAYMENTS_TOKEN"]
-
 WEBAPP_HOST = environ["WEBAPP_HOST"]
 WEBAPP_PORT = int(environ["WEBAPP_PORT"])
+WEBHOOK_URL = environ["WEBHOOK_URL"]
 
-
-# Webhook configurartion
-WEBHOOK_HOST = environ["WEBHOOK_HOST"]
-WEBHOOK_PATH = environ["WEBHOOK_PATH"]
-WEBHOOK_URL = f"{WEBHOOK_HOST}{WEBHOOK_PATH}"
+# Sentry configurations
+SENTRY_DSN = environ["SENTRY_DSN"]
+ENVIRONMENT = environ["ENVIRONMENT"]
+DEBUG = environ["DEBUG"]
 
 # Database connection configuration
 DB_HOST = environ["DB_HOST"]
@@ -24,6 +22,7 @@ DB_NAME = environ["DB_NAME"]
 DB_PORT = int(environ["DB_PORT"])
 
 # Redis storage configuration
-REDIS_STORAGE_HOST = environ["REDIS_HOST"]
-REDIS_STORAGE_PORT = int(environ["REDIS_PORT"])
-REDIS_STORAGE_DB = int(environ["REDIS_DB"])
+REDIS_HOST = environ["REDIS_HOST"]
+REDIS_PORT = int(environ["REDIS_PORT"])
+REDIS_DB = int(environ["REDIS_DB"])
+
