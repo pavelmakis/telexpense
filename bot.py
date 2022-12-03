@@ -12,8 +12,7 @@ from aiohttp.web import Application
 # from sentry_sdk.integrations.logging import LoggingIntegration
 
 import config
-
-# import db
+from db import PostgresConnector
 
 # if not config.DEBUG:
 #     sentry_sdk.init(
@@ -56,9 +55,7 @@ async def on_startup(app: Application) -> None:
     logging.info(f"Webhook was set on '{config.WEBHOOK_URL}'")
 
     # Openning connection pool
-    # await db.open_pool()
-
-    # await register_all_handlers(dp)
+    await pg_pool.open_pool()
 
 
 async def on_shutdown(app: Application) -> None:
@@ -67,8 +64,7 @@ async def on_shutdown(app: Application) -> None:
     await dp.storage.wait_closed()
 
     # Closing connection pool
-    # await db.close_pool()
-    pass
+    await pg_pool.close_pool()
 
 
 # Initialize storage
@@ -82,6 +78,9 @@ storage = RedisStorage2(
 # Initialize bot and dispatcher
 bot = Bot(token=config.API_TOKEN, parse_mode="HTML")
 dp = Dispatcher(bot, storage=storage)
+
+# Initialize postgres connection pool
+pg_pool = PostgresConnector()
 
 
 if __name__ == "__main__":
