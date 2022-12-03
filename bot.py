@@ -73,12 +73,11 @@ async def on_shutdown(app: Application) -> None:
 
 # Initialize storage
 storage = RedisStorage2(
-    host=config.REDIS_STORAGE_HOST,
-    port=config.REDIS_STORAGE_PORT,
-    db=config.REDIS_STORAGE_DB,
+    host=config.REDIS_HOST,
+    port=config.REDIS_PORT,
+    db=config.REDIS_DB,
     prefix="telexpense_fsm",
 )
-
 
 # Initialize bot and dispatcher
 bot = Bot(token=config.API_TOKEN, parse_mode="HTML")
@@ -94,7 +93,7 @@ if __name__ == "__main__":
     register_all_filters(dp)
     register_all_handlers(dp)
 
-    bot_app = get_new_configured_app(dispatcher=dp, path=config.WEBHOOK_PATH)
+    bot_app = get_new_configured_app(dispatcher=dp, path=config.WEBHOOK_URL)
     bot_app.on_startup.append(on_startup)
     bot_app.on_shutdown.append(on_shutdown)
 
