@@ -3,6 +3,7 @@ import sheet
 
 
 def parse_outcome_amount(amount: str) -> float | None:
+    amount = amount.replace(",", ".")
     if amount[0] == "+" or amount[0] == "-":
         amount = amount[1:]
     amount = "-" + amount
@@ -14,6 +15,7 @@ def parse_outcome_amount(amount: str) -> float | None:
 
 
 def parse_income_amount(amount: str) -> float | None:
+    amount = amount.replace(",", ".")
     if amount[0] == "-":
         amount = amount[1:]
     try:
